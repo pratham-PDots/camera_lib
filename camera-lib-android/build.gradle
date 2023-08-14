@@ -50,7 +50,7 @@ afterEvaluate{
 
             groupId='com.github.sj0510'
             artifactId="camera-lib-android"
-            version='1.0.2'
+            version='1.0.31'
         } // com.github.sj0510:camera-lib-android:1.0.0
 
     }
