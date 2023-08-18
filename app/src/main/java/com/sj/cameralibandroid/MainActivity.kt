@@ -1,8 +1,7 @@
 package com.sj.cameralibandroid
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.sj.camera_lib_android.Demo
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
