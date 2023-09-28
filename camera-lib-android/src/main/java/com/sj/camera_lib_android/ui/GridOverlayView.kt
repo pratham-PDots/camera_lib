@@ -1,13 +1,14 @@
 package com.sj.camera_lib_android.ui
+/**
+ * @author Saurabh Kumar 11 September 2023
+ * **/
 
 import android.content.Context
-import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.DisplayMetrics
 import android.view.View
 
 class GridOverlayView(context: Context, attrs: AttributeSet) : View(context, attrs) {

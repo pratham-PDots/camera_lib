@@ -1,5 +1,7 @@
 package com.sj.camera_lib_android
-
+/**
+ * @author Saurabh Kumar 11 September 2023
+ * **/
 import android.content.Context
 import android.widget.Toast
 

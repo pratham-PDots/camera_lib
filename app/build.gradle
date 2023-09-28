@@ -2,7 +2,9 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'maven-publish'
+    id 'com.google.gms.google-services'
 }
+
 
 android {
     namespace 'com.sj.cameralibandroid'
@@ -14,9 +16,21 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk.abiFilters 'armeabi-v7a','arm64-v8a','x86','x86_64'
+
     }
+
+/*    splits {
+        abi {
+            reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
+            include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
+        }
+    }*/
+
+
 
     buildTypes {
         release {
@@ -42,6 +56,11 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+
+
+    implementation project(path: ':camera-lib-android')
+
 
 //    implementation 'com.github.sj0510:camera-lib-android:1.0.0'
 
