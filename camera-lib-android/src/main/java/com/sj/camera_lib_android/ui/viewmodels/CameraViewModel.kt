@@ -64,15 +64,16 @@ class CameraViewModel() : ViewModel()  {
   private var rowID: Double = 0.0
   private var stepsTakenID: ArrayList<String> = ArrayList<String>()
   private var nextStepID: String =""
-  private var fileLeftOvlp: File? = null
-  private var leftOverlapBtmp: Bitmap? = null
-  private var fileRightOvlp: File? = null
-  private var rightOverlapBtmp: Bitmap? = null
-  private var fileTopOvlp: File? = null
-  private var topOverlapBtmp: Bitmap? = null
 
-  private lateinit var positionMatrix: Pair<Int, Int>
-  private lateinit var dimentionMatrix: Pair<Int, Int>
+
+
+  private var positionMatrix: IntArray = intArrayOf(0,0)
+  private var dimensionMatrix: IntArray = intArrayOf(0,0)
+  private var overlapArray: Array<Any> = arrayOf(0,0,0,0.0f,0.0f,0.0f)
+
+//  private var overlapArray: FloatArray = floatArrayOf(0f,0f,0f,0.0f,0.0f,0.0f)
+  // Format  [isTop, isLeft, isRight, top_overlap_value, left_overlap_value, right_overlap_value]
+
   private var mySharedPref: String = "MyPrefsSW"
   private lateinit var mContext: Context
 
@@ -100,7 +101,7 @@ class CameraViewModel() : ViewModel()  {
 
 
 //    currentImageList.add(CaptureImageModel(bmp1,currentImageList.size,coordinatesCropped, file1, directionSelected,rowSum.toString()))
-    
+
 
     // Save Details in class
     Log.d("imageSW imageDetails Saving","START ===>> directionSelected: $directionSelected")
@@ -110,6 +111,7 @@ class CameraViewModel() : ViewModel()  {
       directionID = directionSelected
     }
 
+    // stepsTaken Work
     if (currentImageList.isNotEmpty() ){
        stepsTakenID = currentImageList.last().stepsTaken
 
@@ -118,34 +120,39 @@ class CameraViewModel() : ViewModel()  {
       }else stepsTakenID.add(directionSelected)
     }else stepsTakenID.add("")
 
+    // Position and Dimension Work
     if (currentImageList.isNotEmpty()) {
       if (currentImageList.last().stepsTaken.size > 1 && currentImageList.last().stepsTaken[1] == "down"){
         val sum = currentImageList.size % rowID.toInt()
         val col = currentImageList.size/rowID.toInt()
 
-        positionMatrix = Pair(sum,col)
-        dimentionMatrix = Pair(rowID.toInt(),col+1)
+        positionMatrix = intArrayOf(sum,col)
+        dimensionMatrix = intArrayOf(rowID.toInt(),col+1)
 
-        Log.d("imageSW sumDown", " $sum, positionMatrix: $positionMatrix, dimentionMatrix: $dimentionMatrix")
+        Log.d("imageSW sumDown", " $sum, positionMatrix: $positionMatrix, dimensionMatrix: $dimensionMatrix")
 
       }else{
         val sum = currentImageList.size % rowID.toInt()
-        positionMatrix = Pair(sum,currentImageList.size)
-        dimentionMatrix = Pair(rowID.toInt(), currentImageList.size+1)
+        positionMatrix = intArrayOf(sum,currentImageList.size)
+        dimensionMatrix = intArrayOf(rowID.toInt(), currentImageList.size+1)
 
-        Log.d("imageSW sumLR", " $sum, positionMatrix: $positionMatrix, dimentionMatrix: $dimentionMatrix")
+        Log.d("imageSW sumLR", " $sum, positionMatrix: $positionMatrix, dimensionMatrix: $dimensionMatrix")
 
       }
     }else {
-      positionMatrix = Pair(0,0)
-      dimentionMatrix = Pair(1,1)
-      Log.d("imageSW sum 1stImg",  "positionMatrix: $positionMatrix, dimentionMatrix: $dimentionMatrix")
+      positionMatrix = intArrayOf(0,0)
+      dimensionMatrix = intArrayOf(1,1)
+
+      Log.d("imageSW sum 1stImg",  "positionMatrix: $positionMatrix, dimensionMatrix: $dimensionMatrix")
     }
 
+    // getOverlapArray Work
+    overlapArray = getOverlapArray()
+    Log.d("imageSW overlapArray",overlapArray.contentToString())
 
 
-    currentImageList.add(ImageDetailsModel("$positionMatrix","$dimentionMatrix", captureTime,zoomLevel, mode ,directionID,
-      isAutomaticID,rowID,stepsTakenID,nextStepID, overlapBE, ImageModel("$file1","image/png","$captureTime.png"),
+    currentImageList.add(ImageDetailsModel(positionMatrix,dimensionMatrix, captureTime,zoomLevel, mode ,directionID,
+      isAutomaticID,rowID,stepsTakenID,nextStepID, overlapArray.contentToString(), ImageModel("$file1","image/png","$captureTime.png"),
       file1, bmp1, coordinatesCropped))
 
     Log.d("imageSW handle_img", " currentImageList.size: ${currentImageList.size} , rowSum: $rowSum")
@@ -182,12 +189,12 @@ class CameraViewModel() : ViewModel()  {
       imageUploadList.addAll(currentImageList.map {imageDetails ->
         ImageUploadModel(
           // Map properties from ImageDetailsModel to ImageUploadModel
-          imageDetails.position,
-          imageDetails.dimension,"","", "${currentImageList.size}",
+          imageDetails.position.contentToString(),
+          imageDetails.dimension.contentToString(),"","", "${currentImageList.size}",
           imageDetails.appTimestamp,
           imageDetails.orientation,
           imageDetails.zoomLevel, "",
-          "${imageDetails.croppedCoordinates.contentToString()}", "${imageDetails.overlapPercent}",
+          imageDetails.croppedCoordinates.contentToString(), "${imageDetails.overlapPercent}",
           "${imageDetails.file}","image/png","${imageDetails.appTimestamp}.png", imageDetails.file
         )
 
@@ -464,7 +471,8 @@ class CameraViewModel() : ViewModel()  {
 
     // for left right direction
     try {
-      if ((direction.isNotEmpty() && (direction == "left" || direction == "right")) || (directionSelected == "right" || directionSelected == "left") || (guideResult == "right" || guideResult == "left")) {
+      if ((direction.isNotEmpty() && (direction == "left" || direction == "right")) ||
+        (directionSelected == "right" || directionSelected == "left") || (guideResult == "right" || guideResult == "left")) {
         if (currentImageList.size == 1){
           _uiState.update { state ->
             state.copy(
@@ -608,8 +616,30 @@ class CameraViewModel() : ViewModel()  {
         )
       }
     }
+    
+  }
+  
+  private fun getOverlapArray(): Array<Any> {
+    // Overlap Array Work
+    // overlapArray Format  [isTop, isLeft, isRight, top_overlap_value, left_overlap_value, right_overlap_value]
 
+    if (uiState.value.topOverlayImage != null){
+      overlapArray = if (uiState.value.leftOverlayImage != null){
+        arrayOf(1,1,0, overlapBE, overlapBE,0) // Top + Left
+      }else if (uiState.value.rightOverlayImage != null){
+        arrayOf(1,0,1,overlapBE, 0,overlapBE) // Top + Right
+      }else{
+        arrayOf(1,0,0, overlapBE,0,0) // Top Only
+      }
+    }else if (uiState.value.leftOverlayImage != null){
+      overlapArray = arrayOf(0,1,0,0, overlapBE,0) // Only Left
+    }else if (uiState.value.rightOverlayImage != null){
+      overlapArray = arrayOf(0,0,1,0,0,overlapBE) // only Right
+    }else{
+      overlapArray = arrayOf(0,0,0,0,0,0) // No One for 1st image
 
+    }
+    return overlapArray
   }
 
 
@@ -703,7 +733,7 @@ class CameraViewModel() : ViewModel()  {
 //    Log.d("dataFromOpenCam: ", "$mMode, ${mOverlapBE.toString()}, $mUploadParam")
     mContext = context
     mode = mMode
-    overlapBE = mOverlapBE  //TODO: enable overlap percent for all overlap images
+    overlapBE = mOverlapBE/100  //TODO: enable overlap percent for all overlap images
     upload_param = mUploadParam
     resolution = mResolution
     referenceUrl = mReferenceUrl
@@ -813,13 +843,7 @@ class CameraViewModel() : ViewModel()  {
     isAutomaticID = false
     stepsTakenID = ArrayList<String>()
     nextStepID = ""
-    fileLeftOvlp = null
-    leftOverlapBtmp = null
-    fileRightOvlp = null
-    rightOverlapBtmp = null
-    fileTopOvlp = null
-    topOverlapBtmp = null
-
+    Common.zoomSelected = "0"
 
   }
 
@@ -858,7 +882,7 @@ class CameraViewModel() : ViewModel()  {
     {
       is JSONArray ->
       {
-        val map = (0 until value.length()).associate { Pair(it.toString(), value[it]) }
+        val map = (0 until value.length()).associate { intArrayOf(it.toString(), value[it]) }
         JSONObject(map).toMap().values.toList()
       }
       is JSONObject -> value.toMap()

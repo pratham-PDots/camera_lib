@@ -6,8 +6,8 @@ package com.sj.camera_lib_android.models
 import android.graphics.Bitmap
 import java.io.File
 data class ImageDetailsModel (
-    val position: String,
-    val dimension: String,
+    val position: IntArray,
+    val dimension: IntArray,
     val appTimestamp: String,
     val zoomLevel: String,
     val orientation: String,
@@ -16,7 +16,7 @@ data class ImageDetailsModel (
     val row: Double,
     val stepsTaken: ArrayList<String>,
     val nextStep: String,
-    val overlapPercent: Float,
+    val overlapPercent: String,
 
     val imageItem: ImageModel,
 
