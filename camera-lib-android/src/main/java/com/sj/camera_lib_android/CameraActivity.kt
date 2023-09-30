@@ -1088,7 +1088,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
           if (isLowLight) {
               // image has low light
-              Common.showToast(this, "This image has low light!")
+//              Common.showToast(this, "This image has low light!")
               // Image Enhancement
 //              val enhancedBitmap2 = ImageProcessingUtils.enhanceImageBrightness(targetBmp, 1.5f)
               Log.d("imageSW isLowLight 2: ", " $isLowLight  Enhancement DONE")
