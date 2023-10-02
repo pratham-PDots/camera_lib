@@ -20,6 +20,7 @@ data class ImageUploadModel(
     val session_id: String,
     val crop_coordinates: String,
     val overlap_values: String,
+    val upload_params: String,
     val uri: String,
     val type: String,
     val name: String,

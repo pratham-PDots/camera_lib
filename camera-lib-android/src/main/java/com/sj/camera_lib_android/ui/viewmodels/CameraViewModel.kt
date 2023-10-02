@@ -151,9 +151,9 @@ class CameraViewModel() : ViewModel()  {
     Log.d("imageSW overlapArray",overlapArray.contentToString())
 
 
-    currentImageList.add(ImageDetailsModel(positionMatrix,dimensionMatrix, captureTime,zoomLevel, mode ,directionID,
-      isAutomaticID,rowID,stepsTakenID,nextStepID, overlapArray.contentToString(), ImageModel("$file1","image/png","$captureTime.png"),
-      file1, bmp1, coordinatesCropped))
+    currentImageList.add(ImageDetailsModel(positionMatrix,dimensionMatrix, captureTime,zoomLevel, mode
+      ,directionID, isAutomaticID,rowID,stepsTakenID,nextStepID, overlapArray.contentToString(),upload_param,
+      ImageModel("$file1","image/png","$captureTime.png"), file1, bmp1, coordinatesCropped))
 
     Log.d("imageSW handle_img", " currentImageList.size: ${currentImageList.size} , rowSum: $rowSum")
     imageCapturedListLive.value = currentImageList
@@ -195,7 +195,7 @@ class CameraViewModel() : ViewModel()  {
           imageDetails.orientation,
           imageDetails.zoomLevel, "",
           imageDetails.croppedCoordinates.contentToString(), "${imageDetails.overlapPercent}",
-          "${imageDetails.file}","image/png","${imageDetails.appTimestamp}.png", imageDetails.file
+          upload_param,"${imageDetails.file}","image/png","${imageDetails.appTimestamp}.png", imageDetails.file
         )
 
       })
@@ -205,7 +205,6 @@ class CameraViewModel() : ViewModel()  {
       saveToSharedPref(imageUploadList)
 
         // Upload to Firebase or send List to 3rd Party
-      if (uploadFrom.isNotEmpty() && uploadFrom == "Shelfwatch") {
         // upload to Firebase
         // Call My Service for image Upload to firebase in the background
         val utils = Utils()
@@ -227,10 +226,11 @@ class CameraViewModel() : ViewModel()  {
         }
 
 //        uploadToFirebase(mContext, imageUploadList.last(), firebaseDBReference1, imageUploadList) //uploadImages
-      }
-      else{
-        Log.d("imageSW UploadTo", "3rd party")
-//        Broadcast only when uploading from 3rd party
+
+        //        Broadcast only when uploadFrom from 3rd party
+
+        if (uploadFrom.isNotEmpty() && uploadFrom != "Shelfwatch") {
+          Log.d("imageSW UploadTo", "3rd party")
         val intent = Intent("DataSaved")
         intent.putExtra("status","Done")
         intent.putParcelableArrayListExtra("imageListSaved",ArrayList(imageUploadList))

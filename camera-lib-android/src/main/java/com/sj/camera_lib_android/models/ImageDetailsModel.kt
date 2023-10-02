@@ -17,6 +17,7 @@ data class ImageDetailsModel (
     val stepsTaken: ArrayList<String>,
     val nextStep: String,
     val overlapPercent: String,
+    val uploadParams: String,
 
     val imageItem: ImageModel,
 
