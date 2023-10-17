@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import org.json.JSONObject
 import java.io.File
 
 
@@ -210,11 +211,14 @@ class CameraViewModel() : ViewModel()  {
         val utils = Utils()
         if (utils.checkInternetConnection(context)) {
 
+          val projectId = JSONObject(upload_param).get("project_id")
+
           if (imageUploadList.isNotEmpty()) {
             // Start Service
             val intent = Intent(context, MyServices()::class.java) // image Upload from gallery
             intent.putParcelableArrayListExtra("mediaList", ArrayList(imageUploadList))
             intent.putExtra("deviceName",deviceName)
+            intent.putExtra("project_id", projectId.toString())
             context.startService(intent)
 
           }else{

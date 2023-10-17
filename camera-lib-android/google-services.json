@@ -1,26 +1,115 @@
 {
   "project_info": {
-    "project_number": "1004527836629",
-    "project_id": "shelfwatchandroidcamsdk",
-    "storage_bucket": "shelfwatchandroidcamsdk.appspot.com"
+    "project_number": "1000346601092",
+    "project_id": "client-itc-209815",
+    "storage_bucket": "client-itc-209815.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1004527836629:android:f03f8fd196fc87cb11315c",
+        "mobilesdk_app_id": "1:1000346601092:android:aa5a2a7e7fa334e0c764d1",
         "android_client_info": {
-          "package_name": "com.sj.camera_lib_android"
+          "package_name": "com.paralleldots.sw"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1000346601092-ae86e7th9k4n21o3o250048meuso7ktl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyChS-AbGjeY6jBHSH4ONPGFkZ01xS8Kkr0"
+          "current_key": "AIzaSyDmQxfwly2gx_niEX0Hc4WKMDuO1PFFh7k"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1000346601092-ae86e7th9k4n21o3o250048meuso7ktl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1000346601092-bvh4a1bs4t2u4q9dgm284jv226gcm1e8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.odin.paralleldots"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000346601092:android:d8e42205d68b2a1bc764d1",
+        "android_client_info": {
+          "package_name": "com.shelfwatch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1000346601092-ae86e7th9k4n21o3o250048meuso7ktl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmQxfwly2gx_niEX0Hc4WKMDuO1PFFh7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1000346601092-ae86e7th9k4n21o3o250048meuso7ktl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1000346601092-bvh4a1bs4t2u4q9dgm284jv226gcm1e8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.odin.paralleldots"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000346601092:android:015562f7b83ebe92c764d1",
+        "android_client_info": {
+          "package_name": "com.sj.camera_lib_android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1000346601092-ae86e7th9k4n21o3o250048meuso7ktl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmQxfwly2gx_niEX0Hc4WKMDuO1PFFh7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1000346601092-ae86e7th9k4n21o3o250048meuso7ktl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1000346601092-bvh4a1bs4t2u4q9dgm284jv226gcm1e8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.odin.paralleldots"
+              }
+            }
+          ]
         }
       }
     }

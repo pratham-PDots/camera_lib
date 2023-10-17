@@ -30,7 +30,6 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
         var isBlurFeature = ""
         var isCropFeature = ""
         var uploadFrom = ""
-
         if (extras != null) {
             modeRotation = extras.getString("mode") ?: ""
             overlayBE = extras.getString("overlapBE")?.toFloat() ?: 20f

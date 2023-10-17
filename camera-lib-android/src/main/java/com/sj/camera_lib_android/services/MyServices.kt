@@ -13,8 +13,10 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.sj.camera_lib_android.models.ImageUploadModel
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.UUID
 
 class MyServices : Service() {
 
@@ -22,6 +24,7 @@ class MyServices : Service() {
     private var deviceName: String = ""
     private var storage: FirebaseStorage? = null
     private var storageReference: StorageReference? = null
+    val uuid = UUID.randomUUID()
     companion object{
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss"
 
@@ -33,7 +36,7 @@ class MyServices : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // get the Firebase storage reference
-        storage = FirebaseStorage.getInstance()
+        storage = FirebaseStorage.getInstance("gs://shelfwatch-app-dev")
         storageReference = storage!!.reference
 
 
@@ -46,7 +49,7 @@ class MyServices : Service() {
 
         if (imageUploadList.size > 0){
             try {
-                uploadImage(imageUploadList) // Upload images to the firebase
+                uploadImage(imageUploadList, sessionId = uuid.toString(), projectId = intent?.getStringExtra("project_id") ?: "pratham") // Upload images to the firebase
             }catch (exception:Exception){
                 Log.e("imageSW exceptionFirebase","$exception")
             }
@@ -62,9 +65,11 @@ class MyServices : Service() {
     }
 
 
-    private fun uploadImage(list: MutableList<ImageUploadModel>) {
+    private fun uploadImage(list: MutableList<ImageUploadModel>, projectId : String = "", sessionId: String = "") {
+
+
         val uploadImgTime = SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())
-        val fbRef = storageReference?.child("Shelfwatch")?.child("$deviceName/$uploadImgTime")
+        val fbRef = storageReference?.child("dist/test_images/$projectId")
         Log.d("imageSW storageReference fbRef", "$fbRef")
 
 
@@ -92,10 +97,11 @@ class MyServices : Service() {
 
                 val fileUri: Uri = Uri.fromFile(mediaModelClass.file)
 
+                Log.d("imageSW", upload_params)
+
                 try {
                     val metadata = StorageMetadata.Builder()
                         .setContentType("image/png")
-                        .setCustomMetadata("upload_params", upload_params)
                         .setCustomMetadata("position", position)
                         .setCustomMetadata("dimension", dimension)
                         .setCustomMetadata("longitude", longitude)
@@ -104,15 +110,21 @@ class MyServices : Service() {
                         .setCustomMetadata("app_timestamp", app_timestamp)
                         .setCustomMetadata("orientation", orientation)
                         .setCustomMetadata("zoom_level", zoom_level)
-                        .setCustomMetadata("session_id", session_id)
+                        .setCustomMetadata("session_id", sessionId)
                         .setCustomMetadata("crop_coordinates", crop_coordinates)
                         .setCustomMetadata("overlap_values", overlap_values)
                         .setCustomMetadata("uri", uri)
                         .setCustomMetadata("type", type)
                         .setCustomMetadata("name", name)
-                        .build()
 
-                    val uploadTask = fbRef?.child("images/$name")?.putFile(fileUri, metadata)
+                    val uploadParamJson = JSONObject(upload_params)
+                    uploadParamJson.put("app_session_id", sessionId)
+
+                    for(key in uploadParamJson.keys()) {
+                        metadata.setCustomMetadata(key, uploadParamJson[key].toString())
+                    }
+
+                    val uploadTask = fbRef?.child(sessionId + "_" + "${index + 1}")?.putFile(fileUri, metadata.build())
 
                     // Upload the byte array to Firebase Storage
                     uploadTask?.addOnSuccessListener { taskSnapshot ->
