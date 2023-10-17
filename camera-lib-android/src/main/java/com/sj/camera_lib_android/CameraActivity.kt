@@ -219,7 +219,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         if (extras != null) {
             modeRotation = extras.getString("mode") ?: ""
-            overlayBE = extras.getString("overlapBE")?.toFloat() ?: 20f
+            overlayBE = extras.getFloat("overlapBE")
             uploadParams = extras.getString("uploadParam") ?: ""
             resolution = extras.getString("resolution") ?: ""
             referenceUrl = extras.getString("referenceUrl") ?: ""
