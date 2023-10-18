@@ -6,26 +6,189 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toTopOf="@id/button2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutMode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Mode">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextMode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="portrait" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutOverlapBE"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter OverlapBE">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextOverlapBE"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="20f" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutResolution"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Resolution">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextResolution"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="2048" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutReferenceURL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Reference URL">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextReferenceURL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutBlurFeature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Blur Feature">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextBlurFeature"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutCropFeature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Crop Feature">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextCropFeature"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutUploadFrom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Upload From">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextUploadFrom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Shelfwatch" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutProjectId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Project ID">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextProjectId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="263cbe94-ed05-430b-a0f9-ae16ab14d0f" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- New TextInputLayout for shop_id -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutShopId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Shop ID">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextShopId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="62475" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- New TextInputLayout for category_id -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutCategoryId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Category ID">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextCategoryId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="1453" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                app:layout_constraintTop_toBottomOf="@id/ll"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/button2"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:scrollbars="vertical"
+                    android:id="@+id/scrollingTextView"
+                    android:textSize="16sp" />
+
+            </ScrollView>
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
     <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="launchCAMERA"
         android:text="Launch SDK"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginBottom="20dp"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="demoSDK"
-        android:text="Demo SDK"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
