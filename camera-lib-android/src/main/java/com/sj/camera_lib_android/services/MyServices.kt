@@ -119,6 +119,7 @@ class MyServices : Service() {
 
                     val uploadParamJson = JSONObject(upload_params)
                     uploadParamJson.put("app_session_id", sessionId)
+                    uploadParamJson.put("seq_no", (index + 1).toString())
                     if(list.size > 1) uploadParamJson.put("image_type", "multiple")
 
                     for(key in uploadParamJson.keys()) {
