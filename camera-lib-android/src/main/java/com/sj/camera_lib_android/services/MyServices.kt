@@ -36,7 +36,7 @@ class MyServices : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // get the Firebase storage reference
-        storage = FirebaseStorage.getInstance("gs://shelfwatch-app-dev")
+        storage = FirebaseStorage.getInstance("gs://shelfwatch-app-prod")
         storageReference = storage!!.reference
 
 

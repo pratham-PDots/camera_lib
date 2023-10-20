@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.sj.camera_lib_android.Demo
@@ -17,11 +18,32 @@ import com.sj.camera_lib_android.models.ImageUploadModel
 import com.sj.camera_lib_android.ui.activities.LaunchShelfwatchCamera
 import com.sj.camera_lib_android.ui.viewmodels.CameraViewModel
 import com.sj.cameralibandroid.databinding.ActivityMainBinding
+import org.json.JSONObject
 
 
 class MainActivity : AppCompatActivity() {
     private val uploadFrom = "Shelfwatch" // 3rdParty / Shelfwatch
-    private var uploadParams = ""
+    private var uploadParams = JSONObject("""
+                        {
+                            "shop_id": 62475,
+                            "project_id": "263cbe94-ed05-430b-a0f9-ae16ab14d0f",
+                            "td_version_id": 1156,
+                            "shelf_image_id": null,
+                            "asset_image_id": null,
+                            "shelf_type": "Main Aisle",
+                            "category_id": 1453,
+                            "user_id": 36400,
+                            "isConnected": true,
+                            "sn_image_type": "skus",
+                            "image_type": "single",
+                            "seq_no": 1,
+                            "level": 1,
+                            "last_image_flag": 1,
+                            "uploadOnlyOnWifi": 0,
+                            "app_session_id": "8e2faa6b-d6fe-413a-a693-76a0cbe0ce71",
+                            "total_image_captured" : "1"
+                        }
+                        """)
     private lateinit var viewModel: CameraViewModel
     private lateinit var binding: ActivityMainBinding
 
@@ -34,34 +56,86 @@ class MainActivity : AppCompatActivity() {
 
         binding.scrollingTextView.text = ""
 
-        uploadParams = """
-                        {
-                            "shop_id": 62475,
-                            "project_id": "263cbe94-ed05-430b-a0f9-ae16ab14d0f",
-                            "td_version_id": 1180,
-                            "shelf_image_id": null,
-                            "asset_image_id": null,
-                            "shelf_type": "Retailer Owned Fridge",
-                            "category_id": 1453,
-                            "user_id": 36400,
-                            "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNzd29yZCI6ImZlNjBjMWUyODllNGU2MTNkOGU3MGVjMzJlZGM1NjljMjllYTJlMGRhYTJlYzRkNTYzMzZjZjk4MmE0OTM5Y2YiLCJ1c2VybmFtZSI6IktQX1Rlc3RfMjAifQ.A4ich3QNdtREmfhEckbgnHZbqEy4OS9PYFCMCmhZB98",
-                            "isConnected": true,
-                            "sn_image_type": "skus",
-                            "image_type": "single",
-                            "seq_no": 1,
-                            "level": null,
-                            "last_image_flag": 1,
-                            "uploadOnlyOnWifi": 0,
-                            "app_session_id": "8e2faa6b-d6fe-413a-a693-76a0cbe0ce71",
-                            "task_id": 266768
-                        }
-                        """
-        Log.d("imageSW uploadParams ",uploadParams)
+        Log.d("imageSW uploadParams ",uploadParams.toString())
         // register BroadcastReceiver
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("DataSaved"))
 
+        binding.editUserId.doOnTextChanged { text, start, before, count ->
+            uploadParams.put("user_id", binding.editUserId.text?.trim().toString())
+            binding.uploadParamTextView.text = formatJson(uploadParams.toString())
+
+        }
+
+        binding.editTextCategoryId.doOnTextChanged { text, start, before, count ->
+            uploadParams.put("category_id", binding.editTextCategoryId.text?.trim().toString())
+            binding.uploadParamTextView.text = formatJson(uploadParams.toString())
+
+        }
+
+        binding.editTextShopId.doOnTextChanged { text, start, before, count ->
+            uploadParams.put("shop_id", binding.editTextShopId.text?.trim().toString())
+            binding.uploadParamTextView.text = formatJson(uploadParams.toString())
+
+        }
+        binding.editTextProjectId.doOnTextChanged { text, start, before, count ->
+            uploadParams.put("project_id", binding.editTextProjectId.text?.trim().toString())
+            binding.uploadParamTextView.text = formatJson(uploadParams.toString())
+
+        }
+
         binding.button2.setOnClickListener {
             launchCAMERA()
+        }
+
+        binding.addbutton.setOnClickListener {
+            UploadParamBottomsheet().apply {
+                setOnSaveClickListener(object : UploadParamBottomsheet.OnSaveClickListener {
+                    override fun onSaveClicked(key: String, value: String) {
+                        uploadParams.put(key.trim(), value.trim())
+                        binding.uploadParamTextView.text = formatJson(uploadParams.toString())
+                    }
+
+                })
+                show(supportFragmentManager, tag)
+            }
+        }
+
+    }
+
+    // Function to format the JSON string
+    fun formatJson(jsonStr: String): String {
+        val indentSize = 4 // You can adjust the indentation size as needed
+        val builder = StringBuilder()
+        var indent = 0
+        val len = jsonStr.length
+
+        for (i in 0 until len) {
+            val currentChar = jsonStr[i]
+            if (currentChar == '{' || currentChar == '[') {
+                builder.append(currentChar)
+                builder.append('\n')
+                indent += indentSize
+                appendIndent(builder, indent)
+            } else if (currentChar == '}' || currentChar == ']') {
+                builder.append('\n')
+                indent -= indentSize
+                appendIndent(builder, indent)
+                builder.append(currentChar)
+            } else if (currentChar == ',') {
+                builder.append(currentChar)
+                builder.append('\n')
+                appendIndent(builder, indent)
+            } else {
+                builder.append(currentChar)
+            }
+        }
+
+        return builder.toString()
+    }
+
+    fun appendIndent(builder: StringBuilder, indent: Int) {
+        for (i in 0 until indent) {
+            builder.append(' ')
         }
     }
 
@@ -99,34 +173,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun launchCAMERA() {
         binding.scrollingTextView.text = ""
-        val uploadParamsCustom = """
-                        {
-                            "shop_id": ${binding.editTextShopId.text?.trim().toString()},
-                            "project_id": "${binding.editTextProjectId.text?.trim().toString()}",
-                            "td_version_id": 1180,
-                            "shelf_image_id": null,
-                            "asset_image_id": null,
-                            "shelf_type": "Retailer Owned Fridge",
-                            "category_id": ${binding.editTextCategoryId.text?.trim().toString()},
-                            "user_id": 36400,
-                            "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNzd29yZCI6ImZlNjBjMWUyODllNGU2MTNkOGU3MGVjMzJlZGM1NjljMjllYTJlMGRhYTJlYzRkNTYzMzZjZjk4MmE0OTM5Y2YiLCJ1c2VybmFtZSI6IktQX1Rlc3RfMjAifQ.A4ich3QNdtREmfhEckbgnHZbqEy4OS9PYFCMCmhZB98",
-                            "isConnected": true,
-                            "sn_image_type": "skus",
-                            "image_type": "single",
-                            "seq_no": 1,
-                            "level": null,
-                            "last_image_flag": 1,
-                            "uploadOnlyOnWifi": 0,
-                            "app_session_id": "8e2faa6b-d6fe-413a-a693-76a0cbe0ce71",
-                            "task_id": 266768
-                        }
-                        """
-
+        uploadParams.put("shop_id", binding.editTextShopId.text?.trim().toString())
+        uploadParams.put("category_id", binding.editTextCategoryId.text?.trim().toString())
+        uploadParams.put("user_id", binding.editUserId.text?.trim().toString())
+        uploadParams.put("project_id", binding.editTextProjectId.text?.trim().toString())
 
         val intent = Intent(this@MainActivity, LaunchShelfwatchCamera::class.java)
         intent.putExtra("mode", binding.editTextMode.text.toString()) //portrait / landscape
         intent.putExtra("overlapBE", binding.editTextOverlapBE.text.toString())
-        intent.putExtra("uploadParam", uploadParamsCustom)
+        intent.putExtra("uploadParam", uploadParams.toString())
         intent.putExtra("resolution", binding.editTextResolution.text.toString())
         intent.putExtra("referenceUrl", binding.editTextReferenceURL.text.toString())
         intent.putExtra("isBlurFeature", binding.editTextBlurFeature.text.toString())
