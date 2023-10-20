@@ -40,8 +40,7 @@ class MainActivity : AppCompatActivity() {
                             "level": 1,
                             "last_image_flag": 1,
                             "uploadOnlyOnWifi": 0,
-                            "app_session_id": "8e2faa6b-d6fe-413a-a693-76a0cbe0ce71",
-                            "total_image_captured" : "1"
+                            "app_session_id": "8e2faa6b-d6fe-413a-a693-76a0cbe0ce71"
                         }
                         """)
     private lateinit var viewModel: CameraViewModel
