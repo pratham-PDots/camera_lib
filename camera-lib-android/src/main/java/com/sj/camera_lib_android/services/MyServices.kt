@@ -36,7 +36,7 @@ class MyServices : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // get the Firebase storage reference
-        storage = FirebaseStorage.getInstance("gs://shelfwatch-app-prod")
+        storage = FirebaseStorage.getInstance("gs://shelfwatch-app-dev")
         storageReference = storage!!.reference
 
 
@@ -126,7 +126,7 @@ class MyServices : Service() {
                         metadata.setCustomMetadata(key, uploadParamJson[key].toString())
                     }
 
-                    val uploadTask = fbRef?.child(sessionId + "_" + "${index + 1}")?.putFile(fileUri, metadata.build())
+                    val uploadTask = fbRef?.child(sessionId + "_" + "${index + 1}" + ".png")?.putFile(fileUri, metadata.build())
 
                     // Upload the byte array to Firebase Storage
                     uploadTask?.addOnSuccessListener { taskSnapshot ->

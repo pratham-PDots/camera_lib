@@ -187,11 +187,13 @@ class CameraViewModel() : ViewModel()  {
       imageUploadList.clear()
 
       if (currentImageList.isNotEmpty()){
+      val dimension = currentImageList.last().dimension
+
       imageUploadList.addAll(currentImageList.map {imageDetails ->
         ImageUploadModel(
           // Map properties from ImageDetailsModel to ImageUploadModel
           imageDetails.position.contentToString(),
-          imageDetails.dimension.contentToString(),"","", "${currentImageList.size}",
+          dimension.contentToString(),"","", "${currentImageList.size}",
           imageDetails.appTimestamp,
           imageDetails.orientation,
           imageDetails.zoomLevel, "",
