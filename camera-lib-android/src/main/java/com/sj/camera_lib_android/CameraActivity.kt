@@ -1198,7 +1198,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private fun takePhoto(isBlurFeature: String, isCropFeature: String) {
         viewModel.showLoader()
         val imageCapture = imageCapture ?: return
-        val nameTimeStamp = SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())
+        val nameTimeStamp = viewModel.uuid.toString() + "_" + (viewModel.currentImageList.size + 1)
         val outputDirectory = this.filesDir
         if (outputDirectory != null) Log.d("imageSW outputDirectory", outputDirectory.absolutePath.toString())
         val photoFile = File(outputDirectory, "$nameTimeStamp.png")
@@ -1242,6 +1242,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     mImgUri = savedImageUri
                     mBitmap = bitmap
                     captureTime = nameTimeStamp
+                    viewModel.imageName = nameTimeStamp
 
                     val msg = "Photo capture succeeded: $savedImageUri"
 //                    Toast.makeText(baseContext, msg, Toast.LENGTH_LONG).show()
@@ -1678,7 +1679,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     companion object {
         private const val TAG = "CameraSDK_Android"
-        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss"
+        const val FILENAME_FORMAT = "yyyy-MM-dd HH:mm:ss"
         private const val REQUEST_CODE_PERMISSIONS = 20
         var backpressedlistener: Backpressedlistener? = null
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)

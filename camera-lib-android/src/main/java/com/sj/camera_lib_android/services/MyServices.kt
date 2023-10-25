@@ -24,7 +24,6 @@ class MyServices : Service() {
     private var deviceName: String = ""
     private var storage: FirebaseStorage? = null
     private var storageReference: StorageReference? = null
-    val uuid = UUID.randomUUID()
     companion object{
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss"
 
@@ -49,7 +48,7 @@ class MyServices : Service() {
 
         if (imageUploadList.size > 0){
             try {
-                uploadImage(imageUploadList, sessionId = uuid.toString(), projectId = intent?.getStringExtra("project_id") ?: "pratham") // Upload images to the firebase
+                uploadImage(imageUploadList, sessionId = intent?.getStringExtra("uuid") ?: "pratham", projectId = intent?.getStringExtra("project_id") ?: "pratham") // Upload images to the firebase
             }catch (exception:Exception){
                 Log.e("imageSW exceptionFirebase","$exception")
             }

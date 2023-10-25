@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModel
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.sj.camera_lib_android.CameraActivity
 import com.sj.camera_lib_android.models.ImageDetailsModel
 import com.sj.camera_lib_android.models.ImageModel
 import com.sj.camera_lib_android.models.ImageUploadModel
@@ -27,6 +28,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.json.JSONObject
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.UUID
 
 
 class CameraViewModel() : ViewModel()  {
@@ -46,10 +50,12 @@ class CameraViewModel() : ViewModel()  {
   var isBlurFeature = ""
   var isCropFeature = ""
   var uploadFrom = ""
+  var imageName = ""
 
   private var directionSelected =""
   var directionForOverlap =""
   var rowSum:Int = 0
+  val uuid = UUID.randomUUID()
 
   val imageUploadList: MutableList<ImageUploadModel> = mutableListOf()
 
@@ -152,7 +158,8 @@ class CameraViewModel() : ViewModel()  {
     Log.d("imageSW overlapArray",overlapArray.contentToString())
 
 
-    currentImageList.add(ImageDetailsModel(positionMatrix,dimensionMatrix, captureTime,zoomLevel, mode
+    currentImageList.add(ImageDetailsModel(positionMatrix,dimensionMatrix, SimpleDateFormat(
+      CameraActivity.FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()),zoomLevel, mode
       ,directionID, isAutomaticID,rowID,stepsTakenID,nextStepID, overlapArray.contentToString(),upload_param,
       ImageModel("$file1","image/png","$captureTime.png"), file1, bmp1, coordinatesCropped))
 
@@ -198,7 +205,7 @@ class CameraViewModel() : ViewModel()  {
           imageDetails.orientation,
           imageDetails.zoomLevel, "",
           imageDetails.croppedCoordinates.contentToString(), "${imageDetails.overlapPercent}",
-          upload_param,"${imageDetails.file}","image/png","${imageDetails.appTimestamp}.png", imageDetails.file
+          upload_param,"${imageDetails.file}","image/png","${imageName}.png", imageDetails.file
         )
 
       })
@@ -221,6 +228,7 @@ class CameraViewModel() : ViewModel()  {
             intent.putParcelableArrayListExtra("mediaList", ArrayList(imageUploadList))
             intent.putExtra("deviceName",deviceName)
             intent.putExtra("project_id", projectId.toString())
+            intent.putExtra("uuid", uuid.toString())
             context.startService(intent)
 
           }else{
