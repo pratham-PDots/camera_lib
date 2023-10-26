@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
                         {
                             "shop_id": 62475,
                             "project_id": "263cbe94-ed05-430b-a0f9-ae16ab14d0f",
-                            "td_version_id": 1156,
+                            "td_version_id": 178,
                             "shelf_image_id": null,
                             "asset_image_id": null,
                             "shelf_type": "Main Aisle",
