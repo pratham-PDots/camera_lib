@@ -57,6 +57,8 @@ class CameraViewModel() : ViewModel()  {
   var rowSum:Int = 0
   val uuid = UUID.randomUUID()
 
+  var wideAngleSet = false
+
   val imageUploadList: MutableList<ImageUploadModel> = mutableListOf()
 
   val currentImageList = arrayListOf<ImageDetailsModel>()
@@ -161,7 +163,7 @@ class CameraViewModel() : ViewModel()  {
     currentImageList.add(ImageDetailsModel(positionMatrix,dimensionMatrix, SimpleDateFormat(
       CameraActivity.FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()),zoomLevel, mode
       ,directionID, isAutomaticID,rowID,stepsTakenID,nextStepID, overlapArray.contentToString(),upload_param,
-      ImageModel("$file1","image/png","$captureTime.png"), file1, bmp1, coordinatesCropped))
+      ImageModel("$file1","image/jpeg","$captureTime.jpg"), file1, bmp1, coordinatesCropped))
 
     Log.d("imageSW handle_img", " currentImageList.size: ${currentImageList.size} , rowSum: $rowSum")
     imageCapturedListLive.value = currentImageList
@@ -205,7 +207,7 @@ class CameraViewModel() : ViewModel()  {
           imageDetails.orientation,
           imageDetails.zoomLevel, "",
           imageDetails.croppedCoordinates.contentToString(), "${imageDetails.overlapPercent}",
-          upload_param,"${imageDetails.file}","image/png","${imageName}.png", imageDetails.file
+          upload_param,"${imageDetails.file}","image/jpeg","${imageName}.jpg", imageDetails.file
         )
 
       })

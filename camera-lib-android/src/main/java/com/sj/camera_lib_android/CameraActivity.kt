@@ -14,12 +14,16 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.graphics.Rect
+import android.hardware.camera2.CameraAccessException
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
+import android.util.SizeF
 import android.view.OrientationEventListener
 import android.view.View
 import android.view.ViewTreeObserver
@@ -32,6 +36,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraControl
@@ -47,6 +52,7 @@ import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -69,11 +75,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.nio.ByteBuffer
-import java.text.SimpleDateFormat
 import java.util.ArrayDeque
-import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.math.atan
+import kotlin.math.max
 
 
 /** Helper type alias used for analysis use case callbacks */
@@ -162,6 +168,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private lateinit var zoomLayout: LinearLayout
     private lateinit var radioGroupZoom: RadioGroup
     private lateinit var zoomPercentFinal: String
+
+    private lateinit var wideAngleButton: Button
 
     // Firebase Database
 //    private val mDatabase = FirebaseDatabase.getInstance()
@@ -431,7 +439,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         // Check camera permissions if all permission granted
         // start camera else ask for the permission
         if (allPermissionsGranted()) {
-             startCamera()
+             startCameraW()
 
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
@@ -595,6 +603,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
                     viewModel.imageCapturedListLive.observe(this@CameraActivity, androidx.lifecycle.Observer { imageModel ->
 
+                        wideAngleButton.isVisible = (imageModel.size == 0)
+
                         if (viewModel.currentImageList.size > 0) {
                                 previewPageImgCS.setImageBitmap(imageModel.last().image)
                                 zoomLayout.visibility = View.GONE
@@ -700,6 +710,20 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             imageDialog.show()
 
         }
+
+        wideAngleButton.setOnClickListener {
+            val wideAngleCameraId = findWideAngleCamera((getSystemService(Context.CAMERA_SERVICE) as CameraManager))
+
+            viewModel.wideAngleSet = if(viewModel.wideAngleSet) {
+                startCamera()
+                false
+            } else {
+                startCamera(wideAngleCameraId)
+                true
+            }
+        }
+
+
         crossImg.setOnClickListener {
             onBackPressed()
         }
@@ -813,13 +837,13 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         exitBtnPS.setOnClickListener{
             cameraLayout.visibility = View.VISIBLE
             previewImgLayout.visibility = View.GONE
-            startCamera() // exitBtnPS
+            startCameraW() // exitBtnPS
         }
 
         captureMorePS.setOnClickListener{
             cameraLayout.visibility = View.VISIBLE
             previewImgLayout.visibility = View.GONE
-            startCamera() // captureMorePS
+            startCameraW() // captureMorePS
         }
 
 
@@ -1017,12 +1041,60 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             cropLayoutPS.visibility = View.GONE
         }
 
-
+        wideAngleButton.isVisible = (viewModel.currentImageList.size == 0 && !isWideAngleCameraSameAsDefault())
 
 //        outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
-
     } // END of onCreate
+
+    private fun findWideAngleCamera(manager: CameraManager): String? {
+        var wideAngleCameraId: String? = null
+        var widestFieldOfView = 0f
+
+        try {
+            val cameraIds = manager.cameraIdList
+            for (cameraId in cameraIds) {
+                val characteristics = manager.getCameraCharacteristics(cameraId)
+
+                val lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING)
+                val sensorInfo = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
+                val focalLengths = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)
+                val minimumFocusDistance = characteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE)
+
+                if (lensFacing == CameraCharacteristics.LENS_FACING_BACK &&
+                    sensorInfo != null &&
+                    focalLengths != null &&
+                    minimumFocusDistance != null
+                ) {
+                    Log.d("imageSW wide find", cameraId)
+                    val fieldOfView = calculateFieldOfView(sensorInfo, focalLengths)
+                    if (fieldOfView > widestFieldOfView) {
+                        widestFieldOfView = fieldOfView
+                        wideAngleCameraId = cameraId
+                    }
+                }
+            }
+        } catch (e: CameraAccessException) {
+            e.printStackTrace()
+        }
+
+        return wideAngleCameraId
+    }
+
+    private fun calculateFieldOfView(sensorInfo: SizeF, focalLengths: FloatArray): Float {
+        // Calculate the field of view using sensor size, focal length, and minimum focus distance
+        val horizontalFieldOfView = 2 * atan(sensorInfo.width / (2 * focalLengths[0]))
+        val verticalFieldOfView = 2 * atan(sensorInfo.height / (2 * focalLengths[0]))
+
+        // Choose the wider field of view (horizontal or vertical)
+        return max(horizontalFieldOfView, verticalFieldOfView)
+    }
+
+    private fun startCameraW() {
+        val wideAngleCameraId = findWideAngleCamera((getSystemService(Context.CAMERA_SERVICE) as CameraManager))
+        if(viewModel.wideAngleSet) startCamera(wideAngleCameraId) else startCamera()
+    }
+
 
     private fun uploadSaveImages(context: Context) {
         lifecycleScope.launch{
@@ -1201,7 +1273,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         val nameTimeStamp = viewModel.uuid.toString() + "_" + (viewModel.currentImageList.size + 1)
         val outputDirectory = this.filesDir
         if (outputDirectory != null) Log.d("imageSW outputDirectory", outputDirectory.absolutePath.toString())
-        val photoFile = File(outputDirectory, "$nameTimeStamp.png")
+        val photoFile = File(outputDirectory, "$nameTimeStamp.jpg")
 
         // Create time-stamped output file to hold the image
 //        val photoFile = File(outputDirectory, SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".png")
@@ -1293,7 +1365,19 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             })
     }
 
-    private fun startCamera() {
+    fun isWideAngleCameraSameAsDefault(): Boolean {
+        val manager = getSystemService(CAMERA_SERVICE) as CameraManager
+        val wideAngleCameraId = findWideAngleCamera(manager)
+        val defaultCameraId = manager.cameraIdList.find { cameraId ->
+            val characteristics = manager.getCameraCharacteristics(cameraId)
+            val lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING)
+            lensFacing == CameraCharacteristics.LENS_FACING_BACK
+        }
+        return wideAngleCameraId == defaultCameraId
+    }
+
+    @androidx.annotation.OptIn(androidx.camera.camera2.interop.ExperimentalCamera2Interop::class)
+    private fun startCamera(wideAngleCameraId : String? = null) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
         cameraProviderFuture.addListener(Runnable {
@@ -1327,9 +1411,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     })
                 }
 
-
             // Select back camera as a default
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+            val cameraSelector = wideAngleCameraId?.let { wC -> CameraSelector.Builder().addCameraFilter { fil -> fil.filter {  Camera2CameraInfo.from(it).cameraId == wC } }.build() }
+                ?: CameraSelector.DEFAULT_BACK_CAMERA
 
 
             try {
@@ -1375,7 +1459,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
-                startCamera()
+                startCameraW()
             } else {
                 // If permissions are not granted,
                 Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show()
@@ -1525,6 +1609,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         captureImg = findViewById(R.id.image_capture_button)
         deleteImg = findViewById(R.id.delete_btn)
         previewPageImgCS = findViewById(R.id.preview_btn)
+        wideAngleButton = findViewById(R.id.wideAngleButton)
         crossImg = findViewById(R.id.cross_iv)
         referenceImg = findViewById(R.id.imgReference_iv)
         submitBtn1 = findViewById(R.id.submitImgLL)
