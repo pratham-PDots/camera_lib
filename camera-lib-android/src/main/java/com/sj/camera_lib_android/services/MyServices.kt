@@ -100,7 +100,7 @@ class MyServices : Service() {
 
                 try {
                     val metadata = StorageMetadata.Builder()
-                        .setContentType("image/png")
+                        .setContentType("image/jpeg")
                         .setCustomMetadata("position", position)
                         .setCustomMetadata("dimension", dimension)
                         .setCustomMetadata("longitude", longitude)
@@ -125,7 +125,7 @@ class MyServices : Service() {
                         metadata.setCustomMetadata(key, uploadParamJson[key].toString())
                     }
 
-                    val uploadTask = fbRef?.child(sessionId + "_" + "${index + 1}" + ".png")?.putFile(fileUri, metadata.build())
+                    val uploadTask = fbRef?.child(sessionId + "_" + "${index + 1}" + ".jpg")?.putFile(fileUri, metadata.build())
 
                     // Upload the byte array to Firebase Storage
                     uploadTask?.addOnSuccessListener { taskSnapshot ->

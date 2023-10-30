@@ -388,6 +388,7 @@
                         android:id="@+id/wideAngleButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="WIDE"
                         app:layout_constraintBottom_toTopOf="@id/preview_btn"
                         app:layout_constraintStart_toStartOf="parent"
                         android:layout_marginBottom="20dp"
