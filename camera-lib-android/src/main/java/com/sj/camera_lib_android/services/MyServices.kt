@@ -153,7 +153,10 @@ class MyServices : Service() {
                             val progress: Double = 100.0 * progress.getBytesTransferred() / progress.getTotalByteCount()
                             Log.i("imageSW Firebase Uploading ",
                                 "at $index  Uploaded " + progress.toInt() + "%")
-
+                            val intent = Intent("Progress")
+                            intent.putExtra("index",index + 1)
+                            intent.putExtra("progress", progress.toInt())
+                            LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
                         }
 
                 }catch(e:Exception){

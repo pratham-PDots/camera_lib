@@ -23,6 +23,7 @@ import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     private val uploadFrom = "Shelfwatch" // 3rdParty / Shelfwatch
+    private val progressMap = mutableMapOf<Int, Int>()
     private var uploadParams = JSONObject("""
                         {
                             "shop_id": 62475,
@@ -140,6 +141,22 @@ class MainActivity : AppCompatActivity() {
 
     private val myBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            var progress = intent!!.getIntExtra("progress", 0)
+            var index = intent!!.getIntExtra("index", -1)
+
+            Log.d("imageSW broadcast", "$index $progress")
+
+            if(index != - 1) {
+                progressMap[index] = progress
+                var prettyProgress: String = "Upload Status: \n"
+                progressMap.forEach { (index, progress) ->
+                    prettyProgress += "Image $index : $progress% \n"
+                }
+                binding.progressTextView.text = prettyProgress
+            }
+
+
+
             var status = intent!!.getStringExtra("status")
             var imageListSaved = intent.getParcelableArrayListExtra<ImageUploadModel>("imageListSaved")
             Log.i("imageSW BroadcastReceiver","Received: $status, " +
@@ -197,7 +214,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("DataSaved"))// onResume
-
+        LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("Progress"))// onResume
     }
 
     // Unbind from the service in the onDestroy() method of the fragment
