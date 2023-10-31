@@ -603,7 +603,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
                     viewModel.imageCapturedListLive.observe(this@CameraActivity, androidx.lifecycle.Observer { imageModel ->
 
-                        wideAngleButton.isVisible = (imageModel.size == 0)
+                        wideAngleButton.isVisible = (viewModel.currentImageList.size == 0 && !isWideAngleCameraSameAsDefault())
 
                         if (viewModel.currentImageList.size > 0) {
                                 previewPageImgCS.setImageBitmap(imageModel.last().image)
@@ -1365,7 +1365,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             })
     }
 
-    fun isWideAngleCameraSameAsDefault(): Boolean {
+    private fun isWideAngleCameraSameAsDefault(): Boolean {
         val manager = getSystemService(CAMERA_SERVICE) as CameraManager
         val wideAngleCameraId = findWideAngleCamera(manager)
         val defaultCameraId = manager.cameraIdList.find { cameraId ->
