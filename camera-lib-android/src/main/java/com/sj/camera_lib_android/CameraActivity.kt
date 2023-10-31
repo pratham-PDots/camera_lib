@@ -1339,7 +1339,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         if (isImgBlur.first) {
                             // Image is blurred
 //                            viewBinding?.demoImg?.setImageBitmap(bitmapFinal!!)
-                            imageBlur.setImageURI(savedImageUri)
+                            imageBlur.setImageBitmap(mBitmap)
 //                            Glide.with(this@CameraActivity).load(savedImageUri).into(imageBlur)
 
                             //Show Hide Layouts
