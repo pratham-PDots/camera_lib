@@ -31,6 +31,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID
+import kotlin.math.max
 
 
 class CameraViewModel() : ViewModel()  {
@@ -51,13 +52,16 @@ class CameraViewModel() : ViewModel()  {
   var isCropFeature = ""
   var uploadFrom = ""
   var imageName = ""
+  var lastDirection = ""
 
   private var directionSelected =""
   var directionForOverlap =""
   var rowSum:Int = 0
   val uuid = UUID.randomUUID()
+  var maxRow = 0
+  var maxCol = 0
 
-  var wideAngleSet = false
+  var wideAngleSet = true
 
   val imageUploadList: MutableList<ImageUploadModel> = mutableListOf()
 
@@ -135,15 +139,26 @@ class CameraViewModel() : ViewModel()  {
         val sum = currentImageList.size % rowID.toInt()
         val col = currentImageList.size/rowID.toInt()
 
-        positionMatrix = intArrayOf(sum,col)
-        dimensionMatrix = intArrayOf(rowID.toInt(),col+1)
+        val lastDir = if(stepsTakenID.last() != "") stepsTakenID.last() else lastDirection
+        val direction = if(lastDir == "left") -1 else 1
+
+        positionMatrix = intArrayOf(direction * col, sum)
+        dimensionMatrix = intArrayOf(col + 1, rowID.toInt())
+        maxRow = max(maxRow, col + 1)
+        maxCol = max(maxCol, rowID.toInt())
 
         Log.d("imageSW sumDown", " $sum, positionMatrix: $positionMatrix, dimensionMatrix: $dimensionMatrix")
 
       }else{
         val sum = currentImageList.size % rowID.toInt()
-        positionMatrix = intArrayOf(sum,currentImageList.size)
-        dimensionMatrix = intArrayOf(rowID.toInt(), currentImageList.size+1)
+
+        val lastDir = if(stepsTakenID.last() != "") stepsTakenID.last() else lastDirection
+        val direction = if(lastDir == "left") -1 else 1
+
+        positionMatrix = intArrayOf(direction * currentImageList.size, sum)
+        dimensionMatrix = intArrayOf(currentImageList.size+1, rowID.toInt())
+        maxRow = max(maxRow, currentImageList.size+1)
+        maxCol = max(maxCol, rowID.toInt())
 
         Log.d("imageSW sumLR", " $sum, positionMatrix: $positionMatrix, dimensionMatrix: $dimensionMatrix")
 
@@ -154,6 +169,10 @@ class CameraViewModel() : ViewModel()  {
 
       Log.d("imageSW sum 1stImg",  "positionMatrix: $positionMatrix, dimensionMatrix: $dimensionMatrix")
     }
+
+    Log.d("imageSW grid last Step", stepsTakenID.last())
+    Log.d("imageSW grid positionMatrix", "${currentImageList.size + 1} ${positionMatrix[0]} ${positionMatrix[1]}")
+    Log.d("imageSW grid dimensionMatrix", "${currentImageList.size + 1} ${dimensionMatrix[0]} ${dimensionMatrix[1]}")
 
     // getOverlapArray Work
     overlapArray = getOverlapArray()
@@ -196,7 +215,8 @@ class CameraViewModel() : ViewModel()  {
       imageUploadList.clear()
 
       if (currentImageList.isNotEmpty()){
-      val dimension = currentImageList.last().dimension
+      val dimension = intArrayOf(maxRow, maxCol)
+      Log.d("imageSW grid", "${dimension[0]} ${dimension[1]}")
 
       imageUploadList.addAll(currentImageList.map {imageDetails ->
         ImageUploadModel(
@@ -685,11 +705,13 @@ class CameraViewModel() : ViewModel()  {
       // for Left Right overlapping only
       if (currentImageList[1].direction == "right" || currentImageList[1].direction == "left") {
         isAuto1 = true
+        lastDirection = currentImageList[1].direction
       }
 
       if (currentImageList.last().stepsTaken.isNotEmpty() && currentImageList.last().stepsTaken[1] == "down"
         && (currentImageList.last().stepsTaken.last() == "right" || currentImageList.last().stepsTaken.last() == "left")){
         isAuto1 = true
+        lastDirection = currentImageList.last().stepsTaken.last()
       }
 
     } else isAuto1 = false
