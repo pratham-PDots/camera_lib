@@ -183,7 +183,7 @@ class MainActivity : AppCompatActivity() {
                 """.trimIndent()
                         }
 
-            binding.scrollingTextView.text = formattedText
+            if(!formattedText.isNullOrEmpty()) binding.scrollingTextView.text = formattedText
         }
     }
 

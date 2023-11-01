@@ -215,10 +215,15 @@ class CameraViewModel() : ViewModel()  {
       imageUploadList.clear()
 
       if (currentImageList.isNotEmpty()){
-      val dimension = intArrayOf(maxRow, maxCol)
+      val dimension = intArrayOf(maxCol, maxRow)
       Log.d("imageSW grid", "${dimension[0]} ${dimension[1]}")
 
       imageUploadList.addAll(currentImageList.map {imageDetails ->
+        var cropCoordinates = arrayOf(0,0,0,0)
+        imageDetails.croppedCoordinates.let {
+          cropCoordinates = arrayOf(it[0], it[1], it[2] - it[0], it[3] - it[1])
+        }
+
         ImageUploadModel(
           // Map properties from ImageDetailsModel to ImageUploadModel
           imageDetails.position.contentToString(),
@@ -226,7 +231,7 @@ class CameraViewModel() : ViewModel()  {
           imageDetails.appTimestamp,
           imageDetails.orientation,
           imageDetails.zoomLevel, "",
-          imageDetails.croppedCoordinates.contentToString(), "${imageDetails.overlapPercent}",
+          cropCoordinates.contentToString(), "${imageDetails.overlapPercent}",
           upload_param,"${imageDetails.file}","image/jpeg","${imageName}.jpg", imageDetails.file
         )
 
