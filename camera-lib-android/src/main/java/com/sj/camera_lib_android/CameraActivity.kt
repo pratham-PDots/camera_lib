@@ -1091,6 +1091,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     private fun startCameraW() {
+        wideAngleButton.isVisible = (viewModel.currentImageList.size == 0 && !isWideAngleCameraSameAsDefault())
         val wideAngleCameraId = findWideAngleCamera((getSystemService(Context.CAMERA_SERVICE) as CameraManager))
         if(viewModel.wideAngleSet) startCamera(wideAngleCameraId) else startCamera()
     }
