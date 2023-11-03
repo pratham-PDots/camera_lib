@@ -55,6 +55,8 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[CameraViewModel::class.java]
 
         binding.scrollingTextView.text = ""
+        binding.progressTextView.text = ""
+        progressMap.clear()
 
         Log.d("imageSW uploadParams ",uploadParams.toString())
         // register BroadcastReceiver
@@ -189,6 +191,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun launchCAMERA() {
         binding.scrollingTextView.text = ""
+        binding.progressTextView.text = ""
+        progressMap.clear()
         uploadParams.put("shop_id", binding.editTextShopId.text?.trim().toString())
         uploadParams.put("category_id", binding.editTextCategoryId.text?.trim().toString())
         uploadParams.put("user_id", binding.editUserId.text?.trim().toString())
