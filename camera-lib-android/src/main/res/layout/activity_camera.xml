@@ -485,7 +485,6 @@
                         app:cropAutoZoomEnabled="false"
                         app:cropInitialCropWindowPaddingRatio="0"
                         app:layout_constraintBottom_toTopOf="@+id/LL1"
-                        app:layout_constraintDimensionRatio="3:4"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/cropPageTitleTV" />

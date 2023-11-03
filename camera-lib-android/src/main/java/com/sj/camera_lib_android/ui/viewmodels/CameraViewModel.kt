@@ -62,6 +62,8 @@ class CameraViewModel() : ViewModel()  {
   var maxCol = 0
 
   var wideAngleSet = true
+  var imageSavedCount = 0
+  var submitClicked = false
 
   val imageUploadList: MutableList<ImageUploadModel> = mutableListOf()
 
@@ -207,7 +209,7 @@ class CameraViewModel() : ViewModel()  {
   }
 
   fun uploadImages(context: Context) {
-
+    Log.d("imageSW", "Image Submitted")
     val deviceName = getDeviceModel()
     val utils = Utils()
     if (utils.checkInternetConnection(mContext)) {

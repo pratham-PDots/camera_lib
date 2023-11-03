@@ -58,6 +58,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bugfender.sdk.Bugfender
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.sj.camera_lib_android.ui.interfaces.Backpressedlistener
 import com.google.firebase.FirebaseApp
 import com.sj.camera_lib_android.services.MyServices
@@ -71,9 +75,12 @@ import com.sj.camera_lib_android.utils.imageutils.BlurDetection
 import com.sj.camera_lib_android.utils.imageutils.ImageProcessingUtils
 import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.ArrayDeque
 import java.util.concurrent.ExecutorService
@@ -791,7 +798,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 getString(R.string.yes_btn),
                 getString(R.string.no_btn),
                 onClick = {
-                    if (viewModel.currentImageList.isNotEmpty()) {
+                    viewModel.submitClicked = true
+                    Log.d("imageSW", "Saved Image Count : ${viewModel.imageSavedCount} Submit : ${viewModel.submitClicked}")
+                    if (viewModel.currentImageList.isNotEmpty() && viewModel.imageSavedCount == 0) {
                         viewModel.showLoader() // submitBtn1
                         uploadSaveImages(this@CameraActivity) // submitBtn1
                     }
@@ -814,9 +823,11 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     getString(R.string.yes_btn),
                     getString(R.string.no_btn),
                     onClick = {
-                        if (viewModel.currentImageList.isNotEmpty()) {
-                            viewModel.showLoader() // uploadBtnPS
-                            uploadSaveImages(this@CameraActivity) // uploadBtnPS
+                        viewModel.submitClicked = true
+                        Log.d("imageSW", "Saved Image Count : ${viewModel.imageSavedCount} Submit : ${viewModel.submitClicked}")
+                        if (viewModel.currentImageList.isNotEmpty() && viewModel.imageSavedCount == 0) {
+                            viewModel.showLoader() // submitBtn1
+                            uploadSaveImages(this@CameraActivity) // submitBtn1
                         }
 //                    Bugfender.d("android_data_uploaded_chf","ok")
 //                    finish()
@@ -1255,7 +1266,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             onClick = {
                 this?.let { it1 ->
 
-                    Toast.makeText(this, getString(R.string.dialogTitle), Toast.LENGTH_SHORT).show()
 
                     /*//        view.isEnabled = false
                               view?.setBackgroundResource(R.drawable.red_solid_circle)
@@ -1305,65 +1315,142 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     // set the saved uri to the image view
 //                    previewPageImgCS.visibility = View.VISIBLE
 //                    previewPageImgCS.setImageURI(savedImageUri)
-                    val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && savedImageUri!=null) {
-                        ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, savedImageUri))
-                    } else {
-                        MediaStore.Images.Media.getBitmap(contentResolver, savedImageUri)
-                    }
 
-                    mFile = photoFile
-                    mImgUri = savedImageUri
-                    mBitmap = bitmap
-                    captureTime = nameTimeStamp
-                    viewModel.imageName = nameTimeStamp
+                    Glide.with(this@CameraActivity)
+                        .asBitmap()
+                        .load(savedImageUri)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .override(resizedWidthNew!!, resizedHeightNew!!)
+                        .into(object : SimpleTarget<Bitmap>() {
+                            override fun onResourceReady(
+                                resource: Bitmap,
+                                transition: Transition<in Bitmap>?
+                            ) {
 
-                    val msg = "Photo capture succeeded: $savedImageUri"
+                                val bitmap = resource
+
+                                viewModel.imageSavedCount++
+
+                                Log.d("imageSW", "Saved Image Count : ${viewModel.imageSavedCount}")
+
+                                saveImageToFile(photoFile, bitmap, this@CameraActivity)
+
+                                mFile = photoFile
+                                mImgUri = savedImageUri
+                                mBitmap = bitmap
+                                captureTime = nameTimeStamp
+                                viewModel.imageName = nameTimeStamp
+
+                                val msg = "Photo capture succeeded: $savedImageUri"
 //                    Toast.makeText(baseContext, msg, Toast.LENGTH_LONG).show()
-                    Log.d(TAG, msg)
-                    viewModel.hideLoader()
+                                Log.d(TAG, msg)
+                                viewModel.hideLoader()
 
 
-                    // Condition Check Work Flow:
-                    // Blur ==> lowLight ==> rotation ==> cropping ==> Saving Final Image
-                    if (isBlurFeature != null && isBlurFeature.isNotEmpty() && isBlurFeature == "true") {
-
-                        val bitmap1 = mBitmap
-                        val targetBmp: Bitmap = bitmap1!!.copy(Bitmap.Config.ARGB_8888, false)
 
 
-                        val isImgBlur = BlurDetection.runDetection(this@CameraActivity, targetBmp) // Blur check
+                                // Condition Check Work Flow:
+                                // Blur ==> lowLight ==> rotation ==> cropping ==> Saving Final Image
+                                if (isBlurFeature != null && isBlurFeature.isNotEmpty() && isBlurFeature == "true") {
+
+                                    val bitmap1 = mBitmap
+                                    val targetBmp: Bitmap =
+                                        bitmap1!!.copy(Bitmap.Config.ARGB_8888, false)
+
+
+                                    val isImgBlur = BlurDetection.runDetection(
+                                        this@CameraActivity,
+                                        targetBmp
+                                    ) // Blur check
 //                        val isImgBlur2 = ImageProcessingUtils.isImageBlurry(mBitmap!!) // Blur check
 //                        val isImgBlur = ImageProcessingUtils.checkBluryImg(mBitmap!!) // Blur check
 //                        Log.d("imageSW Blur: ", "isImgBlur3: ${isImgBlur.first}")
-                        Log.d("imageSW Blur: ", "isBlurFeature: $isBlurFeature  ,isImgBlur: $isImgBlur")
-                        Bugfender.d("android_image_blur","isBlurFeature: $isBlurFeature  ,isImgBlur: $isImgBlur")
-                        if (isImgBlur.first) {
-                            // Image is blurred
+                                    Log.d(
+                                        "imageSW Blur: ",
+                                        "isBlurFeature: $isBlurFeature  ,isImgBlur: $isImgBlur"
+                                    )
+                                    Bugfender.d(
+                                        "android_image_blur",
+                                        "isBlurFeature: $isBlurFeature  ,isImgBlur: $isImgBlur"
+                                    )
+                                    if (isImgBlur.first) {
+                                        // Image is blurred
 //                            viewBinding?.demoImg?.setImageBitmap(bitmapFinal!!)
-                            imageBlur.setImageBitmap(mBitmap)
+                                        imageBlur.setImageBitmap(mBitmap)
 //                            Glide.with(this@CameraActivity).load(savedImageUri).into(imageBlur)
 
-                            //Show Hide Layouts
-                            cameraLayout.visibility = View.GONE
-                            previewImgLayout.visibility = View.GONE
-                            cropLayout.visibility = View.GONE
-                            blurLayout.visibility = View.VISIBLE
+                                        //Show Hide Layouts
+                                        cameraLayout.visibility = View.GONE
+                                        previewImgLayout.visibility = View.GONE
+                                        cropLayout.visibility = View.GONE
+                                        blurLayout.visibility = View.VISIBLE
 
 //                                utils.showToast(requireContext(), "Image is blur!")
 
-                        } else {
-                            // Image is not blurred
+                                    } else {
+                                        // Image is not blurred
 //                        utils.showToast(requireContext(), "Image is not blur.")
-                            cropLowLightCheck(mBitmap!!, mFile!!, isCropFeature) //not blurred
+                                        cropLowLightCheck(
+                                            mBitmap!!,
+                                            mFile!!,
+                                            isCropFeature
+                                        ) //not blurred
 
-                        }
-                    } else {
-                        // check Low Light Image
+                                    }
+                                } else {
+                                    // check Low Light Image
 //                        val enhancedRotedBitmap2 = checkLowLightSave(file, mBitmap!!, isCropFeature)
-                        cropLowLightCheck(mBitmap!!, mFile!!, isCropFeature) // No blur features
-                    }
+                                    cropLowLightCheck(
+                                        mBitmap!!,
+                                        mFile!!,
+                                        isCropFeature
+                                    ) // No blur features
+                                }
+                            }
+
+                        })
                 }
             })
+    }
+
+    fun saveImageToFile(file1: File,bitmap1:Bitmap, context: Context? = null) {
+        Log.d("imageSW ", "saveImageToFile START")
+
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                withContext(Dispatchers.IO) {
+                    val appContext = context?.applicationContext
+                    /*val fileOutputStream = FileOutputStream(file1)
+                    fileOutputStream.write(imageData)
+                    fileOutputStream.close()*/
+
+                    FileOutputStream(file1).use { outputStream ->
+                        bitmap1.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
+                        outputStream.flush()
+                        outputStream.close()
+                    }
+
+                    viewModel.imageSavedCount--
+
+                    Log.d("imageSW", "Saved Image Count : ${viewModel.imageSavedCount} Submit : ${viewModel.submitClicked}")
+
+                    if(viewModel.submitClicked && viewModel.imageSavedCount == 0)
+                        appContext?.let { uploadSaveImages(it) }
+
+
+                    Log.d("imageSW ", "saveBitmapToDisk DONE: $bitmap1")
+
+                }
+                // Image file saved successfully
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Bugfender.e("android_image_save_file","IOException: "+e.printStackTrace().toString())
+
+                // Error occurred while saving the image file
+            }
+        }
+        Log.d("imageSW ", "saveImageToFile DONE")
+
     }
 
     private fun isWideAngleCameraSameAsDefault(): Boolean {
