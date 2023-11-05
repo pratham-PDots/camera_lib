@@ -98,7 +98,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     var isArrowSelected: Boolean = true
     private var mFile: File? = null
     private var mBitmap: Bitmap? = null
-    private var mImgUri: Uri? = null
     private var captureTime: String = ""
     private var deviceName: String = ""
 
@@ -158,7 +157,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private var mFilePS: File? = null
     private var mBitmapPS: Bitmap? = null
-    private var mImgUriPS: Uri? = null
 
     private var mPosPS: Int = -1
     private var croppingPointsPS: Array<Int> = emptyArray()
@@ -179,8 +177,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private lateinit var wideAngleButton: Button
 
     // Firebase Database
-//    private val mDatabase = FirebaseDatabase.getInstance()
-//    private var mDatabaseReference = mDatabase.reference
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -203,7 +199,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 //        OpenCVLoader.initDebug()
 
         // Initialize Firebase
-//        FirebaseApp.initializeApp(this@CameraActivity)
 
          if (FirebaseApp.getApps(applicationContext).isEmpty()) {
             FirebaseApp.initializeApp(applicationContext)
@@ -270,18 +265,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             val layoutParam1 = previewImgPS.layoutParams as ConstraintLayout.LayoutParams
                 layoutParam1.dimensionRatio = "4:3"
                 previewImgPS.layoutParams = layoutParam1
-
-
-            /*       *//*val layoutParam = cropImageView.layoutParams as ConstraintLayout.LayoutParams
-                layoutParam.dimensionRatio = "4:3"
-                cropImageView.layoutParams = layoutParam
-*//*
-
-                val layoutParam = demoImg.layoutParams as ConstraintLayout.LayoutParams
-                layoutParam.dimensionRatio = "4:3"
-                demoImg.layoutParams = layoutParam
-*/
-//            updateGuidelineConstraintsForLandscape()
 
             /** for Preview Screen **/
                 val layoutParamPS = previewImgPS.layoutParams as ConstraintLayout.LayoutParams
@@ -353,81 +336,42 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                 ) {
                                     orientationBl.visibility = View.INVISIBLE
 
-//                                Log.d("imageRotation", " Orientation_PORTRAIT =>> $orientation , modeRotation: $modeRotation")
-//                                utils.isPortrait = true
-//                                utils.isReverseLandscape = false
                                 } else {
                                     orientationTv.text = "Change orientation to landscape"
                                     orientationBl.visibility = View.VISIBLE
                                 }
-//                            Log.d("imageSW ", "Portrait Orientation =>> $orientation")
-//                            utils.showToast(this@CameraActivity, "Portrait Orientation")
                             }
 
                             ORIENTATION_REVERSE_PORTRAIT -> {
                                 orientationTv.text = "Change orientation to $modeRotation"
                                 orientationBl.visibility = View.VISIBLE
-//                            Log.d("imageSWRotation", " ORIENTATION_REVERSE_PORTRAIT =>> $orientation , modeRotation: $modeRotation")
-
-//                            utils.isReverseLandscape = false
-//                            utils.isPortrait = false
-
-//                            Log.d("imageSW", "Reverse Portrait Orientation = $orientation")
-//                            utils.showToast(this@CameraActivity, "ReversePortrait Orientation")
                             }
 
                             ORIENTATION_LANDSCAPE -> {
                                 if (modeRotation.equals("landscape", true)) {
                                     orientationBl.visibility = View.INVISIBLE
-//                                Log.d("imageRotation", " ORIENTATION_LANDSCAPE =>> $orientation , modeRotation: $modeRotation")
-
-//                                utils.isReverseLandscape = false
-//                                utils.isPortrait = false
 
                                 } else {
                                     orientationTv.text = "Change orientation to portrait"
                                     orientationBl.visibility = View.VISIBLE
                                 }
-//                            Log.d("imageSW Landscape ", "Orientation = $orientation")
-//                            utils.showToast(this@CameraActivity, "Landscape Orientation")
                             }
 
                             ORIENTATION_REVERSE_LANDSCAPE -> {
-//                            Log.d("imageRotation", " ORIENTATION_REVERSE_LANDSCAPE =>> $orientation , modeRotation: $modeRotation")
-
-                                /*if (mode == "landscape") {
-                                viewBinding.orientationBl.root.visibility = View.INVISIBLE
-                                utils.isReverseLandscape = true
-                                utils.isPortrait = false
-
-                            } else {
-                                viewBinding.orientationBl.orientationTv.text = "Change orientation to portrait"
-                                viewBinding.orientationBl.root.visibility = View.VISIBLE
-                            }*/
                                 orientationTv.text = "Change orientation to $modeRotation"
                                 orientationBl.visibility = View.VISIBLE
 
-//                            Log.d("Reverse Landscape ", "Orientation = $orientation")
-//                            utils.showToast(this@CameraActivity, "Reverse Landscape Orientation")
                             }
 
                             ORIENTATION_PARALLEL -> {
                                 if (modeRotation.equals("portrait", true) && Common.isPortraitParallel) {
 
-//                                Log.d("imageRotation ", " modeRotation: $modeRotation,  ORIENTATION_PARALLEL, =>> $orientation \n==> modeSelected: $modeSelected")
-
-//                                utils.isPortrait = true
-//                                utils.isReverseLandscape = false
                                     orientationBl.visibility = View.INVISIBLE
                                 } else if (modeRotation.equals(
                                         "landscape",
                                         true
                                     ) && Common.isLandscapeParallel
                                 ) {
-//                                Log.d("imageRotation ", " modeRotation: $modeRotation,  ORIENTATION_PARALLEL =>> $orientation \n==> modeSelected: $modeSelected")
-
-//                                utils.isReverseLandscape = false
-//                                utils.isPortrait = false
                                     orientationBl.visibility = View.INVISIBLE
                                 }
                             }
@@ -459,7 +403,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     if (it.showLoader) {
                         loader.visibility = View.VISIBLE
                     } else {
-//            captureImg.isEnabled = true
                         captureImg.setBackgroundResource(R.drawable.white_solid_circle)
                         loader.visibility = View.GONE
                     }
@@ -585,7 +528,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     } else overlapImgRight.visibility = View.GONE
 
                     if (it.topOverlayImage != null) {
-//            Log.d("top overlay image","exist")
                         overlapImgTop.visibility = View.VISIBLE
                         setImgHeight(overlapImgTop, overlayBE.toInt())
 
@@ -615,7 +557,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         if (viewModel.currentImageList.size > 0) {
                                 previewPageImgCS.setImageBitmap(imageModel.last().image)
                                 zoomLayout.visibility = View.GONE
-//                            Log.d("imageSW","currentImageList.size > 0")
                             }
                             else{
                                 Common.zoomSelected = "0"
@@ -629,7 +570,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                 if (Common.zoomSelected != null) {
                                     zoomCamera("0f", camera!!) // currentImageList.size < 0
                                 }
-//                                Log.d("imageSW","currentImageList.size < 0")
 
                             }
 
@@ -642,7 +582,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                             onClick = { clickedImg: Bitmap, croppingPoints1: Array<Int>, file1: File, position1: Int ->
 
                                 previewImgPS.setImageBitmap(clickedImg)
-//                    binding?.previewIv?.setImageURI(Uri.fromFile(file1))
 
                                 croppingPointsPS = croppingPoints1
                                 mBitmapPS = clickedImg
@@ -670,7 +609,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         // Zoom in OUT
                 radioGroupZoom.setOnCheckedChangeListener { group, checkedId ->
                     val selectedRadioButton:RadioButton = group.findViewById(checkedId)
-        //            Toast.makeText(requireContext(), " On checked change :" + " ${selectedRadioButton.text}", Toast.LENGTH_SHORT).show()
                     Common.zoomSelected = selectedRadioButton.text.toString()
 
                     if (Common.zoomSelected != null) {
@@ -754,7 +692,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             it.setBackgroundColor(Color.GREEN)
             this.let { it1 ->
                 isArrowSelected = true
-        //        Log.i("isArrowSelected==>> ",""+isArrowSelected)
                 viewModel.leftArrowClicked(it1)
             }
         }
@@ -765,7 +702,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             this.let { it1 ->
                 isArrowSelected = true
                 viewModel.rightArrowClicked(it1)
-//        Log.i("isArrowSelected==>> ",""+isArrowSelected)
             }
         }
 
@@ -773,7 +709,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             it.setBackgroundColor(Color.GREEN)
             this.let { it1 ->
                 isArrowSelected = true
-//        Log.i("isArrowSelected==>> ",""+isArrowSelected)
 
                 viewModel.bottomArrowClicked(it1)
             }
@@ -804,8 +739,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         viewModel.showLoader() // submitBtn1
                         uploadSaveImages(this@CameraActivity) // submitBtn1
                     }
-//                    Bugfender.d("android_data_uploaded_chf","ok")
-//                    finish()
+
                 }
             ).show(supportFragmentManager, "DialogFragment")
         }else {
@@ -829,8 +763,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                             viewModel.showLoader() // submitBtn1
                             uploadSaveImages(this@CameraActivity) // submitBtn1
                         }
-//                    Bugfender.d("android_data_uploaded_chf","ok")
-//                    finish()
+
                     }
                 ).show(supportFragmentManager, "DialogFragment")
             }else {
@@ -862,7 +795,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         //Cropping Work
         resetCropBtnCL.setOnClickListener {
             resetCroppingImg(cropImageViewCL, mBitmap!!,Uri.fromFile(mFile),"CS")
-//                viewBinding?.cropImageView?.let { it1 -> resetCroppingImg(it1, Uri.fromFile(mFile)) }
         }
 
         // Retake from Crop screen
@@ -879,11 +811,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             mBitmap = null
 
 
-//            bitmapFinal?.recycle()
-//            bitmapFinal = null
 
             mFile = null
-//                fileFinal = null
         }
         // Retake from Blur screen
         retakeBlurImg.setOnClickListener{
@@ -899,11 +828,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             mBitmap?.recycle()
             mBitmap = null
 
-//            bitmapFinal?.recycle()
-//            bitmapFinal = null
 
             mFile = null
-//                fileFinal = null
         }
 
 
@@ -928,7 +854,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         //Cropping Work: getCropped Image Result
         cropImageViewCL.setOnCropImageCompleteListener { _, result ->
             // Get the cropped image and display it in the ImageView
-//           viewBinding?.imageView?.setImageBitmap(result.bitmap)
 
             // Get the coordinates of the four corners
             val cropRect = result.cropRect
@@ -940,7 +865,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             // format sd be like this [Xmin, Ymin, Xmax, Ymax]
             coordinatesCrop = arrayOf(left,top, right, bottom)
             Log.d("imageSW Cropping", "DONE coordinatesCrop: Xmin, Ymin, Xmax, Ymax: ${coordinatesCrop.contentToString()}")
-//            Log.d("imageSW bitmap crop"," size: ${bitmapFinal?.width} , ${bitmapFinal?.height}")
 
 
 //            checkLowLightSave after cropping
@@ -949,11 +873,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     checkLowLightSave(it, mBitmap!!) // after cropping
                 }
 
-//            utils.showToast(this, "File Saved")
             } else {
                 Bugfender.e("android_cropping_bitmap","mFile or mBitmap is empty/ null")
                 Log.d("imageSW", " checkLowLightSave: mFile or mBitmap is empty/ null")
-//            utils.showToast(this, "fileFinal or bitmapFinal is empty/ null ")
             }
         }
 
@@ -972,7 +894,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
             cropRectValuesPS = croppingRect(croppingPointsPS, cropImageViewPS)
 
-//            binding?.cropImageView?.setImageUriAsync(Uri.fromFile(mFile))
             cropImageViewPS.setImageBitmap(mBitmapPS)
             if (cropRectValuesPS != null) {
                 cropImageViewPS.cropRect = cropRectValuesPS
@@ -983,12 +904,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         // Reset Button Click
         resetCropBtnPS.setOnClickListener {
-//            binding?.imagePreviewLayout?.visibility = View.GONE
-//            binding?.croppingLayout?.visibility = View.VISIBLE
-//
-//            val cropRectValues = croppingRect(croppingPoints!!, cropImageView)
-//
-//            binding?.cropImageView?.setImageUriAsync(Uri.fromFile(mFile))
+
             if (cropRectValuesPS != null) {
                 cropImageViewPS.cropRect = cropRectValuesPS
             }else{
@@ -997,21 +913,15 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         }
 
-        /* // Retake Button Click
-         binding?.croppingRetakeBtn?.setOnClickListener {
- //            resetCroppingImg(cropImageView, mBitmap)
-         }*/
 
 
         cropDoneBtnPS.setOnClickListener {
             cropImageViewPS.getCroppedImageAsync()
         }
-//        val cropImageView: CropImageView = view.findViewById(R.id.cropImageView)
 
         //getCropped Image Result
         cropImageViewPS.setOnCropImageCompleteListener { _, result ->
             // Get the cropped image and display it in the ImageView
-//           viewBinding?.imageView?.setImageBitmap(result.bitmap)
 
             // Get the coordinates of the four corners
             val cropRect = result.cropRect
@@ -1027,8 +937,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
             if (coordinatesCrop != null && mFile != null) {
 
-//                viewModel.updateCropCoordinates(mFile!!.toUri().toString(), mPos, coordinatesCrop)
-//                simulateItemClick(mPos)
 
                 // this is to update and get new coordinates
                 if (mPosPS != -1) {
@@ -1054,7 +962,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         wideAngleButton.isVisible = (viewModel.currentImageList.size == 0 && !isWideAngleCameraSameAsDefault())
 
-//        outputDirectory = getOutputDirectory()
         cameraExecutor = Executors.newSingleThreadExecutor()
     } // END of onCreate
 
@@ -1117,11 +1024,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             viewModel.hideLoader()
             viewModel.discardAllImages()
             finish()
-            /*//Show Hide Layouts
-            cameraLayout.visibility = View.VISIBLE
-            previewImgLayout.visibility = View.GONE
-            cropLayout.visibility = View.GONE
-            blurLayout.visibility = View.GONE*/
         }
     }
 
@@ -1147,13 +1049,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         blurLayout.visibility = View.GONE
 
 
-        /* viewBinding?.cropImageView?.apply {
-             viewBinding?.cropImageView?.setGuidelines(CropImageView.Guidelines.ON)
-         }*/
-
         if (resizedEnhancedRotatedBitmap != null && resizedEnhancedRotatedBitmap.toString().isNotEmpty()) {
             cropImageViewCL.setImageBitmap(resizedEnhancedRotatedBitmap) // cropping
-//          cropImageViewCL.setImageUriAsync(mImgUri)
         } else {
             Log.d("imageSW cropping: ", "NOT start with bitmap NULL => $resizedEnhancedRotatedBitmap")
             Bugfender.e("android_cropping_start ", "not start with bitmap is null or empty => $resizedEnhancedRotatedBitmap")
@@ -1171,37 +1068,24 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         var enhancedRotatedBitmap: Bitmap? = null
 
           if (isLowLight) {
-              // image has low light
-//              Common.showToast(this, "This image has low light!")
-              // Image Enhancement
-//              val enhancedBitmap2 = ImageProcessingUtils.enhanceImageBrightness(targetBmp, 1.5f)
               Log.d("imageSW isLowLight 2: ", " $isLowLight  Enhancement DONE")
 
-              // check And Do Rotation for reverse mode
-//              val rotatedEnhancedBitmap = checkAndDoRotation(file1, enhancedBitmap2,resolution)
               enhancedRotatedBitmap = bitmap2
 
           } else {
-              // No Low light Continue with your normal flow
-  //        utils.showToast(requireContext(), "The image has not low light")
 
-              // check And Do Rotation for reverse mode
-//              val rotatedBitmap = checkAndDoRotation(file1, bitmap2, resolution)
               enhancedRotatedBitmap = bitmap2
               Log.d("imageSW ", " No Enhancement")
 
           }
 
 
-//        bitmapFinal = bitmap2
-//        fileFinal = file1
 
         // File Saving work
         if (mFile != null && enhancedRotatedBitmap.toString().isNotEmpty() && captureTime.isNotEmpty()) {
 
             viewModel.handleClickedImage(enhancedRotatedBitmap, coordinatesCrop, mFile!!, captureTime, this@CameraActivity)
 
-//            saveImg4React(fileFinal!!, bitmapFinal!!)
             Bugfender.d("android_image_update_react","done")
 
             //Show Hide Layouts
@@ -1209,11 +1093,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             previewImgLayout.visibility = View.GONE
             cropLayout.visibility = View.GONE
             blurLayout.visibility = View.GONE
-//            utils.showToast(requireContext(), "File Saved")
         } else {
             Bugfender.e("android_image_save","mFile or mBitmap is empty/ null")
             Log.d("imageSW save", "fileFinal or bitmapFinal is empty/ null")
-//            utils.showToast(requireContext(), "fileFinal or bitmapFinal is empty/ null ")
         }
 
         return enhancedRotatedBitmap
@@ -1236,7 +1118,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     override fun onBackPressed() {
             if (backpressedlistener != null){
-//            utils.showToast(this,"Camera Back Pressed")
             if (viewModel.currentImageList.size > 0) {
                 SubmitDialog( // onBackPressed
                     getString(R.string.discard_submit),
@@ -1244,16 +1125,10 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     getString(R.string.no_btn),
                     onClick = {
                         viewModel.discardAllImages() // back button discard
-                        //Layout Visibility
-//                        viewBinding?.cameraLayout?.visibility = View.VISIBLE
-//                        viewBinding?.croppingLayout?.visibility = View.GONE
-//                        viewBinding?.blurLayout?.visibility = View.GONE
                     }
                 ).show(supportFragmentManager, "DialogFragment")
             } else {
-//                context?.let { it1 -> viewModel.dismissCamera(it1) }
                 finish()
-//                activity?.onBackPressed()
             }
 
         }
@@ -1267,11 +1142,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 this?.let { it1 ->
 
 
-                    /*//        view.isEnabled = false
-                              view?.setBackgroundResource(R.drawable.red_solid_circle)
-                              viewModel.showLoader()
-                              takePhoto()
-                              viewModel.resetArrowClicked()*/
                 }
 
             }
@@ -1287,8 +1157,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         val photoFile = File(outputDirectory, "$nameTimeStamp.jpg")
 
         // Create time-stamped output file to hold the image
-//        val photoFile = File(outputDirectory, SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()) + ".png")
-        // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
         imageCapture.takePicture(
             outputOptions,
@@ -1302,19 +1170,10 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     val savedImageUri = output.savedUri ?: Uri.fromFile(photoFile)
                     Log.d("imageSW takePhoto"," END , img: $savedImageUri at time $nameTimeStamp")
 
-                   /* val dimensionsAndResolution = getImageDimensionsAndResolution(this@CameraActivity, savedImageUri)
-                    if (dimensionsAndResolution != null) {
-                        val (width, height, resolution) = dimensionsAndResolution
-                        Log.d("imageSW Info", "Width: $width, Height: $height, Resolution: $resolution")
-                    } else {
-                        Log.e("imageSW Info", "Failed to get image info")
-                    }*/
 
 
 
                     // set the saved uri to the image view
-//                    previewPageImgCS.visibility = View.VISIBLE
-//                    previewPageImgCS.setImageURI(savedImageUri)
 
                     Glide.with(this@CameraActivity)
                         .asBitmap()
@@ -1336,13 +1195,11 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                 saveImageToFile(photoFile, bitmap, this@CameraActivity)
 
                                 mFile = photoFile
-                                mImgUri = savedImageUri
                                 mBitmap = bitmap
                                 captureTime = nameTimeStamp
                                 viewModel.imageName = nameTimeStamp
 
                                 val msg = "Photo capture succeeded: $savedImageUri"
-//                    Toast.makeText(baseContext, msg, Toast.LENGTH_LONG).show()
                                 Log.d(TAG, msg)
                                 viewModel.hideLoader()
 
@@ -1362,9 +1219,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                         this@CameraActivity,
                                         targetBmp
                                     ) // Blur check
-//                        val isImgBlur2 = ImageProcessingUtils.isImageBlurry(mBitmap!!) // Blur check
-//                        val isImgBlur = ImageProcessingUtils.checkBluryImg(mBitmap!!) // Blur check
-//                        Log.d("imageSW Blur: ", "isImgBlur3: ${isImgBlur.first}")
                                     Log.d(
                                         "imageSW Blur: ",
                                         "isBlurFeature: $isBlurFeature  ,isImgBlur: $isImgBlur"
@@ -1375,9 +1229,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                     )
                                     if (isImgBlur.first) {
                                         // Image is blurred
-//                            viewBinding?.demoImg?.setImageBitmap(bitmapFinal!!)
                                         imageBlur.setImageBitmap(mBitmap)
-//                            Glide.with(this@CameraActivity).load(savedImageUri).into(imageBlur)
 
                                         //Show Hide Layouts
                                         cameraLayout.visibility = View.GONE
@@ -1385,11 +1237,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                         cropLayout.visibility = View.GONE
                                         blurLayout.visibility = View.VISIBLE
 
-//                                utils.showToast(requireContext(), "Image is blur!")
 
                                     } else {
                                         // Image is not blurred
-//                        utils.showToast(requireContext(), "Image is not blur.")
                                         cropLowLightCheck(
                                             mBitmap!!,
                                             mFile!!,
@@ -1399,7 +1249,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                     }
                                 } else {
                                     // check Low Light Image
-//                        val enhancedRotedBitmap2 = checkLowLightSave(file, mBitmap!!, isCropFeature)
                                     cropLowLightCheck(
                                         mBitmap!!,
                                         mFile!!,
@@ -1420,9 +1269,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             try {
                 withContext(Dispatchers.IO) {
                     val appContext = context?.applicationContext
-                    /*val fileOutputStream = FileOutputStream(file1)
-                    fileOutputStream.write(imageData)
-                    fileOutputStream.close()*/
 
                     FileOutputStream(file1).use { outputStream ->
                         bitmap1.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
@@ -1492,10 +1338,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 // The analyzer can then be assigned to the instance
                 .also {
                     it.setAnalyzer(cameraExecutor, LuminosityAnalyzer { luma ->
-                        // Values returned from our analyzer are passed to the attached listener
-                        // We log image analysis results here - you should do something useful
-                        // instead!
-//                        Log.d("imageSW imageAnalyzer", "Average luminosity: $luma")
                     })
                 }
 
@@ -1564,7 +1406,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         val layoutParams = imageView.layoutParams
         if (newWidth != null) {
             layoutParams.width = newWidth
-//            layoutParams.height = heightNewVF!!
         }
         imageView.layoutParams = layoutParams
         Log.d("imageSW","OW:$currentWidth, newWidth set at $overlapBE% newWidth: $newWidth")
@@ -1576,7 +1417,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         val layoutParams = imageView.layoutParams
         if (newHeight != null) {
             layoutParams.height = newHeight
-//            layoutParams.width = widthNewVF!!
 
         }
         imageView.layoutParams = layoutParams
@@ -1600,7 +1440,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     private fun cropBitmapFromBottom(bitmap: Bitmap, percent: Int): Bitmap {
-//        Log.d("imageSW", "crop%  $percent")
         val width = bitmap.width
         val height = bitmap.height
         val cropHeight = (height * percent / 100f).toInt()
@@ -1609,7 +1448,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     private fun cropBitmapByWidthFromRight(bitmap: Bitmap, percent: Int): Bitmap {
-//        Log.d("imageSW", "crop%  $percent")
         val width = bitmap.width
         val height = bitmap.height
         val cropWidth = (width * percent / 100f).toInt()
@@ -1618,7 +1456,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     private fun cropBitmapByWidthFromLeft(bitmap: Bitmap, percent: Int): Bitmap {
-//        Log.d("imageSW", "crop%  $percent")
         val width = bitmap.width
         val height = bitmap.height
         val cropWidth = (width * percent / 100f).toInt()
@@ -1659,7 +1496,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         Log.d("imageSW reset", " imgUri==>>  $imgUri1")
         cropImageView.resetCropRect()
         if (imgUri1 != null && imgUri1.toString().isNotEmpty()) {
-//            cropImageView.setImageUriAsync(imgUri1)
             cropImageView.setImageBitmap(mBitmap1)
 
         } else
@@ -1671,7 +1507,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
            val cameraControl: CameraControl? = camera1?.cameraControl
            val cameraInfo: CameraInfo? = camera1?.cameraInfo
            val currentZoomRatio = cameraInfo?.zoomState?.value?.zoomRatio ?: 1f
-    //       var newZoomRatio = currentZoomRatio + zoomPercent.toFloat()
+
            var newZoomRatio = 1f
            if (zoomPercent.toFloat() == 0f){
                newZoomRatio = 1f
@@ -1863,7 +1699,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         private const val ORIENTATION_REVERSE_LANDSCAPE = 3
         private const val ORIENTATION_PARALLEL = -1
 
-        private const val BLUR_THRESHOLD = 200
         const val BLURRED_IMAGE = "BLURRED IMAGE"
         const val NOT_BLURRED_IMAGE = "NOT BLURRED IMAGE"
     }

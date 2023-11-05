@@ -39,15 +39,12 @@ class CameraViewModel() : ViewModel()  {
   // Expose screen UI state
   private val _uiState = MutableStateFlow(CameraUiState())
   val uiState: StateFlow<CameraUiState> = _uiState.asStateFlow()
-//  val currentImageList = arrayListOf<CaptureImageModel>()
-//  val imageCapturedList: MutableLiveData<ArrayList<CaptureImageModel>> = MutableLiveData()
 
   var mode = ""
   var overlapBE = 0.2f
   var upload_param= ""
   var resolution = ""
   var referenceUrl = ""
-  // val referenceUrl = "https://www.gstatic.com/webp/gallery/1.jpg"
   var isBlurFeature = ""
   var isCropFeature = ""
   var uploadFrom = ""
@@ -72,7 +69,6 @@ class CameraViewModel() : ViewModel()  {
 
 
 
-//  private val imageDetails:ImageDetails = ViewModelProvider.AndroidViewModelFactory.getInstance(Application()).create(ImageDetails::class.java)
   //ImageDetails
   private var directionID: String = ""
   private var isAutomaticID: Boolean = false
@@ -86,7 +82,6 @@ class CameraViewModel() : ViewModel()  {
   private var dimensionMatrix: IntArray = intArrayOf(0,0)
   private var overlapArray: Array<Any> = arrayOf(0,0,0,0.0f,0.0f,0.0f)
 
-//  private var overlapArray: FloatArray = floatArrayOf(0f,0f,0f,0.0f,0.0f,0.0f)
   // Format  [isTop, isLeft, isRight, top_overlap_value, left_overlap_value, right_overlap_value]
 
   private var mySharedPref: String = "MyPrefsSW"
@@ -115,7 +110,6 @@ class CameraViewModel() : ViewModel()  {
     val zoomLevel = if (Common.zoomSelected != null) Common.zoomSelected else "0"
 
 
-//    currentImageList.add(CaptureImageModel(bmp1,currentImageList.size,coordinatesCropped, file1, directionSelected,rowSum.toString()))
 
 
     // Save Details in class
@@ -203,7 +197,6 @@ class CameraViewModel() : ViewModel()  {
 
     clearSharedPref()
     imageUploadList.clear()
-//    resetAllData() // handleClickedImage
     renderUi() // handleClickedImage
 
   }
@@ -292,43 +285,6 @@ class CameraViewModel() : ViewModel()  {
 
   }
 
-/*
-// Firebase RealtimeDB
-  private fun uploadToFirebase(
-    context: Context,
-    imageUploadModel1: ImageUploadModel,
-    firebaseDBReference1: DatabaseReference,
-    imageUploadList: MutableList<ImageUploadModel>
-  ) {
-    Log.d("imageSW uploadToFirebase", ", ListSize: ${imageUploadList.size}, firebaseDBReference1: $firebaseDBReference1")
-
-    try {
-      firebaseDBReference1.addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-// Get Post object and use the values to update the UI
-//        firebaseDBReference1.setValue(imageUploadModel1)
-          firebaseDBReference1.setValue(imageUploadList)
-
-          Log.d("imageSW Firebase ", "data added , Size: ${imageUploadList.size}")
-
-          Toast.makeText(context, "Images Uploaded Successfully", Toast.LENGTH_SHORT).show()
-          hideLoader()
-
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-          Log.d("imageSW Firebase ", "Fail to add data:$error , Size: ${imageUploadList.size}")
-
-          Toast.makeText(context, "Fail to add data $error", Toast.LENGTH_SHORT).show()
-          hideLoader()
-        }
-      })
-    }catch (e: Exception){
-      Log.e("imageSW uploadToFirebase","Exception: ${e.toString()}")
-    }
-  }
-*/
-
   private fun saveToSharedPref(imageUploadList1: MutableList<ImageUploadModel>) {
     // Convert the list to a JSON string
     val gson = Gson()
@@ -369,14 +325,6 @@ class CameraViewModel() : ViewModel()  {
 
     if (currentImageList.isNotEmpty()){
       Log.d("imageSW currentImageList Last"," size: ${currentImageList.size}, ${currentImageList.last()}")
-/*    Log.d("imageSW currentImageList Last", "size: ${currentImageList.size} ==>>> D= ${currentImageList.last().direction}," +
-            " isAuto= ${currentImageList.last().isAutomatic}, row: ${currentImageList.last().row}, stepsTaken: ${currentImageList.last().stepsTaken} " +
-            "nextStep: ${currentImageList.last().nextStep}, overlap%: ${currentImageList.last().overlapPercent}, " +
-            "previewFile: ${currentImageList.last().file}, previewImage: ${currentImageList.last().image}, coordinatesCropped: ${currentImageList.last().croppedCoordinates.contentToString()}," +
-        " fileLeftOvlp: ${currentImageList.last().fileLeftOvlp},  leftOverlapBtmp: ${currentImageList.last().leftOverlapBtmp}, "+
-        "fileRightOvlp: ${currentImageList.last().fileRightOvlp},rightOverlapBtmp: ${currentImageList.last().rightOverlapBtmp}," +
-        " fileTopOvlp: ${currentImageList.last().fileTopOvlp}, topOverlapBtmp: ${currentImageList.last().topOverlapBtmp}, "
-    )*/
     }else Log.d("imageSW currentImageList Last"," Empty")
 
 
@@ -403,7 +351,6 @@ class CameraViewModel() : ViewModel()  {
     }
 
 
-//    Log.d("imageSW renderUi", " state_received: $currentData")
     _uiState.update { state->
       state.copy(
         isImageListEmpty = currentImageList.isEmpty()
@@ -426,11 +373,9 @@ class CameraViewModel() : ViewModel()  {
       }
     }
 
-//    val guideResult1 = showGuide()
     val guideResult = showDirectionResult()
     Log.d("imageSW guideResult"," $guideResult ")
 
-//    Log.d("imageSW","preViewList: ${preViewList.iterator()} , overlapPercentages: ${overlapPercentages.iterator()} ")
     if(!isAutomaticID){
       _uiState.update { state->
         state.copy(
@@ -496,7 +441,6 @@ class CameraViewModel() : ViewModel()  {
   }
 
   private fun getImageDetails() {
-//    directionID = currentImageList.last().direction
     isAutomaticID = currentImageList.last().isAutomatic
     rowID = currentImageList.last().row
     stepsTakenID = currentImageList[currentImageList.size-1].stepsTaken
@@ -652,7 +596,6 @@ class CameraViewModel() : ViewModel()  {
 
     }
     catch ( e: ClassCastException){
-//      Log.d("overlay_image_top","topoverlay excption")
       _uiState.update { state ->
         state.copy(
           topOverlayImage = null
@@ -740,11 +683,6 @@ class CameraViewModel() : ViewModel()  {
         val nextStepTaken = stepsTakenID[1]
         if (nextStepTaken == "down") {
           // Work for DOWN direction
-         /* val index = currentImageList.size - currentImageList.last().row
-          if (index.toInt() == row) direction  // Overlapping only in one direction
-          else "down"   // Overlapping in both
-
-*/
           if (currentImageList.size % row == 0) direction else "down"
 
         } else direction // work for LEFT RIGHT Direction
@@ -755,7 +693,6 @@ class CameraViewModel() : ViewModel()  {
     Log.d("imageSW resultSDR", "$result")
     directionForOverlap = result
 
-//    result = if (currentImageList.size > 1 && currentImageList.size % row == 0) direction else "down"
 
     return if(isAutomatic && currentImageList.size > 0) result
     else null
@@ -774,8 +711,6 @@ class CameraViewModel() : ViewModel()  {
     mIsCropFeature: String,
     mUploadFrom: String
   ){
-//    Log.d("dataFromOpenCam: ", mMode)
-//    Log.d("dataFromOpenCam: ", "$mMode, ${mOverlapBE.toString()}, $mUploadParam")
     mContext = context
     mode = mMode
     overlapBE = mOverlapBE/100  //TODO: enable overlap percent for all overlap images
@@ -785,13 +720,6 @@ class CameraViewModel() : ViewModel()  {
     isBlurFeature = mIsBlurFeature
     isCropFeature = mIsCropFeature
     uploadFrom = mUploadFrom
-//    Log.d("dataFromOpenCam1: ", "$mode, ${overlapBE.toString()}, $upload_param")
-
-    /*currentData["left"] = "Left Value"
-    currentData["right"] = "Right Value"
-    currentData["top"] = "Top Value"
-    currentData["direction"] = "Direction Value"
-    currentData["nextStep"] = "Next Step Value"*/
 
     if (currentImageList.size > 0) {
       renderUi() // dataFromOpenCameraEvent
@@ -826,7 +754,6 @@ class CameraViewModel() : ViewModel()  {
   }
 
   fun discardAllImages(){
-//    currentData = defaultData
     currentImageList.clear()
     imageCapturedListLive.value?.clear()
 
@@ -912,30 +839,6 @@ class CameraViewModel() : ViewModel()  {
      )
    }
  }
-
-  /*fun ImageProxy.convertImageProxyToBitmap(): Bitmap {
-    val buffer = planes[0].buffer
-    buffer.rewind()
-    val bytes = ByteArray(buffer.capacity())
-    buffer.get(bytes)
-    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-  }
-
-
-  fun JSONObject.toMap(): Map<String, *> = keys().asSequence().associateWith {
-    when (val value = this[it])
-    {
-      is JSONArray ->
-      {
-        val map = (0 until value.length()).associate { intArrayOf(it.toString(), value[it]) }
-        JSONObject(map).toMap().values.toList()
-      }
-      is JSONObject -> value.toMap()
-      JSONObject.NULL -> null
-      else            -> value
-    }
-  }
-*/
 
   // Function to get the device model name ID
   fun getDeviceModel(): String {
