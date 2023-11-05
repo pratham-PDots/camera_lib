@@ -556,19 +556,13 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     if (viewModel.currentImageList.size>0){
                         previewImgRecycler.adapter = PreviewListAdapter(this@CameraActivity, viewModel.currentImageList,
                             onClick = { clickedImg: Bitmap, croppingPoints1: Array<Int>, file1: File, position1: Int ->
-
-                                previewImgPS.setImageBitmap(clickedImg)
-
-                                croppingPointsPS = croppingPoints1
-                                mBitmapPS = clickedImg
-                                mFilePS = file1
-                                mPosPS = position1
-
-                                Log.d("imageSW PrevFrag",
-                                    " imageSize: WH " + clickedImg.width + " , " + clickedImg.height + "\nBitmap: $clickedImg")
-
-                                cropStartPS.isVisible = croppingPointsPS.isNotEmpty()
+                                setImageInPreview(clickedImg, croppingPoints1, file1, position1)
                             })
+
+                        viewModel.currentImageList.last().let {
+                            setImageInPreview(it.image, it.croppedCoordinates, it.file, viewModel.currentImageList.size - 1)
+                        }
+
                     }
                 }
             }
@@ -947,6 +941,20 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         val layoutParam4 = imageBlur.layoutParams as ConstraintLayout.LayoutParams
         layoutParam4.dimensionRatio = ratio
         imageBlur.layoutParams = layoutParam4
+    }
+
+    private fun setImageInPreview(clickedImg: Bitmap, croppingPoints1: Array<Int>, file1: File, position1: Int) {
+        previewImgPS.setImageBitmap(clickedImg)
+
+        croppingPointsPS = croppingPoints1
+        mBitmapPS = clickedImg
+        mFilePS = file1
+        mPosPS = position1
+
+        Log.d("imageSW PrevFrag",
+            " imageSize: WH " + clickedImg.width + " , " + clickedImg.height + "\nBitmap: $clickedImg")
+
+        cropStartPS.isVisible = croppingPointsPS.isNotEmpty()
     }
 
     private fun findWideAngleCamera(manager: CameraManager): String? {
