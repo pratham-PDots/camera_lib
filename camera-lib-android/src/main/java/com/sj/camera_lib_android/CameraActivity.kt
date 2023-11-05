@@ -567,13 +567,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                 Log.d("imageSW PrevFrag",
                                     " imageSize: WH " + clickedImg.width + " , " + clickedImg.height + "\nBitmap: $clickedImg")
 
-                                if (clickedImg != null && croppingPointsPS.isNotEmpty()) {
-                                    cropStartPS.visibility = View.VISIBLE // showing cropping icon
-                                } else {
-                                    cropStartPS.visibility = View.GONE
-
-                                }
-
+                                cropStartPS.isVisible = croppingPointsPS.isNotEmpty()
                             })
                     }
                 }
@@ -1018,7 +1012,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     private fun cropLowLightCheck(mBitmap1: Bitmap, mFile1: File, isCropFeature1: String) {
-        if (isCropFeature1 != null && isCropFeature1.isNotEmpty() && isCropFeature1.equals("true",true)) {
+        if (isCropFeature1.isNotEmpty() && isCropFeature1.equals("true",true)) {
             croppingStart(mBitmap1)
         }else{
             coordinatesCrop = emptyArray()
