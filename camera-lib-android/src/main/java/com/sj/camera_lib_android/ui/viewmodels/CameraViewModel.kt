@@ -34,7 +34,7 @@ import java.util.UUID
 import kotlin.math.max
 
 
-class CameraViewModel() : ViewModel()  {
+class CameraViewModel : ViewModel()  {
 
   // Expose screen UI state
   private val _uiState = MutableStateFlow(CameraUiState())
@@ -296,23 +296,6 @@ class CameraViewModel() : ViewModel()  {
     Log.d("imageSW offline SAVE","DONE, ${imageUploadList1.size} Last Image ===>> ${imageUploadList1.last()}")
   }
 
-
-  fun getOfflineImageList(context: Context): MutableList<ImageUploadModel> {
-    Log.d("imageSW OfflineList","Fetching Data start")
-    var imageUploadOfflineList: MutableList<ImageUploadModel> = mutableListOf()
-
-    //Retrieve the list from SharedPreferences
-    val sharedPrefs: SharedPreferences = context.getSharedPreferences("MyPrefsSW", Context.MODE_PRIVATE)
-    val json = sharedPrefs.getString("imageUploadListOffline", null)
-
-    if (json != null) {
-      val gson = Gson()
-      val type = object : TypeToken<MutableList<ImageUploadModel>>() {}.type
-      imageUploadOfflineList = gson.fromJson(json, type) ?: mutableListOf()
-    }
-
-    return imageUploadOfflineList
-  }
 
   private fun clearSharedPref(){
     val sharedPrefs: SharedPreferences = mContext.getSharedPreferences("MyPrefsSW", Context.MODE_PRIVATE)
@@ -844,11 +827,6 @@ class CameraViewModel() : ViewModel()  {
   fun getDeviceModel(): String {
     return Build.MANUFACTURER+"_"+Build.DEVICE
   }
-
-}
-
-
-private operator fun Any?.set(s: String, value: Array<Int>) {
 
 }
 

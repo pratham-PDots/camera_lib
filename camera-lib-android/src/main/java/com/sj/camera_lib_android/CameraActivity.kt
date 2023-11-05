@@ -439,28 +439,41 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     }
 
                     Log.d("imageSW it.nextStep"," ${it.nextStep}")
-                    if (it.nextStep == "left") {
-                        isArrowSelected = true
-                        leftArrowIv.setBackgroundColor(Color.GREEN)
-                        rightArrowIv.setBackgroundColor(Color.TRANSPARENT)
-                        downArrowIv.setBackgroundColor(Color.TRANSPARENT)
-                    } else if (it.nextStep == "right") {
-                        isArrowSelected = true
-                        rightArrowIv.setBackgroundColor(Color.GREEN)
-                        leftArrowIv.setBackgroundColor(Color.TRANSPARENT)
-                        downArrowIv.setBackgroundColor(Color.TRANSPARENT)
-                    } else if (it.nextStep == "down") {
-                        isArrowSelected = true
-                        downArrowIv.setBackgroundColor(Color.GREEN)
-                        leftArrowIv.setBackgroundColor(Color.TRANSPARENT)
-                        rightArrowIv.setBackgroundColor(Color.TRANSPARENT)
-                    } else {
-                        leftArrowIv.setBackgroundColor(Color.TRANSPARENT)
-                        rightArrowIv.setBackgroundColor(Color.TRANSPARENT)
-                        downArrowIv.setBackgroundColor(Color.TRANSPARENT)
-                        rightArrowIv.isEnabled = true
-                        leftArrowIv.isEnabled = true
-                        downArrowIv.isEnabled = true
+                    when (it.nextStep) {
+                        "left" -> {
+                            isArrowSelected = true
+                            setArrowColors(
+                                leftArrowColor = Color.GREEN,
+                                rightArrowColor = Color.TRANSPARENT,
+                                downArrowColor = Color.TRANSPARENT
+                            )
+                        }
+                        "right" -> {
+                            isArrowSelected = true
+                            setArrowColors(
+                                leftArrowColor = Color.TRANSPARENT,
+                                rightArrowColor = Color.GREEN,
+                                downArrowColor = Color.TRANSPARENT
+                            )
+                        }
+                        "down" -> {
+                            isArrowSelected = true
+                            setArrowColors(
+                                leftArrowColor = Color.TRANSPARENT,
+                                rightArrowColor = Color.TRANSPARENT,
+                                downArrowColor = Color.GREEN
+                            )
+                        }
+                        else -> {
+                            setArrowColors(
+                                leftArrowColor = Color.TRANSPARENT,
+                                rightArrowColor = Color.TRANSPARENT,
+                                downArrowColor = Color.TRANSPARENT
+                            )
+                            rightArrowIv.isEnabled = true
+                            leftArrowIv.isEnabled = true
+                            downArrowIv.isEnabled = true
+                        }
                     }
 
                     Log.d("imageSW leftOverlayImage", ": ${it.leftOverlayImage}")
@@ -508,15 +521,10 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     } else overlapImgTop.visibility = View.GONE
 
                     Log.d("imageSW it.isImageListEmpty", " : ${it.isImageListEmpty}")
-                    if (it.isImageListEmpty) {
-                        deleteImg.visibility = View.GONE
-                        previewPageImgCS.visibility = View.GONE
-                        submitBtn1.visibility = View.GONE
-                    } else {
-                        deleteImg.visibility = View.VISIBLE
-                        previewPageImgCS.visibility = View.VISIBLE
-                        submitBtn1.visibility = View.VISIBLE
-                    }
+
+                    deleteImg.isVisible = !it.isImageListEmpty
+                    previewPageImgCS.isVisible = !it.isImageListEmpty
+                    submitBtn1.isVisible = !it.isImageListEmpty
 
                     viewModel.imageCapturedListLive.observe(this@CameraActivity, androidx.lifecycle.Observer { imageModel ->
 
@@ -611,17 +619,11 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
 
         // Image referenceUrl WORK
-        if (referenceUrl.isNotEmpty()) {
-            referenceImg.visibility = View.VISIBLE
-        } else {
-            referenceImg.visibility = View.GONE
-
-        }
+        referenceImg.isVisible = referenceUrl.isNotEmpty()
 
         referenceImg.setOnClickListener {
             val imageDialog = ImageDialog(this,referenceUrl)
             imageDialog.show()
-
         }
 
         wideAngleButton.setOnClickListener {
@@ -677,7 +679,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             it.setBackgroundColor(Color.GREEN)
             this.let { it1 ->
                 isArrowSelected = true
-
                 viewModel.bottomArrowClicked(it1)
             }
         }
@@ -932,6 +933,12 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
     } // END of onCreate
+
+    private fun setArrowColors(leftArrowColor : Int, rightArrowColor : Int, downArrowColor : Int) {
+        leftArrowIv.setBackgroundColor(leftArrowColor)
+        rightArrowIv.setBackgroundColor(rightArrowColor)
+        downArrowIv.setBackgroundColor(downArrowColor)
+    }
 
     private fun setLayoutParams(ratio : String) {
         val layoutParam = viewFinder.layoutParams as ConstraintLayout.LayoutParams
@@ -1355,15 +1362,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    // creates a folder inside internal storage
-    private fun getOutputDirectory(): File {
-        val mediaDir = externalMediaDirs.firstOrNull()?.let {
-            File(it, "ShelfwatchCamSDK").apply { mkdirs() }
-        }
-        return if (mediaDir != null && mediaDir.exists())
-            mediaDir else filesDir
-    }
-
     // checks the camera permission
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults:
@@ -1444,35 +1442,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         val cropWidth = (width * percent / 100f).toInt()
         return Bitmap.createBitmap(bitmap, 0, 0, cropWidth, height)
     }
-
-
-    fun getImageDimensionsAndResolution(context: Context, imageUri: Uri): Triple<Int, Int, String>? {
-        try {
-            // Get the display metrics to calculate screen density
-            val displayMetrics = DisplayMetrics()
-            val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
-            val density = displayMetrics.densityDpi
-
-            // Decode the image to get its dimensions
-            val options = BitmapFactory.Options()
-            options.inJustDecodeBounds = true
-            BitmapFactory.decodeStream(context.contentResolver.openInputStream(imageUri), null, options)
-
-            // Calculate the dimensions
-            val width = options.outWidth
-            val height = options.outHeight
-
-            // Calculate the resolution
-            val resolution = "${width}x${height} (${(width * density / 160f).toInt()}dpi)"
-
-            return Triple(width, height, resolution)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return null
-    }
-
 
 
     private fun resetCroppingImg(cropImageView: CropImageView,mBitmap1: Bitmap, imgUri1: Uri, screen: String) {
