@@ -424,10 +424,11 @@ class CameraViewModel : ViewModel()  {
   }
 
   private fun getImageDetails() {
-    isAutomaticID = currentImageList.last().isAutomatic
     rowID = currentImageList.last().row
     stepsTakenID = currentImageList[currentImageList.size-1].stepsTaken
-
+    directionID = ""
+    nextStepID = ""
+    directionSelected = ""
     Log.d("imageSW getImageDetails", "isAutomaticID: $isAutomaticID, rowID: $rowID, stepsTakenID Size: ${stepsTakenID.size}")
   }
 
@@ -721,9 +722,9 @@ class CameraViewModel : ViewModel()  {
   fun deleteLastCapturedImage() {
     Log.d("imageSW delete ","before Size1: ${imageCapturedListLive.value?.size}")
 
+    isAutomaticID = currentImageList.last().isAutomatic
     currentImageList.removeLast()
     imageCapturedListLive.value = currentImageList
-    resetArrowClicked()
     if (currentImageList.isNotEmpty()) getImageDetails()
 
     Log.d("imageSW delete","after Size2: ${currentImageList.size}")
