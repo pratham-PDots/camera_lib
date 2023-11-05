@@ -172,7 +172,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private var camera: Camera? = null
     private lateinit var zoomLayout: LinearLayout
     private lateinit var radioGroupZoom: RadioGroup
-    private lateinit var zoomPercentFinal: String
 
     private lateinit var wideAngleButton: Button
 
@@ -196,9 +195,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         // Initialize Views ID
         initializeIDs()
         // Initialize OpenCV
-//        OpenCVLoader.initDebug()
-
-        // Initialize Firebase
 
          if (FirebaseApp.getApps(applicationContext).isEmpty()) {
             FirebaseApp.initializeApp(applicationContext)
@@ -258,26 +254,11 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             Log.d("imageSW","modeRotation: $modeRotation ,==> landscape ==> modeSelected: $modeRotation ")
 
-            val layoutParam = viewFinder.layoutParams as ConstraintLayout.LayoutParams
-                layoutParam.dimensionRatio = "4:3"
-                viewFinder.layoutParams = layoutParam
-
-            val layoutParam1 = previewImgPS.layoutParams as ConstraintLayout.LayoutParams
-                layoutParam1.dimensionRatio = "4:3"
-                previewImgPS.layoutParams = layoutParam1
-
-            /** for Preview Screen **/
-                val layoutParamPS = previewImgPS.layoutParams as ConstraintLayout.LayoutParams
-                layoutParamPS.dimensionRatio = "4:3"
-                previewImgPS.layoutParams = layoutParamPS
+                setLayoutParams("4:3")
 
                 val layoutParamPS2 = cropImageViewPS.layoutParams as ConstraintLayout.LayoutParams
                 layoutParamPS2.dimensionRatio = "4:3"
                 cropImageViewPS.layoutParams = layoutParamPS2
-
-                val layoutParamPS3 = imageBlur.layoutParams as ConstraintLayout.LayoutParams
-                layoutParamPS3.dimensionRatio = "4:3"
-                imageBlur.layoutParams = layoutParamPS3
 
 
             // calculation for resizing
@@ -295,24 +276,11 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             Log.d("imageSW","modeRotation: $modeRotation ,==> portrait ==> modeSelected: $modeRotation")
 
 
+            setLayoutParams("3:4")
 
-            val layoutParam = viewFinder.layoutParams as ConstraintLayout.LayoutParams
-                layoutParam.dimensionRatio = "3:4"
-                viewFinder.layoutParams = layoutParam
-
-            val layoutParam1 = previewImgPS.layoutParams as ConstraintLayout.LayoutParams
-                layoutParam1.dimensionRatio = "3:4"
-                previewImgPS.layoutParams = layoutParam1
-
-                 val layoutParam3 = cropImageViewCL.layoutParams as ConstraintLayout.LayoutParams
+            val layoutParam3 = cropImageViewCL.layoutParams as ConstraintLayout.LayoutParams
                  layoutParam3.dimensionRatio = "3:4"
                  cropImageViewCL.layoutParams = layoutParam3
-
-
-                 val layoutParam4 = imageBlur.layoutParams as ConstraintLayout.LayoutParams
-                 layoutParam4.dimensionRatio = "3:4"
-                 imageBlur.layoutParams = layoutParam4
-
 
         }
 
@@ -964,6 +932,21 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
     } // END of onCreate
+
+    private fun setLayoutParams(ratio : String) {
+        val layoutParam = viewFinder.layoutParams as ConstraintLayout.LayoutParams
+        layoutParam.dimensionRatio = ratio
+        viewFinder.layoutParams = layoutParam
+
+        val layoutParam1 = previewImgPS.layoutParams as ConstraintLayout.LayoutParams
+        layoutParam1.dimensionRatio = ratio
+        previewImgPS.layoutParams = layoutParam1
+
+
+        val layoutParam4 = imageBlur.layoutParams as ConstraintLayout.LayoutParams
+        layoutParam4.dimensionRatio = ratio
+        imageBlur.layoutParams = layoutParam4
+    }
 
     private fun findWideAngleCamera(manager: CameraManager): String? {
         var wideAngleCameraId: String? = null
