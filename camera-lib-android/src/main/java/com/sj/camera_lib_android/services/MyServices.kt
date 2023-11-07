@@ -154,7 +154,7 @@ class MyServices : Service() {
                             Log.i("imageSW Firebase Uploading ",
                                 "at $index  Uploaded " + progress.toInt() + "%")
                             val intent = Intent("Progress")
-                            intent.putExtra("index",index + 1)
+                            intent.putExtra("index",sessionId + "_" + "${index + 1}")
                             intent.putExtra("progress", progress.toInt())
                             LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
                         }

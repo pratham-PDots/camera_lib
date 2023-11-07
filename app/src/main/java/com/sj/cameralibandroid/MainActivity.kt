@@ -23,7 +23,7 @@ import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     private val uploadFrom = "Shelfwatch" // 3rdParty / Shelfwatch
-    private val progressMap = mutableMapOf<Int, Int>()
+    private val progressMap = mutableMapOf<String, Int>()
     private var uploadParams = JSONObject("""
                         {
                             "shop_id": 62475,
@@ -144,11 +144,11 @@ class MainActivity : AppCompatActivity() {
     private val myBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             var progress = intent!!.getIntExtra("progress", 0)
-            var index = intent!!.getIntExtra("index", -1)
+            var index = intent!!.getStringExtra("index")
 
             Log.d("imageSW broadcast", "$index $progress")
 
-            if(index != - 1) {
+            if(!index.isNullOrEmpty()) {
                 progressMap[index] = progress
                 var prettyProgress: String = "Upload Status: \n"
                 progressMap.forEach { (index, progress) ->
@@ -191,8 +191,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun launchCAMERA() {
         binding.scrollingTextView.text = ""
-        binding.progressTextView.text = ""
-        progressMap.clear()
         uploadParams.put("shop_id", binding.editTextShopId.text?.trim().toString())
         uploadParams.put("category_id", binding.editTextCategoryId.text?.trim().toString())
         uploadParams.put("user_id", binding.editUserId.text?.trim().toString())
