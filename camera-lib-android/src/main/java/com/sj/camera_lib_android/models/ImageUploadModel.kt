@@ -24,5 +24,4 @@ data class ImageUploadModel(
     val uri: String,
     val type: String,
     val name: String,
-    val file : File
 ) : Parcelable

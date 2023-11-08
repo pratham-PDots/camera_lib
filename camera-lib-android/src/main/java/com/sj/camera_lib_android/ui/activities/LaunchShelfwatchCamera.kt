@@ -18,7 +18,10 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
 
         val portraitButton = findViewById<LinearLayout>(R.id.portraitRotationLL)
         val landscapeButton = findViewById<LinearLayout>(R.id.landscapeRotationLL)
-        FirebaseApp.initializeApp(applicationContext)
+        if (FirebaseApp.getApps(applicationContext).isEmpty()) {
+            FirebaseApp.initializeApp(applicationContext)
+            Log.d("imageSW FirebaseApp","initialized")
+        }
 
 
         val extras = intent.extras

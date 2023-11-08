@@ -8,12 +8,22 @@ import android.content.Intent
 import android.net.Uri
 import android.os.IBinder
 import android.util.Log
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
+import com.sj.camera_lib_android.Database.AppDatabase
+import com.sj.camera_lib_android.Database.ImageEntity
+import com.sj.camera_lib_android.MyApplication
 import com.sj.camera_lib_android.models.ImageUploadModel
+import com.sj.camera_lib_android.utils.CameraSDK
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID
@@ -24,6 +34,7 @@ class MyServices : Service() {
     private var deviceName: String = ""
     private var storage: FirebaseStorage? = null
     private var storageReference: StorageReference? = null
+    private var applicationScope : CoroutineScope? = null
     companion object{
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss"
 
@@ -32,10 +43,16 @@ class MyServices : Service() {
         return null
     }
 
+    override fun onCreate() {
+        applicationScope = (application as? MyApplication)?.applicationScope
+        super.onCreate()
+    }
+
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // get the Firebase storage reference
-        storage = FirebaseStorage.getInstance("gs://shelfwatch-app-dev")
+        Log.d("imageSW bucket", CameraSDK.bucketName)
+        storage = FirebaseStorage.getInstance(CameraSDK.bucketName)
         storageReference = storage!!.reference
 
 
@@ -57,10 +74,37 @@ class MyServices : Service() {
         return START_STICKY
     }
 
+    private fun broadCastQueue() {
+            val imageDao = AppDatabase.getInstance(this@MyServices.applicationContext).imageDao()
+            val loadedPendingImages = imageDao.getPendingImages()
+            val intent = Intent("queue")
+            intent.putParcelableArrayListExtra(
+                "imageList",
+                ArrayList(loadedPendingImages.map { it.toPendingImage() })
+            )
+            LocalBroadcastManager.getInstance(this@MyServices.applicationContext).sendBroadcast(intent)
+    }
+
 
 
     override fun onDestroy() {
+        Log.d("imageSW", "Service destroyed")
         super.onDestroy()
+    }
+
+
+    private fun addImageToQueue(image: ImageUploadModel) {
+        val imageDao = AppDatabase.getInstance(this.applicationContext).imageDao()
+        if(imageDao.getImageByUri(image.uri) == null)
+            imageDao.insertImage(ImageEntity(image = image, uri = image.uri, isUploaded = false))
+        Log.d("imageSW add", image.uri)
+    }
+
+    private fun removeImageFromQueue(image: ImageUploadModel) {
+        val imageDao = AppDatabase.getInstance(this.applicationContext).imageDao()
+        val imageEntity = imageDao.getImageByUri(image.uri)
+        Log.d("imageSW remove", "${imageEntity?.uri}")
+        imageEntity?.let { imageDao.deleteImage(it) }
     }
 
 
@@ -75,7 +119,12 @@ class MyServices : Service() {
         var count =0
         if (list.size> 0) {
             list.forEachIndexed { index, mediaModelClass ->
+                applicationScope?.launch {
+                    addImageToQueue(mediaModelClass)
+                    broadCastQueue()
+                }
                 Log.e("imageSW Service uploadImageFB", "Count: $count, listSize: ${list.size} at $index")
+
 
                 val upload_params = mediaModelClass.upload_params
                 val position = mediaModelClass.position
@@ -94,7 +143,10 @@ class MyServices : Service() {
                 val type = mediaModelClass.type
                 val name = mediaModelClass.name
 
-                val fileUri: Uri = Uri.fromFile(mediaModelClass.file)
+                val fileUri: Uri = Uri.parse("file://$uri")
+
+
+                Log.d("imageSW file", "$fileUri $uri")
 
                 Log.d("imageSW", upload_params)
 
@@ -125,10 +177,16 @@ class MyServices : Service() {
                         metadata.setCustomMetadata(key, uploadParamJson[key].toString())
                     }
 
-                    val uploadTask = fbRef?.child(sessionId + "_" + "${index + 1}" + ".jpg")?.putFile(fileUri, metadata.build())
+                    val uploadTask = fbRef?.child(name)?.putFile(fileUri, metadata.build())
 
                     // Upload the byte array to Firebase Storage
                     uploadTask?.addOnSuccessListener { taskSnapshot ->
+                            applicationScope?.launch {
+                                Log.d("imageSW", "remove queue")
+                                removeImageFromQueue(mediaModelClass)
+                                broadCastQueue()
+                            }
+
                             // Handle successful upload
                             // You can get the download URL if needed:
                             val downloadUrl = taskSnapshot.metadata?.reference?.downloadUrl

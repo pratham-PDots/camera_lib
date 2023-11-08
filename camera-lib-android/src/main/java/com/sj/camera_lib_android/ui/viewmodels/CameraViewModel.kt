@@ -205,16 +205,16 @@ class CameraViewModel : ViewModel()  {
     Log.d("imageSW", "Image Submitted")
     val deviceName = getDeviceModel()
     val utils = Utils()
-    if (utils.checkInternetConnection(mContext)) {
-      clearSharedPref()
-      imageUploadList.clear()
 
-      if (currentImageList.isNotEmpty()){
+    clearSharedPref()
+    imageUploadList.clear()
+
+    if (currentImageList.isNotEmpty()) {
       val dimension = intArrayOf(maxCol, maxRow)
       Log.d("imageSW grid", "${dimension[0]} ${dimension[1]}")
 
-      imageUploadList.addAll(currentImageList.map {imageDetails ->
-        var cropCoordinates = arrayOf(0,0,0,0)
+      imageUploadList.addAll(currentImageList.map { imageDetails ->
+        var cropCoordinates = arrayOf(0, 0, 0, 0)
         imageDetails.croppedCoordinates.let {
           cropCoordinates = arrayOf(it[0], it[1], it[2] - it[0], it[3] - it[1])
         }
@@ -222,65 +222,60 @@ class CameraViewModel : ViewModel()  {
         ImageUploadModel(
           // Map properties from ImageDetailsModel to ImageUploadModel
           imageDetails.position.contentToString(),
-          dimension.contentToString(),"","", "${currentImageList.size}",
+          dimension.contentToString(), "", "", "${currentImageList.size}",
           imageDetails.appTimestamp,
           imageDetails.orientation,
-          imageDetails.zoomLevel, "",
+          imageDetails.zoomLevel, uuid.toString(),
           cropCoordinates.contentToString(), "${imageDetails.overlapPercent}",
-          upload_param,"${imageDetails.file}","image/jpeg","${imageName}.jpg", imageDetails.file
+          upload_param, "${imageDetails.file}", "image/jpeg",
+          imageDetails.file.toString().substringAfterLast("/")
         )
 
       })
-      Log.d("imageSW uploadImages","${imageUploadList.size} Last Image ===>> ${imageUploadList.last()}")
+      Log.d(
+        "imageSW uploadImages",
+        "${imageUploadList.size} Last Image ===>> ${imageUploadList.last()}"
+      )
 
       //Saving for offlineMode
       saveToSharedPref(imageUploadList)
 
-        // Upload to Firebase or send List to 3rd Party
-        // upload to Firebase
-        // Call My Service for image Upload to firebase in the background
-        val utils = Utils()
-        if (utils.checkInternetConnection(context)) {
+      // Upload to Firebase or send List to 3rd Party
+      // upload to Firebase
+      // Call My Service for image Upload to firebase in the background
 
-          val projectId = JSONObject(upload_param).get("project_id")
+      val projectId = JSONObject(upload_param).get("project_id")
 
-          if (imageUploadList.isNotEmpty()) {
-            // Start Service
-            val intent = Intent(context, MyServices()::class.java) // image Upload from gallery
-            intent.putParcelableArrayListExtra("mediaList", ArrayList(imageUploadList))
-            intent.putExtra("deviceName",deviceName)
-            intent.putExtra("project_id", projectId.toString())
-            intent.putExtra("uuid", uuid.toString())
-            context.startService(intent)
+      if (imageUploadList.isNotEmpty()) {
+        // Start Service
+        val intent = Intent(context, MyServices()::class.java) // image Upload from gallery
+        intent.putParcelableArrayListExtra("mediaList", ArrayList(imageUploadList))
+        intent.putExtra("deviceName", deviceName)
+        intent.putExtra("project_id", projectId.toString())
+        intent.putExtra("uuid", uuid.toString())
+        context.startService(intent)
 
-          }else{
-            Log.e("imageSW startFbService","imageUploadList is EMPTY/ NULL")
-            Toast.makeText(context,"imageUploadList isEmpty", Toast.LENGTH_SHORT).show()
-          }
-        } else {
-          Toast.makeText(context, "Opps! No Internet\nPlease Connect to Internet!", Toast.LENGTH_SHORT).show()
-        }
+      } else {
+        Log.e("imageSW startFbService", "imageUploadList is EMPTY/ NULL")
+        Toast.makeText(context, "imageUploadList isEmpty", Toast.LENGTH_SHORT).show()
+      }
 
 //        uploadToFirebase(mContext, imageUploadList.last(), firebaseDBReference1, imageUploadList) //uploadImages
 
-        //        Broadcast only when uploadFrom from 3rd party
+      //        Broadcast only when uploadFrom from 3rd party
 
-        if (uploadFrom.isNotEmpty() && uploadFrom != "Shelfwatch") {
-          Log.d("imageSW UploadTo", "3rd party")
+      if (uploadFrom.isNotEmpty() && uploadFrom != "Shelfwatch") {
+        Log.d("imageSW UploadTo", "3rd party")
         val intent = Intent("DataSaved")
-        intent.putExtra("status","Done")
-        intent.putParcelableArrayListExtra("imageListSaved",ArrayList(imageUploadList))
-        intent.putExtra("deviceName",getDeviceModel())
+        intent.putExtra("status", "Done")
+        intent.putParcelableArrayListExtra("imageListSaved", ArrayList(imageUploadList))
+        intent.putExtra("deviceName", getDeviceModel())
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent)
       }
 
 
-    }else{
-      Common.showToast(mContext,"Image list is empty now!")
-    }
     } else {
-      hideLoader()
-      Toast.makeText(mContext, "Opps! No Internet\nPlease Connect to Internet", Toast.LENGTH_SHORT).show()
+      Common.showToast(mContext, "Image list is empty now!")
     }
 
   }

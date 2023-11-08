@@ -13,17 +13,18 @@ import android.view.View
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.sj.camera_lib_android.Database.PendingImage
 import com.sj.camera_lib_android.Demo
 import com.sj.camera_lib_android.models.ImageUploadModel
 import com.sj.camera_lib_android.ui.activities.LaunchShelfwatchCamera
 import com.sj.camera_lib_android.ui.viewmodels.CameraViewModel
+import com.sj.camera_lib_android.utils.CameraSDK
 import com.sj.cameralibandroid.databinding.ActivityMainBinding
 import org.json.JSONObject
 
 
 class MainActivity : AppCompatActivity() {
     private val uploadFrom = "Shelfwatch" // 3rdParty / Shelfwatch
-    private val progressMap = mutableMapOf<String, Int>()
     private var uploadParams = JSONObject("""
                         {
                             "shop_id": 62475,
@@ -55,8 +56,6 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[CameraViewModel::class.java]
 
         binding.scrollingTextView.text = ""
-        binding.progressTextView.text = ""
-        progressMap.clear()
 
         Log.d("imageSW uploadParams ",uploadParams.toString())
         // register BroadcastReceiver
@@ -84,6 +83,8 @@ class MainActivity : AppCompatActivity() {
             binding.uploadParamTextView.text = formatJson(uploadParams.toString())
 
         }
+
+        CameraSDK.init(this, "gs://shelfwatch-app-dev")
 
         binding.button2.setOnClickListener {
             launchCAMERA()
@@ -143,18 +144,13 @@ class MainActivity : AppCompatActivity() {
 
     private val myBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            var progress = intent!!.getIntExtra("progress", 0)
-            var index = intent!!.getStringExtra("index")
-
-            Log.d("imageSW broadcast", "$index $progress")
-
-            if(!index.isNullOrEmpty()) {
-                progressMap[index] = progress
-                var prettyProgress: String = "Upload Status: \n"
-                progressMap.forEach { (index, progress) ->
-                    prettyProgress += "Image $index : $progress% \n"
+            if(intent?.action?.equals("queue") == true) {
+                val imageList = intent.getParcelableArrayListExtra<PendingImage>("imageList")
+                var pendingImages = "Upload Status : \n"
+                imageList?.forEach {
+                    pendingImages += "${it.image.name} \n"
                 }
-                binding.progressTextView.text = prettyProgress
+                binding.progressTextView.text = pendingImages
             }
 
 
@@ -181,7 +177,6 @@ class MainActivity : AppCompatActivity() {
                 URI: ${model.uri}
                 Type: ${model.type}
                 Name: ${model.name}
-                File: ${model.file.absolutePath}
                 """.trimIndent()
                         }
 
@@ -196,17 +191,17 @@ class MainActivity : AppCompatActivity() {
         uploadParams.put("user_id", binding.editUserId.text?.trim().toString())
         uploadParams.put("project_id", binding.editTextProjectId.text?.trim().toString())
 
-        val intent = Intent(this@MainActivity, LaunchShelfwatchCamera::class.java)
-        intent.putExtra("mode", binding.editTextMode.text.toString()) //portrait / landscape
-        intent.putExtra("overlapBE", binding.editTextOverlapBE.text.toString())
-        intent.putExtra("uploadParam", uploadParams.toString())
-        intent.putExtra("resolution", binding.editTextResolution.text.toString())
-        intent.putExtra("referenceUrl", binding.editTextReferenceURL.text.toString())
-        intent.putExtra("isBlurFeature", binding.editTextBlurFeature.text.toString())
-        intent.putExtra("isCropFeature", binding.editTextCropFeature.text.toString())
-        intent.putExtra("uploadFrom", binding.editTextUploadFrom.text.toString()) // Shelfwatch / 3rdParty
-        startActivity(intent)
-
+        CameraSDK.startCamera(
+            this,
+            mode = binding.editTextMode.text.toString(),
+            overlapBE = binding.editTextOverlapBE.text.toString(),
+            uploadParam = uploadParams.toString(),
+            resolution = binding.editTextResolution.text.toString(),
+            referenceUrl = binding.editTextReferenceURL.text.toString(),
+            isBlurFeature = binding.editTextBlurFeature.text.toString(),
+            isCropFeature = binding.editTextCropFeature.text.toString(),
+            uploadFrom = binding.editTextUploadFrom.text.toString()
+        )
     }
 
     fun demoSDK(view: View) {
@@ -217,6 +212,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("DataSaved"))// onResume
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("Progress"))// onResume
+        LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("queue"))// onResume
     }
 
     // Unbind from the service in the onDestroy() method of the fragment

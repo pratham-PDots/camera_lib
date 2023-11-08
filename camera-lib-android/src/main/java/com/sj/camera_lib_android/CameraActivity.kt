@@ -683,7 +683,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
         submitBtn1.setOnClickListener {
-            if (utils.checkInternetConnection(this)) {
 
             SubmitDialog( // submitBtn1
                 getString(R.string.dialog_submit),
@@ -691,7 +690,10 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 getString(R.string.no_btn),
                 onClick = {
                     viewModel.submitClicked = true
-                    Log.d("imageSW", "Saved Image Count : ${viewModel.imageSavedCount} Submit : ${viewModel.submitClicked}")
+                    Log.d(
+                        "imageSW",
+                        "Saved Image Count : ${viewModel.imageSavedCount} Submit : ${viewModel.submitClicked}"
+                    )
                     if (viewModel.currentImageList.isNotEmpty() && viewModel.imageSavedCount == 0) {
                         viewModel.showLoader() // submitBtn1
                         uploadSaveImages(this@CameraActivity) // submitBtn1
@@ -699,34 +701,28 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
                 }
             ).show(supportFragmentManager, "DialogFragment")
-        }else {
-            viewModel.hideLoader()
-            Toast.makeText(this, "Opps! No Internet\nPlease Connect to Internet", Toast.LENGTH_SHORT).show()
-        }
 
         }
 
         uploadBtnPS.setOnClickListener {
-            if (utils.checkInternetConnection(this)) {
 
-                SubmitDialog( // uploadBtnPS
-                    getString(R.string.dialog_submit),
-                    getString(R.string.yes_btn),
-                    getString(R.string.no_btn),
-                    onClick = {
-                        viewModel.submitClicked = true
-                        Log.d("imageSW", "Saved Image Count : ${viewModel.imageSavedCount} Submit : ${viewModel.submitClicked}")
-                        if (viewModel.currentImageList.isNotEmpty() && viewModel.imageSavedCount == 0) {
-                            viewModel.showLoader() // submitBtn1
-                            uploadSaveImages(this@CameraActivity) // submitBtn1
-                        }
-
+            SubmitDialog( // uploadBtnPS
+                getString(R.string.dialog_submit),
+                getString(R.string.yes_btn),
+                getString(R.string.no_btn),
+                onClick = {
+                    viewModel.submitClicked = true
+                    Log.d(
+                        "imageSW",
+                        "Saved Image Count : ${viewModel.imageSavedCount} Submit : ${viewModel.submitClicked}"
+                    )
+                    if (viewModel.currentImageList.isNotEmpty() && viewModel.imageSavedCount == 0) {
+                        viewModel.showLoader() // submitBtn1
+                        uploadSaveImages(this@CameraActivity) // submitBtn1
                     }
-                ).show(supportFragmentManager, "DialogFragment")
-            }else {
-                viewModel.hideLoader()
-                Toast.makeText(this, "Opps! No Internet\nPlease Connect to Internet", Toast.LENGTH_SHORT).show()
-            }
+
+                }
+            ).show(supportFragmentManager, "DialogFragment")
         }
         
         previewPageImgCS.setOnClickListener{
