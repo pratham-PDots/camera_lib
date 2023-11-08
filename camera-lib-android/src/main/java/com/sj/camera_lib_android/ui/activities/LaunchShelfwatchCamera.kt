@@ -33,6 +33,7 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
         var isBlurFeature = ""
         var isCropFeature = ""
         var uploadFrom = ""
+        var isRetake = false
         if (extras != null) {
             modeRotation = extras.getString("mode") ?: ""
             overlayBE = extras.getString("overlapBE")?.toFloat() ?: 20f
@@ -42,6 +43,7 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
             isBlurFeature = extras.getString("isBlurFeature") ?: ""
             isCropFeature = extras.getString("isCropFeature") ?: ""
             uploadFrom = extras.getString("uploadFrom") ?: "Shelfwatch"
+            isRetake = extras.getBoolean("isRetake", false)
 
             var message =
                 "Mode: $modeRotation ,uploadParams: $uploadParams , overlayBE: $overlayBE," +
@@ -52,19 +54,19 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
 
         }
         if (modeRotation != null && modeRotation.isNotEmpty()){
-            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom)
+            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake)
 
         }
 
         portraitButton.setOnClickListener {
             modeRotation = "portrait"
-            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom)
+            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake)
             Log.d("imageSW selectRotationDialog", " $modeRotation")
         }
 
         landscapeButton.setOnClickListener {
             modeRotation = "landscape"
-            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom)
+            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake)
 
             Log.d("imageSW selectRotationDialog", " $modeRotation")
         }
@@ -79,7 +81,8 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
         referenceUrl: String,
         isBlurFeature: String,
         isCropFeature: String,
-        uploadFrom: String
+        uploadFrom: String,
+        isRetake: Boolean = false
     ) {
         if (modeRotation.isNotEmpty()){
             val intent = Intent(this@LaunchShelfwatchCamera, CameraActivity::class.java)
@@ -91,6 +94,7 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
             intent.putExtra("isBlurFeature", isBlurFeature)
             intent.putExtra("isCropFeature", isCropFeature)
             intent.putExtra("uploadFrom", uploadFrom) // Shelfwatch / 3rdParty
+            intent.putExtra("isRetake", isRetake)
             startActivity(intent)
             finish()
         }

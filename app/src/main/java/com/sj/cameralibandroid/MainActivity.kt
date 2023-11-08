@@ -200,7 +200,8 @@ class MainActivity : AppCompatActivity() {
             referenceUrl = binding.editTextReferenceURL.text.toString(),
             isBlurFeature = binding.editTextBlurFeature.text.toString(),
             isCropFeature = binding.editTextCropFeature.text.toString(),
-            uploadFrom = binding.editTextUploadFrom.text.toString()
+            uploadFrom = binding.editTextUploadFrom.text.toString(),
+            isRetake = binding.editTextRetake.text.toString().toBoolean()
         )
     }
 

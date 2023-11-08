@@ -61,6 +61,7 @@ class CameraViewModel : ViewModel()  {
   var wideAngleSet = true
   var imageSavedCount = 0
   var submitClicked = false
+  var isRetake: Boolean = false
 
   val imageUploadList: MutableList<ImageUploadModel> = mutableListOf()
 

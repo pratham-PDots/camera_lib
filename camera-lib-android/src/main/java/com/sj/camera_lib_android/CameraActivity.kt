@@ -50,6 +50,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.Group
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -110,6 +111,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private lateinit var previewPageImgCS: ImageView
     private lateinit var crossImg: ImageView
     private lateinit var referenceImg: ImageView
+    private lateinit var overlayGroup: Group
     
     private lateinit var overlapImgTop: ImageView
     private lateinit var overlapImgLeft: ImageView
@@ -232,10 +234,12 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             isBlurFeature = extras.getString("isBlurFeature") ?: ""
             isCropFeature = extras.getString("isCropFeature") ?: ""
             uploadFrom = extras.getString("uploadFrom") ?: "Shelfwatch"
+            viewModel.isRetake = extras.getBoolean("isRetake", false)
+
 
             var message = "Mode: $modeRotation ,uploadParams: $uploadParams , overlayBE: $overlayBE," +
                     " resolution: $resolution, referenceUrl: $referenceUrl, isBlurFeature: $isBlurFeature," +
-                    " isCropFeature: $isCropFeature, uploadFrom: $uploadFrom"
+                    " isCropFeature: $isCropFeature, uploadFrom: $uploadFrom, retake : ${viewModel.isRetake}"
             Log.d("imageSW inputFlags", " CA: $message")
             viewModel.dataFromOpenCameraEvent(applicationContext,modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom)
 
@@ -374,6 +378,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         captureImg.setBackgroundResource(R.drawable.white_solid_circle)
                         loader.visibility = View.GONE
                     }
+
+                    if(viewModel.isRetake) overlayGroup.isVisible = false
 
                     Log.d("imageSW it.enableCaptureBtn"," ${it.enableCaptureBtn}")
         captureImg.isEnabled = it.enableCaptureBtn
@@ -529,6 +535,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     viewModel.imageCapturedListLive.observe(this@CameraActivity, androidx.lifecycle.Observer { imageModel ->
 
                         wideAngleButton.isVisible = (viewModel.currentImageList.size == 0 && !isWideAngleCameraSameAsDefault())
+                        if(viewModel.isRetake) captureImg.isEnabled = (viewModel.currentImageList.size == 0)
 
                         if (viewModel.currentImageList.size > 0) {
                                 previewPageImgCS.setImageBitmap(imageModel.last().image)
@@ -1486,6 +1493,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         wideAngleButton = findViewById(R.id.wideAngleButton)
         crossImg = findViewById(R.id.cross_iv)
         referenceImg = findViewById(R.id.imgReference_iv)
+        overlayGroup = findViewById(R.id.overlayGroup)
         submitBtn1 = findViewById(R.id.submitImgLL)
         zoomLayout = findViewById(R.id.zoomLL)
         radioGroupZoom = findViewById(R.id.radioGroupZoom)

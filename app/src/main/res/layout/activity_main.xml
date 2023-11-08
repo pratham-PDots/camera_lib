@@ -122,6 +122,19 @@
                     android:text="Shelfwatch" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutRetake"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter isRetake">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextRetake"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="false" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

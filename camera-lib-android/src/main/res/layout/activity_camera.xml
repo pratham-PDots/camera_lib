@@ -142,8 +142,16 @@
 
                     </LinearLayout>
 
+                    <androidx.constraintlayout.widget.Group
+                        android:id="@+id/overlayGroup"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:constraint_referenced_ids="right_arrow_ll, left_arrow_ll, down_arrow_ll,
+                     img_left_ll, img_right_ll, img_top_ll"/>
+
                     <!--Left Overlapping-->
                     <FrameLayout
+                        android:id="@+id/img_left_ll"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_gravity="left"
@@ -179,6 +187,7 @@
 
                     <!--TOP Overlapping-->
                     <FrameLayout
+                        android:id="@+id/img_top_ll"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="top"
@@ -217,6 +226,7 @@
                         app:layout_constraintGuide_percent="0.45" />
                     <!--Right Overlapping-->
                     <FrameLayout
+                        android:id="@+id/img_right_ll"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_gravity="end"
