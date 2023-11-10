@@ -39,7 +39,8 @@ object CameraSDK {
         isBlurFeature: String,
         isCropFeature: String,
         uploadFrom: String,
-        isRetake: Boolean = false
+        isRetake: Boolean = false,
+        zoomLevel: Double = 1.0
     ) {
         Log.d("imageSW here", bucketName)
         val intent = Intent(context, LaunchShelfwatchCamera::class.java)
@@ -52,6 +53,7 @@ object CameraSDK {
         intent.putExtra("isCropFeature", isCropFeature)
         intent.putExtra("uploadFrom", uploadFrom) // Shelfwatch / 3rdParty
         intent.putExtra("isRetake", isRetake)
+        intent.putExtra("zoomLevel", zoomLevel)
         context.startActivity(intent)
     }
 

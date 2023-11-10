@@ -49,105 +49,32 @@
                             android:layout_height="0dp" />
                     </androidx.camera.view.PreviewView>
 
-                    <!--Zoom IN OUT-->
-                    <LinearLayout
-                        android:id="@+id/zoomLL"
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toBottomOf="@id/viewFinder"
-                        app:layout_constraintEnd_toEndOf="@id/viewFinder"
-                        app:layout_constraintTop_toTopOf="@id/viewFinder">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/ic_add_24"
-                            />
-
-                        <RadioGroup
-                            android:id="@+id/radioGroupZoom"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center">
-                            <androidx.appcompat.widget.AppCompatRadioButton
-                                android:id="@+id/zoom_1_rb"
-                                android:layout_width="50dp"
-                                android:layout_height="50dp"
-                                android:text="1.0"
-                                android:textStyle="bold"
-                                android:textSize="10dp"
-                                android:gravity="center"
-                                android:checked="false"
-                                android:textColor="@color/white"
-                                android:background="@drawable/bg_round_lightblack"
-                                android:button="@android:color/transparent" />
-                            <RadioButton
-                                android:id="@+id/zoom_075_rb"
-                                android:layout_width="50dp"
-                                android:layout_height="50dp"
-                                android:layout_marginTop="3dp"
-                                android:text="0.75"
-                                android:textSize="10dp"
-                                android:checked="false"
-                                android:gravity="center"
-                                android:textColor="@color/white"
-                                android:background="@drawable/bg_round_lightblack"
-                                android:button="@android:color/transparent" />
-                            <androidx.appcompat.widget.AppCompatRadioButton
-                                android:id="@+id/zoom_05_rb"
-                                android:layout_width="45dp"
-                                android:layout_height="45dp"
-                                android:layout_marginTop="3dp"
-                                android:text="0.5"
-                                android:textSize="10dp"
-                                android:checked="false"
-                                android:gravity="center"
-                                android:textColor="@color/white"
-                                android:background="@drawable/bg_round_lightblack"
-                                android:button="@android:color/transparent" />
-                            <androidx.appcompat.widget.AppCompatRadioButton
-                                android:id="@+id/zoom_025_rb"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:layout_marginTop="3dp"
-                                android:text=".25"
-                                android:textSize="10dp"
-                                android:gravity="center"
-                                android:checked="false"
-                                android:textColor="@color/white"
-                                android:background="@drawable/bg_round_lightblack"
-                                android:button="@android:color/transparent" />
-                            <RadioButton
-                                android:id="@+id/zoom_0_rb"
-                                android:layout_width="35dp"
-                                android:layout_height="35dp"
-                                android:layout_marginTop="3dp"
-                                android:text="0"
-                                android:textSize="10dp"
-                                android:checked="true"
-                                android:gravity="center"
-                                android:textColor="@color/white"
-                                android:background="@drawable/bg_round_lightblack"
-                                android:button="@android:color/transparent" />
-                        </RadioGroup>
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/ic_minus_24"
-                            />
-
-                    </LinearLayout>
-
                     <androidx.constraintlayout.widget.Group
                         android:id="@+id/overlayGroup"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:constraint_referenced_ids="right_arrow_ll, left_arrow_ll, down_arrow_ll,
                      img_left_ll, img_right_ll, img_top_ll"/>
+
+                    <FrameLayout
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        app:layout_constraintBottom_toTopOf="@id/image_capture_button"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginBottom="15dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:background="@drawable/white_circle">
+                        <TextView
+                            android:id="@+id/zoomText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1.0x"
+                            android:padding="5dp"
+                            android:textSize="12dp"
+                            android:textStyle="bold"
+                            android:layout_gravity="center"
+                            android:textColor="#FFFFFF" />
+                    </FrameLayout>
 
                     <!--Left Overlapping-->
                     <FrameLayout

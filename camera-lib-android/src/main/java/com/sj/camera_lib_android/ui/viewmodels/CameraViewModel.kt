@@ -63,6 +63,9 @@ class CameraViewModel : ViewModel()  {
   var submitClicked = false
   var isRetake: Boolean = false
 
+  var currentZoomRatio = 1.0
+  var zoomEnabled: Boolean = true
+
   val imageUploadList: MutableList<ImageUploadModel> = mutableListOf()
 
   val currentImageList = arrayListOf<ImageDetailsModel>()
@@ -108,7 +111,6 @@ class CameraViewModel : ViewModel()  {
     if (directionSelected.isNotEmpty() && directionSelected.equals("down",true)){
       rowSum = currentImageList.last().row.toInt() + 1
     }
-    val zoomLevel = if (Common.zoomSelected != null) Common.zoomSelected else "0"
 
 
 
@@ -177,7 +179,7 @@ class CameraViewModel : ViewModel()  {
 
 
     currentImageList.add(ImageDetailsModel(positionMatrix,dimensionMatrix, SimpleDateFormat(
-      CameraActivity.FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()),zoomLevel, mode
+      CameraActivity.FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis()),currentZoomRatio.toString(), mode
       ,directionID, isAutomaticID,rowID,stepsTakenID,nextStepID, overlapArray.contentToString(),upload_param,
       ImageModel("$file1","image/jpeg","$captureTime.jpg"), file1, bmp1, coordinatesCropped))
 
@@ -795,7 +797,6 @@ class CameraViewModel : ViewModel()  {
     isAutomaticID = false
     stepsTakenID = ArrayList<String>()
     nextStepID = ""
-    Common.zoomSelected = "0"
 
   }
 

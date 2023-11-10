@@ -3,6 +3,7 @@ package com.sj.camera_lib_android
  * @author Saurabh Kumar 11 September 2023
  * **/
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -25,6 +26,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.util.SizeF
 import android.view.OrientationEventListener
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowManager
@@ -52,6 +54,7 @@ import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
@@ -112,6 +115,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private lateinit var crossImg: ImageView
     private lateinit var referenceImg: ImageView
     private lateinit var overlayGroup: Group
+    private lateinit var zoomText: TextView
     
     private lateinit var overlapImgTop: ImageView
     private lateinit var overlapImgLeft: ImageView
@@ -172,13 +176,22 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     //Zoom
     private var camera: Camera? = null
-    private lateinit var zoomLayout: LinearLayout
-    private lateinit var radioGroupZoom: RadioGroup
 
     private lateinit var wideAngleButton: Button
 
-    // Firebase Database
+    private lateinit var scaleGestureDetector : ScaleGestureDetector
 
+    private val scaleGestureListener = object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        override fun onScale(detector: ScaleGestureDetector): Boolean {
+            if(viewModel.isRetake || !viewModel.zoomEnabled) return false
+
+            val newZoomRatio = viewModel.currentZoomRatio * detector.scaleFactor
+
+            setZoomRatio(newZoomRatio)
+
+            return true
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -235,6 +248,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             isCropFeature = extras.getString("isCropFeature") ?: ""
             uploadFrom = extras.getString("uploadFrom") ?: "Shelfwatch"
             viewModel.isRetake = extras.getBoolean("isRetake", false)
+            viewModel.currentZoomRatio = extras.getDouble("zoomLevel", 1.0)
 
 
             var message = "Mode: $modeRotation ,uploadParams: $uploadParams , overlayBE: $overlayBE," +
@@ -536,24 +550,10 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
                         wideAngleButton.isVisible = (viewModel.currentImageList.size == 0 && !isWideAngleCameraSameAsDefault())
                         if(viewModel.isRetake) captureImg.isEnabled = (viewModel.currentImageList.size == 0)
+                        viewModel.zoomEnabled = (imageModel.size == 0)
 
                         if (viewModel.currentImageList.size > 0) {
                                 previewPageImgCS.setImageBitmap(imageModel.last().image)
-                                zoomLayout.visibility = View.GONE
-                            }
-                            else{
-                                Common.zoomSelected = "0"
-                                zoomLayout.visibility = View.VISIBLE
-
-                                // Check the first radio button (index 0)
-                                val firstRadioButton: RadioButton = radioGroupZoom.findViewById(R.id.zoom_0_rb) as RadioButton
-                                firstRadioButton.isChecked = true
-
-                                // Zoom Work
-                                if (Common.zoomSelected != null) {
-                                    zoomCamera("0f", camera!!) // currentImageList.size < 0
-                                }
-
                             }
 
                         }
@@ -576,28 +576,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
 
         }
-//
-        // Zoom in OUT
-                radioGroupZoom.setOnCheckedChangeListener { group, checkedId ->
-                    val selectedRadioButton:RadioButton = group.findViewById(checkedId)
-                    Common.zoomSelected = selectedRadioButton.text.toString()
-
-                    if (Common.zoomSelected != null) {
-                        zoomCamera("${Common.zoomSelected}f", camera!!) // zoom click .25
-                    }
-                        // Reset background color for all radio buttons
-                        for (i in 0 until group.childCount) {
-                            val radioButton = group.getChildAt(i) as RadioButton
-                            radioButton.setBackgroundColor(Color.parseColor("#7F000000"))
-                            radioButton.background = this.getDrawable(R.drawable.bg_round_lightblack)
-                        }
-
-                        // Set the background color of the selected radio button
-                        selectedRadioButton.setBackgroundColor(Color.parseColor("#000000"))
-                    selectedRadioButton.background = this.getDrawable(R.drawable.black_solid_circle)
-
-
-                }
 
 
         //calculate viewFinder Dimensions and set overlapping
@@ -681,6 +659,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         deleteImg.setOnClickListener {
             mFile?.let { it1 -> viewModel.deleteFile(it1.path) }
             if (viewModel.currentImageList.size > 0 ){
+                if(viewModel.currentImageList.size == 1) resetZoom()
                 viewModel.deleteLastCapturedImage()
             }else {
                 isArrowSelected = true // size = 0
@@ -925,6 +904,36 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         cameraExecutor = Executors.newSingleThreadExecutor()
     } // END of onCreate
 
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setZoomListener() {
+        scaleGestureDetector = ScaleGestureDetector(this, scaleGestureListener)
+
+        viewFinder.setOnTouchListener { _, event ->
+            scaleGestureDetector.onTouchEvent(event)
+            true
+        }
+
+        setZoomRatio(viewModel.currentZoomRatio)
+    }
+
+    fun setZoomRatio(zoomRatio: Double) {
+        val cameraInstance = camera ?: return
+
+        val newZoomRatio = zoomRatio.coerceIn(1.0, 2.0)
+
+        cameraInstance.cameraControl.setZoomRatio(newZoomRatio.toFloat())
+
+        viewModel.currentZoomRatio = newZoomRatio
+        zoomText.text = String.format("%.1fx", viewModel.currentZoomRatio)
+    }
+
+    private fun resetZoom() {
+        if(viewModel.isRetake) return
+        viewModel.zoomEnabled = true
+        viewModel.currentZoomRatio = 1.0
+        setZoomRatio(viewModel.currentZoomRatio)
+    }
+
     private fun setArrowColors(leftArrowColor : Int, rightArrowColor : Int, downArrowColor : Int) {
         leftArrowIv.setBackgroundColor(leftArrowColor)
         rightArrowIv.setBackgroundColor(rightArrowColor)
@@ -1120,6 +1129,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     getString(R.string.no_btn),
                     onClick = {
                         viewModel.discardAllImages() // back button discard
+                        resetZoom()
                     }
                 ).show(supportFragmentManager, "DialogFragment")
             } else {
@@ -1348,12 +1358,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 // Bind use cases to camera
                 camera = cameraProvider.bindToLifecycle(this, cameraSelector,preview, imageCapture, imageAnalyzer)
 
-                // Zoom Work
-                 if (viewModel.currentImageList.size > 0) {
-                    if (Common.zoomSelected != null) {
-                        zoomCamera("${Common.zoomSelected}f", camera!!) // startCamera
-                    }
-                }
+                setZoomListener()
+
 
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
@@ -1459,29 +1465,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             Common.showToast(this, "Please capture image before reset")
     }
 
-    //Zooming camera Work
-        private fun zoomCamera(zoomPercent: String, camera1: Camera) {
-           val cameraControl: CameraControl? = camera1?.cameraControl
-           val cameraInfo: CameraInfo? = camera1?.cameraInfo
-           val currentZoomRatio = cameraInfo?.zoomState?.value?.zoomRatio ?: 1f
-
-           var newZoomRatio = 1f
-           if (zoomPercent.toFloat() == 0f){
-               newZoomRatio = 1f
-           }else if (zoomPercent.toFloat() == 0.25f){
-               newZoomRatio = 1.25f
-           }else if (zoomPercent.toFloat() == 0.5f){
-               newZoomRatio = 1.75f
-           }else if (zoomPercent.toFloat() == 0.75f){
-               newZoomRatio = 2.5f
-           }else if (zoomPercent.toFloat() == 1.0f){
-               newZoomRatio = 3.5f
-           }
-
-           Log.d("imageSW ZOOM","newZoomRatio: $newZoomRatio, currentZoomRatio: $currentZoomRatio , zoomPercent: ${zoomPercent.toFloat()}")
-           cameraControl?.setZoomRatio(newZoomRatio.coerceIn(cameraInfo?.zoomState?.value!!.minZoomRatio, cameraInfo.zoomState.value!!.maxZoomRatio))
-        }
-
 
 
     private fun initializeIDs() {
@@ -1495,8 +1478,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         referenceImg = findViewById(R.id.imgReference_iv)
         overlayGroup = findViewById(R.id.overlayGroup)
         submitBtn1 = findViewById(R.id.submitImgLL)
-        zoomLayout = findViewById(R.id.zoomLL)
-        radioGroupZoom = findViewById(R.id.radioGroupZoom)
         loader = findViewById(R.id.loader)
         orientationBl = findViewById(R.id.orientation_bl)
         orientationTv = findViewById(R.id.orientation_tv)
@@ -1542,6 +1523,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         cropImageViewPS = findViewById(R.id.cropImageView_ps)
         resetCropBtnPS = findViewById(R.id.croppingResetBtn_ps)
         cropDoneBtnPS = findViewById(R.id.croppingDoneBtn_ps)
+
+        zoomText = findViewById(R.id.zoomText)
         
         
         

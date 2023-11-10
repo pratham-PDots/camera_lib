@@ -201,7 +201,8 @@ class MainActivity : AppCompatActivity() {
             isBlurFeature = binding.editTextBlurFeature.text.toString(),
             isCropFeature = binding.editTextCropFeature.text.toString(),
             uploadFrom = binding.editTextUploadFrom.text.toString(),
-            isRetake = binding.editTextRetake.text.toString().toBoolean()
+            isRetake = binding.editTextRetake.text.toString().toBoolean(),
+            zoomLevel = binding.editTextZoom.text.toString().toDouble()
         )
     }
 
