@@ -93,10 +93,8 @@ object BlurDetection {
 
         @ColorInt val mostLuminousColor = mostLuminousColorFromBitmap(edgesBitmap)
         val colorHex = "#" + Integer.toHexString(mostLuminousColor)
-//        val isBlurry = mostLuminousColor > Color.parseColor("#CECECE") // Demo threshold
         val isBlurry = mostLuminousColor < 11908536 //  threshold value 11908536
         // Note - in Android, Color.BLACK is -16777216 and Color.WHITE is -1, so range is somewhere in between. Higher is more luminous
-//        Toast.makeText(context, output, Toast.LENGTH_LONG).show()
         Log.d("imageSW ","blur value: $mostLuminousColor")
 
         return Pair(

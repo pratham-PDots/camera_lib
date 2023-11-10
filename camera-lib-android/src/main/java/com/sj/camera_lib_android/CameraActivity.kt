@@ -11,38 +11,28 @@ import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.ImageDecoder
 import android.graphics.Rect
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.DisplayMetrics
 import android.util.Log
 import android.util.SizeF
 import android.view.OrientationEventListener
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
-import androidx.camera.core.CameraControl
-import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
@@ -54,7 +44,6 @@ import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
@@ -809,7 +798,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 //            checkLowLightSave after cropping
             if (mFile != null && mBitmap != null && mBitmap.toString().isNotEmpty()) {
                 mFile?.let {
-                    checkLowLightSave(it, mBitmap!!) // after cropping
+                    checkLowLightSave(mBitmap!!) // after cropping
                 }
 
             } else {
@@ -1037,7 +1026,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }else{
             coordinatesCrop = emptyArray()
             // Low Light and save work
-            val enhancedRotedBitmap = checkLowLightSave(mFile1, mBitmap1) //No Cropping
+            val enhancedRotedBitmap = checkLowLightSave(mBitmap1) //No Cropping
         }
     }
 
@@ -1063,7 +1052,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         viewModel.hideLoader()
     }
 
-    private fun checkLowLightSave(file1: File, bitmap2: Bitmap): Bitmap {
+    private fun checkLowLightSave(bitmap2: Bitmap): Bitmap {
         val targetBmp: Bitmap = bitmap2.copy(Bitmap.Config.ARGB_8888, false)
 
         val isLowLight = ImageProcessingUtils.isLowLightImage(targetBmp)
@@ -1143,13 +1132,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             getString(R.string.dialogTitle),
             getString(R.string.ok_btn),
             "",
-            onClick = {
-                this?.let { it1 ->
-
-
-                }
-
-            }
+            onClick = { }
         ).show(supportFragmentManager, "DialogFragment")
     }
 

@@ -20,14 +20,10 @@ class SubmitDialog(
       // Use the Builder class for convenient dialog construction
       val builder = AlertDialog.Builder(it)
       builder.setMessage(prompt)
-        .setPositiveButton(yesText,
-          DialogInterface.OnClickListener { dialog, id ->
-            onClick()
-          })
-        .setNegativeButton(noText,
-          DialogInterface.OnClickListener { dialog, id ->
-            dismiss()
-          })
+        .setPositiveButton(yesText
+        ) { dialog, id -> onClick() }
+        .setNegativeButton(noText
+        ) { dialog, id -> dismiss() }
       // Create the AlertDialog object and return it
       builder.create()
     } ?: throw IllegalStateException("Activity cannot be null")

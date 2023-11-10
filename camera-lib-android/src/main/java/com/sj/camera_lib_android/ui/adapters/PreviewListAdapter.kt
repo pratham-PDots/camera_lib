@@ -31,7 +31,6 @@ class PreviewListAdapter(
   override fun onBindViewHolder(holder: PreviewListViewHolder, position: Int) {
     val currentItem = currentImageList[position]
     holder.previewImg.setImageBitmap(currentItem.image)
-//    holder.previewImg.setImageURI(Uri.fromFile(currentItem.file))
     holder.rootView.setOnClickListener {
       onClick(currentItem.image,currentItem.croppedCoordinates, currentItem.file, position)
     }

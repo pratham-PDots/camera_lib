@@ -55,7 +55,7 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
 
 
         }
-        if (modeRotation != null && modeRotation.isNotEmpty()){
+        if (modeRotation.isNotEmpty()){
             goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel)
 
         }

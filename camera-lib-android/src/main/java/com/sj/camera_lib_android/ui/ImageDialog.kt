@@ -24,14 +24,11 @@ class ImageDialog(context: Context, referenceUrl: String) : Dialog(context), Vie
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(R.layout.dialog_image_design)
-        getWindow()?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
+        window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
 
         crossImg = findViewById(R.id.cross_iv)
-//        refImg = findViewById(R.id.imgD_iv)
-//        Glide.with(context1).load(R.drawable.mr_sj).into(refImg)
 
         val zoomableImageView: ZoomingImage = findViewById(R.id.imgD_iv)
-//        val imageUrl = "https://www.gstatic.com/webp/gallery/1.jpg"
 
         Log.d("imageSW referenceUrl2"," $referenceUrl2")
         Glide.with(context1).load(referenceUrl2).into(zoomableImageView)

@@ -12,10 +12,7 @@ import android.util.AttributeSet
 import android.view.View
 
 class GridOverlayView(context: Context, attrs: AttributeSet) : View(context, attrs) {
-    //  private val paint = Paint().apply {
-//    color = Color.WHITE
-//    strokeWidth = 1f
-//  }
+
     init {
         this.setWillNotDraw(false)
     }
@@ -25,28 +22,8 @@ class GridOverlayView(context: Context, attrs: AttributeSet) : View(context, att
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-//    val numColumns = 3 // Number of grid columns
-//    val numRows = 3 // Number of grid rows
-//
-//    val columnWidth = width / numColumns
-//    val rowHeight = height / numRows
-//
-//    for (i in 1 until numColumns) {
-//      val x = i * columnWidth.toFloat()
-//      canvas?.drawLine(x, 0f, x, height.toFloat(), paint)
-//    }
-//
-//    for (i in 1 until numRows) {
-//      val y = i * rowHeight.toFloat()
-//      canvas?.drawLine(0f, y, width.toFloat(), y, paint)
-//    }
-        val mDrawBounds: RectF
         val grid = true
         if (grid) {
-            //  Find Screen size first
-//      val metrics: DisplayMetrics = Resources.getSystem().displayMetrics
-//      val screenWidth: Int = metrics.widthPixels
-//      val screenHeight = metrics.heightPixels
             val screenWidth: Int = measuredWidth
             val screenHeight = measuredHeight
 

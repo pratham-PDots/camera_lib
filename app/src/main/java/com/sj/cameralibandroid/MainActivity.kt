@@ -14,9 +14,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.sj.camera_lib_android.Database.PendingImage
-import com.sj.camera_lib_android.Demo
 import com.sj.camera_lib_android.models.ImageUploadModel
-import com.sj.camera_lib_android.ui.activities.LaunchShelfwatchCamera
 import com.sj.camera_lib_android.ui.viewmodels.CameraViewModel
 import com.sj.camera_lib_android.utils.CameraSDK
 import com.sj.cameralibandroid.databinding.ActivityMainBinding
@@ -204,10 +202,6 @@ class MainActivity : AppCompatActivity() {
             isRetake = binding.editTextRetake.text.toString().toBoolean(),
             zoomLevel = binding.editTextZoom.text.toString().toDouble()
         )
-    }
-
-    fun demoSDK(view: View) {
-        Demo.showMessage(this@MainActivity,"Testing SDK OK")
     }
 
     override fun onResume() {
