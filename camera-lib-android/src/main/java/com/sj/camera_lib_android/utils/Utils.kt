@@ -10,10 +10,7 @@ import android.widget.Toast
 
 class Utils {
 
-    fun showToast(context: Context?, message: String) {
-        Toast.makeText(context, "" + message, Toast.LENGTH_SHORT).show()
-    }
-     // method to check internet connection
+    // method to check internet connection
      fun checkInternetConnection(context: Context): Boolean {
 
         // register activity with the connectivity manager service

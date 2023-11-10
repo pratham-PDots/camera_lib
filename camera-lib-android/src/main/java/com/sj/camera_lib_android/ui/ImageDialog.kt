@@ -17,7 +17,6 @@ import com.sj.camera_lib_android.R
 class ImageDialog(context: Context, referenceUrl: String) : Dialog(context), View.OnClickListener {
    private val referenceUrl2 = referenceUrl
    private val context1 = context
-    private lateinit var refImg: ZoomingImage
     private lateinit var crossImg: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
