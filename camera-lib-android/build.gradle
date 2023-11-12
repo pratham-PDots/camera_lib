@@ -71,7 +71,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
 
     // Image Cropping
-    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
+    implementation 'com.vanniktech:android-image-cropper:4.3.3'
 
     // bugfender for Logs
     implementation 'com.bugfender.sdk:android:3.+'

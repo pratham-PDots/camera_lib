@@ -409,7 +409,7 @@
                     android:textSize="16sp"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.theartofdev.edmodo.cropper.CropImageView
+                <com.canhub.cropper.CropImageView
                     android:id="@+id/cropImageView"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
@@ -700,7 +700,7 @@
                         android:textSize="16sp"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.theartofdev.edmodo.cropper.CropImageView
+                    <com.canhub.cropper.CropImageView
                         android:id="@+id/cropImageView_ps"
                         android:layout_width="0dp"
                         android:layout_height="0dp"

@@ -67,7 +67,7 @@ import com.sj.camera_lib_android.utils.Common
 import com.sj.camera_lib_android.utils.Utils
 import com.sj.camera_lib_android.utils.imageutils.BlurDetection
 import com.sj.camera_lib_android.utils.imageutils.ImageProcessingUtils
-import com.theartofdev.edmodo.cropper.CropImageView
+import com.canhub.cropper.CropImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -804,7 +804,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         cropDoneBtnCL.setOnClickListener {
 
             // this is for CROP DONE Button
-            cropImageViewCL.getCroppedImageAsync()
+            cropImageViewCL.croppedImageAsync()
         }
 
         // Continue Button
@@ -823,13 +823,13 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
             // Get the coordinates of the four corners
             val cropRect = result.cropRect
-            val left = cropRect.left
-            val top = cropRect.top
-            val right = cropRect.right
-            val bottom = cropRect.bottom
+            val left = cropRect?.left
+            val top = cropRect?.top
+            val right = cropRect?.right
+            val bottom = cropRect?.bottom
 
             // format sd be like this [Xmin, Ymin, Xmax, Ymax]
-            coordinatesCrop = arrayOf(left, top, right, bottom)
+            coordinatesCrop = arrayOf(left!!, top!!, right!!, bottom!!)
             Log.d(
                 "imageSW Cropping",
                 "DONE coordinatesCrop: Xmin, Ymin, Xmax, Ymax: ${coordinatesCrop.contentToString()}"
@@ -895,7 +895,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
 
         cropDoneBtnPS.setOnClickListener {
-            cropImageViewPS.getCroppedImageAsync()
+            cropImageViewPS.croppedImageAsync()
         }
 
         //getCropped Image Result
@@ -905,13 +905,13 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             // Get the coordinates of the four corners
             val cropRect = result.cropRect
 
-            val left = cropRect.left
-            val top = cropRect.top
-            val right = cropRect.right
-            val bottom = cropRect.bottom
+            val left = cropRect?.left
+            val top = cropRect?.top
+            val right = cropRect?.right
+            val bottom = cropRect?.bottom
 
             // format sd be like this [Xmin, Ymin, Xmax, Ymax]
-            val coordinatesCrop = arrayOf(left, top, right, bottom)
+            val coordinatesCrop = arrayOf(left!!, top!!, right!!, bottom!!)
             Log.d(
                 "imageSW Cropping22",
                 "DONE coordinatesCrop: Xmin, Ymin, Xmax, Ymax: ${coordinatesCrop.contentToString()}"
