@@ -191,13 +191,13 @@ class MainActivity : AppCompatActivity() {
 
         CameraSDK.startCamera(
             this,
-            mode = binding.editTextMode.text.toString(),
-            overlapBE = binding.editTextOverlapBE.text.toString(),
-            uploadParam = uploadParams.toString(),
-            resolution = binding.editTextResolution.text.toString(),
+            orientation = binding.editTextMode.text.toString(),
+            widthPercentage = binding.editTextOverlapBE.text.toString().toInt(),
+            uploadParams = uploadParams,
+            resolution = binding.editTextResolution.text.toString().toInt(),
             referenceUrl = binding.editTextReferenceURL.text.toString(),
-            isBlurFeature = binding.editTextBlurFeature.text.toString(),
-            isCropFeature = binding.editTextCropFeature.text.toString(),
+            allowBlurCheck = binding.editTextBlurFeature.text.toString().toBoolean(),
+            allowCrop = binding.editTextCropFeature.text.toString().toBoolean(),
             uploadFrom = binding.editTextUploadFrom.text.toString(),
             isRetake = binding.editTextRetake.text.toString().toBoolean(),
             zoomLevel = binding.editTextZoom.text.toString().toDouble()

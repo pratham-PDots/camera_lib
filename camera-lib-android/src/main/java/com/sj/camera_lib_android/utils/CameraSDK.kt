@@ -6,31 +6,32 @@ import android.util.Log
 import com.sj.camera_lib_android.services.InitService
 import com.sj.camera_lib_android.services.MyServices
 import com.sj.camera_lib_android.ui.activities.LaunchShelfwatchCamera
+import org.json.JSONObject
 
 object CameraSDK {
     var bucketName = ""
     fun startCamera(
         context: Context,
-        mode: String,
-        overlapBE: String,
-        uploadParam: String,
-        resolution: String,
+        orientation: String,
+        widthPercentage: Int,
+        uploadParams: JSONObject,
+        resolution: Int,
         referenceUrl: String,
-        isBlurFeature: String,
-        isCropFeature: String,
+        allowBlurCheck: Boolean,
+        allowCrop: Boolean,
         uploadFrom: String,
         isRetake: Boolean = false,
         zoomLevel: Double = 1.0
     ) {
         Log.d("imageSW here", bucketName)
         val intent = Intent(context, LaunchShelfwatchCamera::class.java)
-        intent.putExtra("mode", mode) //portrait / landscape
-        intent.putExtra("overlapBE", overlapBE)
-        intent.putExtra("uploadParam", uploadParam)
-        intent.putExtra("resolution", resolution)
+        intent.putExtra("mode", orientation) //portrait / landscape
+        intent.putExtra("overlapBE", widthPercentage.toString())
+        intent.putExtra("uploadParam", uploadParams.toString())
+        intent.putExtra("resolution", resolution.toString())
         intent.putExtra("referenceUrl",referenceUrl)
-        intent.putExtra("isBlurFeature", isBlurFeature)
-        intent.putExtra("isCropFeature", isCropFeature)
+        intent.putExtra("isBlurFeature", allowBlurCheck.toString())
+        intent.putExtra("isCropFeature", allowCrop.toString())
         intent.putExtra("uploadFrom", uploadFrom) // Shelfwatch / 3rdParty
         intent.putExtra("isRetake", isRetake)
         intent.putExtra("zoomLevel", zoomLevel)
