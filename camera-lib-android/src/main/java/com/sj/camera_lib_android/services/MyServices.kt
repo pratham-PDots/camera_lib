@@ -8,25 +8,20 @@ import android.content.Intent
 import android.net.Uri
 import android.os.IBinder
 import android.util.Log
-import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.sj.camera_lib_android.Database.AppDatabase
 import com.sj.camera_lib_android.Database.ImageEntity
-import com.sj.camera_lib_android.MyApplication
+import com.sj.camera_lib_android.ScopeHelper
 import com.sj.camera_lib_android.models.ImageUploadModel
 import com.sj.camera_lib_android.utils.CameraSDK
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.UUID
 
 class MyServices : Service() {
 
@@ -44,7 +39,7 @@ class MyServices : Service() {
     }
 
     override fun onCreate() {
-        applicationScope = (application as? MyApplication)?.applicationScope
+        applicationScope = ScopeHelper.applicationScope
         super.onCreate()
     }
 

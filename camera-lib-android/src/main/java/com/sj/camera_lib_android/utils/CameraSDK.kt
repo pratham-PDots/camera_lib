@@ -3,6 +3,7 @@ package com.sj.camera_lib_android.utils
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.google.firebase.FirebaseApp
 import com.sj.camera_lib_android.services.InitService
 import com.sj.camera_lib_android.services.MyServices
 import com.sj.camera_lib_android.ui.activities.LaunchShelfwatchCamera
@@ -40,6 +41,7 @@ object CameraSDK {
 
     fun init(context: Context, bucketName: String) {
         this.bucketName = bucketName
+        FirebaseApp.initializeApp(context.applicationContext)
         val intent = Intent(context.applicationContext, InitService()::class.java) // image Upload from gallery
         context.startService(intent)
     }
