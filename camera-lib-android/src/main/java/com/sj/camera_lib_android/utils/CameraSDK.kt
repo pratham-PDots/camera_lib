@@ -1,5 +1,6 @@
 package com.sj.camera_lib_android.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -36,7 +37,14 @@ object CameraSDK {
         intent.putExtra("uploadFrom", uploadFrom) // Shelfwatch / 3rdParty
         intent.putExtra("isRetake", isRetake)
         intent.putExtra("zoomLevel", zoomLevel)
-        context.startActivity(intent)
+
+        if (context is Activity) {
+            context.startActivity(intent)
+        } else {
+            // If the context is not an instance of Activity, add the FLAG_ACTIVITY_NEW_TASK flag
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }
     }
 
     fun init(context: Context, bucketName: String) {
