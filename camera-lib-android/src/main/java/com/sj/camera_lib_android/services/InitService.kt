@@ -14,7 +14,7 @@ import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.sj.camera_lib_android.Database.AppDatabase
 import com.sj.camera_lib_android.Database.PendingImage
-import com.sj.camera_lib_android.MyApplication
+import com.sj.camera_lib_android.ScopeHelper
 import com.sj.camera_lib_android.models.ImageUploadModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +32,7 @@ class InitService: Service() {
     }
 
     override fun onCreate() {
-        applicationScope = (application as? MyApplication)?.applicationScope
+        applicationScope = ScopeHelper.applicationScope
         super.onCreate()
     }
 

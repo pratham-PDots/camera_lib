@@ -9,7 +9,6 @@ import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -17,11 +16,11 @@ import com.sj.camera_lib_android.Database.PendingImage
 import com.sj.camera_lib_android.models.ImageUploadModel
 import com.sj.camera_lib_android.ui.viewmodels.CameraViewModel
 import com.sj.camera_lib_android.utils.CameraSDK
-import com.sj.cameralibandroid.databinding.ActivityMainBinding
+import com.sj.cameralibandroid.databinding.ActivityDummyBinding
 import org.json.JSONObject
 
 
-class MainActivity : AppCompatActivity() {
+class DummyActivity : AppCompatActivity() {
     private val uploadFrom = "Shelfwatch" // 3rdParty / Shelfwatch
     private var uploadParams = JSONObject("""
                         {
@@ -44,11 +43,11 @@ class MainActivity : AppCompatActivity() {
                         }
                         """)
     private lateinit var viewModel: CameraViewModel
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityDummyBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityDummyBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this)[CameraViewModel::class.java]

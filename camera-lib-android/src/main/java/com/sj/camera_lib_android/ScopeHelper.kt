@@ -3,6 +3,6 @@ package com.sj.camera_lib_android
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
-object MyApplication {
+object ScopeHelper {
     val applicationScope = CoroutineScope(Dispatchers.IO)
 }
