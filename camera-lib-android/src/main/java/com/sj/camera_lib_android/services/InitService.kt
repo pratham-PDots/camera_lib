@@ -14,6 +14,7 @@ import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.sj.camera_lib_android.Database.AppDatabase
 import com.sj.camera_lib_android.Database.PendingImage
+import com.sj.camera_lib_android.Database.ReactPendingData
 import com.sj.camera_lib_android.ScopeHelper
 import com.sj.camera_lib_android.models.ImageUploadModel
 import kotlinx.coroutines.CoroutineScope
@@ -49,10 +50,12 @@ class InitService: Service() {
                 val pendingImageList = loadedPendingImages.map { it.toPendingImage() }
                 val handler = Handler(Looper.getMainLooper())
                 handler.post {
-                    val intent = Intent("queue")
+                    val intent = Intent("did-receive-queue-data")
                     intent.putParcelableArrayListExtra(
                         "imageList",
-                        ArrayList(pendingImageList)
+                        ArrayList(loadedPendingImages.map { it.toPendingImage() }.groupBy { it.image.session_id }.map { imageMap ->
+                            ReactPendingData(imageMap.key, imageMap.value.map { it.toReactPendingImage() })
+                        })
                     )
                     LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
                 }

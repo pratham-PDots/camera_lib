@@ -11,4 +11,12 @@ data class PendingImage(
     var isUploaded: Boolean,
     var error: String,
     var image: ImageUploadModel
-) : Parcelable
+) : Parcelable {
+    fun toReactPendingImage() : ReactPendingImage {
+        return ReactPendingImage(
+            uri = this.uri,
+            upload_status = this.isUploaded,
+            error = this.error
+        )
+    }
+}

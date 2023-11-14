@@ -14,6 +14,7 @@ import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import com.sj.camera_lib_android.Database.AppDatabase
 import com.sj.camera_lib_android.Database.ImageEntity
+import com.sj.camera_lib_android.Database.ReactPendingData
 import com.sj.camera_lib_android.ScopeHelper
 import com.sj.camera_lib_android.models.ImageUploadModel
 import com.sj.camera_lib_android.utils.CameraSDK
@@ -72,10 +73,12 @@ class MyServices : Service() {
     private fun broadCastQueue() {
             val imageDao = AppDatabase.getInstance(this@MyServices.applicationContext).imageDao()
             val loadedPendingImages = imageDao.getPendingImages()
-            val intent = Intent("queue")
+            val intent = Intent("did-receive-queue-data")
             intent.putParcelableArrayListExtra(
                 "imageList",
-                ArrayList(loadedPendingImages.map { it.toPendingImage() })
+                ArrayList(loadedPendingImages.map { it.toPendingImage() }.groupBy { it.image.session_id }.map { imageMap ->
+                    ReactPendingData(imageMap.key, imageMap.value.map { it.toReactPendingImage() })
+                })
             )
             LocalBroadcastManager.getInstance(this@MyServices.applicationContext).sendBroadcast(intent)
     }

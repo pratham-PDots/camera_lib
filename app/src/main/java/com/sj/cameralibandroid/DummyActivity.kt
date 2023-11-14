@@ -13,6 +13,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.sj.camera_lib_android.Database.PendingImage
+import com.sj.camera_lib_android.Database.ReactPendingData
 import com.sj.camera_lib_android.models.ImageUploadModel
 import com.sj.camera_lib_android.ui.viewmodels.CameraViewModel
 import com.sj.camera_lib_android.utils.CameraSDK
@@ -141,13 +142,9 @@ class DummyActivity : AppCompatActivity() {
 
     private val myBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if(intent?.action?.equals("queue") == true) {
-                val imageList = intent.getParcelableArrayListExtra<PendingImage>("imageList")
-                var pendingImages = "Upload Status : \n"
-                imageList?.forEach {
-                    pendingImages += "${it.image.name} \n"
-                }
-                binding.progressTextView.text = pendingImages
+            if(intent?.action?.equals("did-receive-queue-data") == true) {
+                val imageList = intent.getParcelableArrayListExtra<ReactPendingData>("imageList")
+                binding.progressTextView.text = imageList.toString()
             }
 
 
@@ -207,7 +204,7 @@ class DummyActivity : AppCompatActivity() {
         super.onResume()
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("DataSaved"))// onResume
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("Progress"))// onResume
-        LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("queue"))// onResume
+        LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("did-receive-queue-data"))// onResume
     }
 
     // Unbind from the service in the onDestroy() method of the fragment
