@@ -26,6 +26,7 @@ import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -167,7 +168,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     //Zoom
     private var camera: Camera? = null
 
-    private lateinit var wideAngleButton: Button
+    private lateinit var wideAngleButton: ImageButton
+    private var wideAngleClicked = false
 
     private lateinit var scaleGestureDetector: ScaleGestureDetector
 
@@ -631,6 +633,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             val wideAngleCameraId =
                 findWideAngleCamera((getSystemService(Context.CAMERA_SERVICE) as CameraManager))
 
+            wideAngleButton.setColorFilter(if(wideAngleClicked) Color.argb(255, 181, 71, 71) else Color.TRANSPARENT)
+            wideAngleClicked = !wideAngleClicked
+
             viewModel.wideAngleSet = if (viewModel.wideAngleSet) {
                 startCamera()
                 false
@@ -942,6 +947,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             cropLayoutPS.visibility = View.GONE
         }
 
+
+        wideAngleButton.setColorFilter(Color.argb(255, 181, 71, 71))
         wideAngleButton.isVisible =
             (viewModel.currentImageList.size == 0 && !isWideAngleCameraSameAsDefault())
 

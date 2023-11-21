@@ -21,6 +21,7 @@ import com.sj.camera_lib_android.utils.CameraSDK
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -103,6 +104,10 @@ class MyServices : Service() {
         val imageEntity = imageDao.getImageByUri(image.uri)
         Log.d("imageSW remove", "${imageEntity?.uri}")
         imageEntity?.let { imageDao.deleteImage(it) }
+        image.uri.let {
+            val file = File(it)
+            Log.d("imageSW file deleted", file.delete().toString())
+        }
     }
 
 
