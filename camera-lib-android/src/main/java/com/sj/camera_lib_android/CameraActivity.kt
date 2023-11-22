@@ -319,11 +319,15 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             // calculation for resizing
             resizedWidthNew = resolution.toInt()
             resizedHeightNew = (resolution.toInt() * 3) / 4
+            viewModel.imageWidth = resolution.toInt()
+            viewModel.imageHeight = (resolution.toInt() * 3) / 4
             Log.d("imageSW resizeNEW: ", "Landscape WH: $resizedWidthNew, $resizedHeightNew")
 
         } else {
             resizedWidthNew = (resolution.toInt() * 3) / 4
             resizedHeightNew = resolution.toInt()
+            viewModel.imageWidth = (resolution.toInt() * 3) / 4
+            viewModel.imageHeight = resolution.toInt()
             Log.d("imageSW resizeNEW: ", "Portrait WH: $resizedWidthNew, $resizedHeightNew")
 
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT

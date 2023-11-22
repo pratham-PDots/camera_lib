@@ -150,6 +150,7 @@ class MyServices : Service() {
                 val session_id = mediaModelClass.session_id
                 val crop_coordinates = mediaModelClass.crop_coordinates
                 val overlap_values = mediaModelClass.overlap_values
+                val last_image_flag = mediaModelClass.last_image_flag
 
                 val uri = mediaModelClass.uri
                 val type = mediaModelClass.type
@@ -179,6 +180,7 @@ class MyServices : Service() {
                         .setCustomMetadata("uri", uri)
                         .setCustomMetadata("type", type)
                         .setCustomMetadata("name", name)
+                        .setCustomMetadata("last_image_flag", last_image_flag)
 
                     val uploadParamJson = JSONObject(upload_params)
                     uploadParamJson.put("app_session_id", sessionId)

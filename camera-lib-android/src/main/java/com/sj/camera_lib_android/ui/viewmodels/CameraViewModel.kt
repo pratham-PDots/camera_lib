@@ -69,6 +69,9 @@ class CameraViewModel : ViewModel() {
 
     val imageUploadList: MutableList<ImageUploadModel> = mutableListOf()
 
+    var imageWidth: Int = 0
+    var imageHeight: Int = 0
+
     val currentImageList = arrayListOf<ImageDetailsModel>()
     val imageCapturedListLive: MutableLiveData<ArrayList<ImageDetailsModel>> = MutableLiveData()
 
@@ -248,8 +251,10 @@ class CameraViewModel : ViewModel() {
             val dimension = intArrayOf(maxCol, maxRow)
             Log.d("imageSW grid", "${dimension[0]} ${dimension[1]}")
 
-            imageUploadList.addAll(currentImageList.map { imageDetails ->
+            imageUploadList.addAll(currentImageList.mapIndexed { index, imageDetails ->
                 var cropCoordinates = arrayOf(0, 0, 0, 0)
+                if(imageDetails.croppedCoordinates.isEmpty())
+                    imageDetails.croppedCoordinates = arrayOf(0, 0, imageWidth, imageHeight)
                 imageDetails.croppedCoordinates.let {
                     cropCoordinates = arrayOf(it[0], it[1], it[2] - it[0], it[3] - it[1])
                 }
@@ -263,7 +268,8 @@ class CameraViewModel : ViewModel() {
                     imageDetails.zoomLevel, uuid.toString(),
                     cropCoordinates.contentToString(), "${imageDetails.overlapPercent}",
                     upload_param, "${imageDetails.file}", "image/jpeg",
-                    imageDetails.file.toString().substringAfterLast("/")
+                    imageDetails.file.toString().substringAfterLast("/"),
+                    last_image_flag = if(index == currentImageList.size - 1) "1" else "0"
                 )
 
             })
