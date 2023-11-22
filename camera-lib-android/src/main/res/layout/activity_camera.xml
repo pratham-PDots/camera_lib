@@ -55,8 +55,8 @@
                     android:layout_width="140dp"
                     android:layout_height="65dp"
                     android:layout_marginStart="20dp"
-                    android:layout_marginBottom="-5dp"
-                    app:layout_constraintBottom_toTopOf="@id/image_capture_button"
+                    android:layout_marginBottom="-10dp"
+                    app:layout_constraintBottom_toTopOf="@id/zoomLayout"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
@@ -122,6 +122,7 @@
                      img_left_ll, img_right_ll, img_top_ll" />
 
                 <FrameLayout
+                    android:id="@+id/zoomLayout"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginBottom="15dp"
