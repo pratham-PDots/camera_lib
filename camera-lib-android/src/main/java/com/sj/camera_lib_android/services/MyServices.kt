@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.IBinder
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.bugfender.sdk.Bugfender
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
@@ -115,7 +116,15 @@ class MyServices : Service() {
 
 
         val uploadImgTime = SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())
-        val fbRef = storageReference?.child("dist/test_images/$projectId")
+        var tdVersion = ""
+        if(list.isNotEmpty()) {
+            val json = JSONObject(list[0].upload_params)
+            if(json.has("test_image_version_id"))
+                tdVersion = JSONObject(list[0].upload_params)["test_image_version_id"].toString()
+        }
+        var fbRef: StorageReference? = if(tdVersion.isNotEmpty())
+            storageReference?.child("dist/test_images/${projectId}_${tdVersion}")
+        else storageReference?.child("dist/test_images/$projectId")
         Log.d("imageSW storageReference fbRef", "$fbRef")
 
 
@@ -186,6 +195,7 @@ class MyServices : Service() {
                     uploadTask?.addOnSuccessListener { taskSnapshot ->
                             applicationScope?.launch {
                                 Log.d("imageSW", "remove queue")
+                                Bugfender.d("native-image-upload-success", "reference: $fbRef name: $name")
                                 removeImageFromQueue(mediaModelClass)
                                 broadCastQueue()
                             }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.bugfender.sdk.Bugfender
 import com.google.firebase.FirebaseApp
 import com.sj.camera_lib_android.services.InitService
 import com.sj.camera_lib_android.services.MyServices
@@ -50,6 +51,8 @@ object CameraSDK {
     fun init(context: Context, bucketName: String) {
         this.bucketName = bucketName
         FirebaseApp.initializeApp(context.applicationContext)
+        Bugfender.init(context.applicationContext, "lz6sMkQQVpEZXeY9o7Bi7VwyCG7wTPU6", true)
+        Bugfender.enableCrashReporting()
         val intent = Intent(context.applicationContext, InitService()::class.java) // image Upload from gallery
         context.startService(intent)
     }
