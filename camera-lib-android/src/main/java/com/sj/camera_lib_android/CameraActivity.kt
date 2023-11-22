@@ -14,6 +14,10 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
@@ -69,6 +73,7 @@ import com.sj.camera_lib_android.utils.Utils
 import com.sj.camera_lib_android.utils.imageutils.BlurDetection
 import com.sj.camera_lib_android.utils.imageutils.ImageProcessingUtils
 import com.canhub.cropper.CropImageView
+import com.sj.camera_lib_android.databinding.ActivityCameraBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -80,8 +85,11 @@ import java.nio.ByteBuffer
 import java.util.ArrayDeque
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.math.abs
 import kotlin.math.atan
+import kotlin.math.atan2
 import kotlin.math.max
+import kotlin.math.sqrt
 
 
 /** Helper type alias used for analysis use case callbacks */
@@ -155,6 +163,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private var mFilePS: File? = null
     private var mBitmapPS: Bitmap? = null
 
+    /* View binding */
+    private lateinit var binding: ActivityCameraBinding
+
     private var mPosPS: Int = -1
     private var croppingPointsPS: Array<Int> = emptyArray()
     private var cropRectValuesPS: Rect? = null
@@ -167,6 +178,20 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     //Zoom
     private var camera: Camera? = null
+
+    /* Tilt Detection */
+    private lateinit var sensorManager: SensorManager
+    private var accelerometerSensor: Sensor? = null
+    private var gyroscopeSensor: Sensor? = null
+    private var timestamp: Long = 0
+    private var pitch = 0.0f
+    private var roll = 0.0f
+    private var gyroscopeX = 0.0f
+    private var gyroscopeY = 0.0f
+    private val alpha = 0.98f // Complementary filter constant
+    private var filteredTiltX = 0f
+    private var filteredTiltY = 0f
+    private val alphaTilt = 0.05f
 
     private lateinit var wideAngleButton: ImageButton
     private var wideAngleClicked = false
@@ -188,7 +213,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_camera)
+        binding = ActivityCameraBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         // hide the action bar
         supportActionBar?.hide()
         val utils = Utils()
@@ -953,7 +979,91 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             (viewModel.currentImageList.size == 0 && !isWideAngleCameraSameAsDefault())
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+
+        initSensors()
+
+        binding.verticalTiltView.setHorizontalMode(false)
     } // END of onCreate
+
+    private fun initSensors() {
+        // Initialize SensorManager
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+        // Get accelerometer and gyroscope sensors
+        accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+
+        binding.tiltGroup.isVisible = !(accelerometerSensor == null && gyroscopeSensor == null)
+    }
+
+    private val sensorListener = object : SensorEventListener {
+        override fun onSensorChanged(event: SensorEvent) {
+            when (event.sensor.type) {
+                Sensor.TYPE_ACCELEROMETER -> {
+                    val accelX = event.values[0]
+                    val accelY = event.values[1]
+                    val accelZ = event.values[2]
+
+                    // Detect landscape orientation based on accelerometer data
+                    val landscapeOrientation = (abs(accelX) > abs(accelY))
+
+                    if (landscapeOrientation) {
+                        // Landscape orientation: adjust pitch and roll calculation
+                        pitch = atan2(-accelY, sqrt(accelX * accelX + accelZ * accelZ))
+                        roll = atan2(accelX, accelZ)
+                    } else {
+                        // Portrait orientation
+                        pitch = atan2(-accelX, sqrt(accelY * accelY + accelZ * accelZ))
+                        roll = atan2(accelY, accelZ)
+                    }
+                }
+
+                Sensor.TYPE_GYROSCOPE -> {
+                    val gyroX = event.values[0]
+                    val gyroY = event.values[1]
+
+                    if (timestamp != 0L) {
+                        val dT =
+                            (event.timestamp - timestamp) * 1e-9f // Convert nanoseconds to seconds
+
+                        gyroscopeX += gyroX * dT
+                        gyroscopeY += gyroY * dT
+
+                        // Apply complementary filter for improved stability
+                        pitch = alpha * (pitch + gyroscopeX * dT) + (1 - alpha) * pitch
+                        roll = alpha * (roll + gyroscopeY * dT) + (1 - alpha) * roll
+                    }
+                }
+            }
+
+            timestamp = event.timestamp
+
+            // Update tilt values
+            val tiltXDegrees = Math.toDegrees(roll.toDouble()).toFloat()
+            val tiltYDegrees = Math.toDegrees(pitch.toDouble()).toFloat()
+
+            // Apply the low-pass filter
+            filteredTiltX += alphaTilt * (mapTilt(tiltXDegrees, true) - filteredTiltX)
+            filteredTiltY += alphaTilt * (mapTilt(tiltYDegrees, false) - filteredTiltY)
+
+            val tiltXVal = String.format("%.2f", filteredTiltX).toFloat()
+            val tiltYVal = String.format("%.2f", filteredTiltY).toFloat()
+
+            // Update the tilt views with the filtered values
+            binding.horizontalTiltView.setValue(tiltXVal)
+            binding.verticalTiltView.setValue(tiltYVal)
+            binding.tiltWarningMessage.isVisible = ((abs(tiltXVal) > 6f) || (abs(tiltYVal) > 6f))
+        }
+
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+            // Handle accuracy changes if needed
+        }
+    }
+
+    private fun mapTilt(tiltDegree: Float, xAxis: Boolean): Float {
+        val degreeDiff = tiltDegree - (if (xAxis) 90 else 0)
+        return degreeDiff / 5f
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setZoomListener() {
@@ -1753,6 +1863,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     override fun onResume() {
         super.onResume()
+        registerSensors()
         backpressedlistener = this
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(myBroadcastReceiver, IntentFilter("thisIsForMyPartner"))// onResume
@@ -1762,6 +1873,24 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     override fun onPause() {
         backpressedlistener = null
         super.onPause()
+        sensorManager.unregisterListener(sensorListener)
+    }
+
+    private fun registerSensors() {
+        accelerometerSensor?.let {
+            sensorManager.registerListener(
+                sensorListener,
+                it,
+                SensorManager.SENSOR_DELAY_FASTEST
+            )
+        }
+        gyroscopeSensor?.let {
+            sensorManager.registerListener(
+                sensorListener,
+                it,
+                SensorManager.SENSOR_DELAY_FASTEST
+            )
+        }
     }
 
     override fun onDestroy() {
