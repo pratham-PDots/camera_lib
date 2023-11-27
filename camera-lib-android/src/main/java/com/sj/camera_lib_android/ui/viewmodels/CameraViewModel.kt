@@ -242,6 +242,44 @@ class CameraViewModel : ViewModel() {
 
     }
 
+    fun handleDeletedImage() {
+        // Assume rowSum as row Index (1-indexed)
+        rowSum = if (currentImageList.isEmpty()) { // condition for 1st image capture
+            1
+        } else {
+            currentImageList.last().row.toInt()
+        }
+
+        if (directionSelected.isNotEmpty() && directionSelected.equals("down", true)) {
+            rowSum = currentImageList.last().row.toInt() + 1
+        }
+
+        rowID = rowSum.toDouble()
+
+        // Why?
+        if (directionSelected.isNotEmpty() && !directionSelected.equals("down", true)) {
+            directionID = directionSelected
+        }
+
+        // stepsTaken Work
+        stepsTakenID.removeLast()
+
+        // getOverlapArray Work
+        overlapArray = getOverlapArray()
+        Log.d("imageSW overlapArray", overlapArray.contentToString())
+
+        if (currentImageList.size > 1) directionSelected = ""
+        // isAutomatic Process work
+        isAutomaticID = if (currentImageList.isNotEmpty()) {
+            if (!currentImageList.last().isAutomatic) {
+                checkSetAutomatic()
+            } else {
+                currentImageList.last().isAutomatic
+            }
+        } else false
+        Log.d("imageSW isAutomaticID", "$isAutomaticID")
+    }
+
     fun uploadImages(context: Context) {
         Log.d("imageSW", "Image Submitted")
         val deviceName = getDeviceModel()
@@ -475,18 +513,6 @@ class CameraViewModel : ViewModel() {
         if (currentImageList.isNotEmpty()) {
             doImageOverlay(guideResult)
         }
-    }
-
-    private fun getImageDetails() {
-        rowID = currentImageList.last().row
-        stepsTakenID = currentImageList[currentImageList.size - 1].stepsTaken
-        directionID = ""
-        nextStepID = ""
-        directionSelected = ""
-        Log.d(
-            "imageSW getImageDetails",
-            "isAutomaticID: $isAutomaticID, rowID: $rowID, stepsTakenID Size: ${stepsTakenID.size}"
-        )
     }
 
     private fun doImageOverlay(guideResult: String?) {
@@ -785,10 +811,10 @@ class CameraViewModel : ViewModel() {
     fun deleteLastCapturedImage() {
         Log.d("imageSW delete ", "before Size1: ${imageCapturedListLive.value?.size}")
 
-        isAutomaticID = currentImageList.last().isAutomatic
         currentImageList.removeLast()
         imageCapturedListLive.value = currentImageList
-        if (currentImageList.isNotEmpty()) getImageDetails()
+        directionSelected = ""
+        if(currentImageList.isNotEmpty()) handleDeletedImage()
 
         Log.d("imageSW delete", "after Size2: ${currentImageList.size}")
 
