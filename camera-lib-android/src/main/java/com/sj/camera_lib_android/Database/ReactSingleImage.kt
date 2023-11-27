@@ -9,5 +9,5 @@ data class ReactSingleImage(
     val uri: String,
     var error: String,
     val status: Boolean,
-    val imageData: ImageUploadModel
+    val imageData: String
 ) : Parcelable

@@ -128,6 +128,22 @@ class MyServices : Service() {
         }
     }
 
+    private fun getStringifiedMetadata(metadata: StorageMetadata): String {
+        val keys = metadata.customMetadataKeys
+        val jsonObject = JSONObject()
+
+        for (key in keys) {
+            val value = metadata.getCustomMetadata(key)
+            if (value != null) {
+                jsonObject.put(key, value)
+            }
+        }
+
+        return jsonObject.toString()
+    }
+
+
+
 
     private fun uploadImage(list: MutableList<ImageUploadModel>, projectId : String = "", sessionId: String = "") {
 
@@ -210,6 +226,8 @@ class MyServices : Service() {
 
                     val uploadTask = fbRef?.child(name)?.putFile(fileUri, metadata.build())
 
+
+
                     // Upload the byte array to Firebase Storage
                     uploadTask?.addOnSuccessListener { taskSnapshot ->
                             applicationScope?.launch {
@@ -221,7 +239,7 @@ class MyServices : Service() {
                                     uri = mediaModelClass.uri,
                                     error = "",
                                     status = true,
-                                    imageData = mediaModelClass
+                                    imageData = getStringifiedMetadata(metadata.build())
                                 ))
                             }
 
@@ -247,7 +265,7 @@ class MyServices : Service() {
                                 uri = mediaModelClass.uri,
                                 error = exception.message.toString(),
                                 status = false,
-                                imageData = mediaModelClass
+                                imageData = getStringifiedMetadata(metadata.build())
                             ))
                             Log.e("imageSW Firebase Upload", "Fail: ${exception.printStackTrace()}, message: " + exception.message)
 
