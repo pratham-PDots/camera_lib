@@ -89,6 +89,7 @@ class DummyActivity : AppCompatActivity() {
         }
 
         binding.addbutton.setOnClickListener {
+            CameraSDK.uploadFailedImage(this)
             UploadParamBottomsheet().apply {
                 setOnSaveClickListener(object : UploadParamBottomsheet.OnSaveClickListener {
                     override fun onSaveClicked(key: String, value: String) {

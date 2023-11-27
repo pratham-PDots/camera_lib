@@ -18,6 +18,7 @@
 
         <service android:name=".services.MyServices" />
         <service android:name=".services.InitService" />
+        <service android:name=".services.FailedRetryService" />
     </application>
 
 </manifest>

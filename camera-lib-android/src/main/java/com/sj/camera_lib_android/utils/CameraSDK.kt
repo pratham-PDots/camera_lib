@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import com.bugfender.sdk.Bugfender
 import com.google.firebase.FirebaseApp
+import com.sj.camera_lib_android.services.FailedRetryService
 import com.sj.camera_lib_android.services.InitService
 import com.sj.camera_lib_android.services.MyServices
 import com.sj.camera_lib_android.ui.activities.LaunchShelfwatchCamera
@@ -56,6 +57,12 @@ object CameraSDK {
         Bugfender.init(context.applicationContext, "lz6sMkQQVpEZXeY9o7Bi7VwyCG7wTPU6", true)
         Bugfender.enableCrashReporting()
         val intent = Intent(context.applicationContext, InitService()::class.java) // image Upload from gallery
+        context.startService(intent)
+    }
+
+    fun uploadFailedImage(context: Context) {
+        Log.d("imageSW", "uploadFailedImage")
+        val intent = Intent(context.applicationContext, FailedRetryService()::class.java)
         context.startService(intent)
     }
 }

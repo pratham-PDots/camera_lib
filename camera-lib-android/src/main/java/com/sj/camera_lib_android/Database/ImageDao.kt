@@ -14,6 +14,9 @@ interface ImageDao {
     @Query("SELECT * FROM images WHERE isUploaded = 0")
     fun getPendingImages(): List<ImageEntity>
 
+    @Query("SELECT * FROM images WHERE error IS NOT NULL AND error != ''")
+    fun getFailedImages(): List<ImageEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertImage(image: ImageEntity)
 
