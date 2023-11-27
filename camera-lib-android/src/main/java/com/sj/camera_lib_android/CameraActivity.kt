@@ -271,6 +271,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             uploadFrom = extras.getString("uploadFrom") ?: "Shelfwatch"
             viewModel.isRetake = extras.getBoolean("isRetake", false)
             viewModel.currentZoomRatio = extras.getDouble("zoomLevel", 1.0)
+            viewModel.backendToggle = extras.getBoolean("backendToggle", false)
 
 
             var message =
@@ -606,10 +607,22 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                 (viewModel.currentImageList.size == 0)
                             viewModel.zoomEnabled = (imageModel.size == 0)
 
+                            binding.overlapToggle?.isEnabled = (viewModel.currentImageList.size == 0)
+
                             if (viewModel.currentImageList.size > 0) {
                                 previewPageImgCS.setImageBitmap(imageModel.last().image)
                             }
 
+                            /* overlap */
+                            if (viewModel.currentImageList.isNotEmpty()) {
+                                Log.d("imageSW toggle", "${viewModel.backendToggle} ${binding.overlapToggle?.isChecked} ${viewModel.currentImageList.size}")
+                                if(viewModel.backendToggle) {
+                                    if (binding.overlapToggle?.isChecked == false) binding.overlapGroup?.isVisible =
+                                        false
+                                    if (viewModel.currentImageList.size == 1 && binding.overlapToggle?.isChecked == true)
+                                        binding.overlayGroup.isVisible = true
+                                }
+                            }
                         }
                     )
 
@@ -686,7 +699,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 isArrowSelected = true
             }
 
-            if (isArrowSelected) {
+            if (isArrowSelected || (viewModel.backendToggle && binding.overlapToggle?.isChecked == false)) {
                 captureImg.setBackgroundResource(R.drawable.black_solid_circle)
                 Log.d("imageSW takePhoto", " START")
                 takePhoto(isBlurFeature, isCropFeature)
@@ -986,8 +999,16 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         initSensors()
 
+        resetToggle()
+
         binding.verticalTiltView.setHorizontalMode(false)
     } // END of onCreate
+
+    private fun resetToggle() {
+        binding.overlapToggle?.apply {
+            isVisible = viewModel.backendToggle
+        }
+    }
 
     private fun initSensors() {
         // Initialize SensorManager
@@ -1198,6 +1219,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private fun uploadSaveImages(context: Context) {
         lifecycleScope.launch {
+            if(viewModel.backendToggle) {
+                viewModel.overlapToggleChecked = binding.overlapToggle?.isChecked == true
+            }
             viewModel.uploadImages(context) // uploadSaveImages
 
         }

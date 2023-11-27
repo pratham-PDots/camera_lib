@@ -93,6 +93,9 @@ class CameraViewModel : ViewModel() {
     private var mySharedPref: String = "MyPrefsSW"
     private lateinit var mContext: Context
 
+    /* Overlap toggle */
+    var backendToggle: Boolean = true
+    var overlapToggleChecked = false
 
     fun handleClickedImage(
 //    fileUri: Uri,
@@ -248,7 +251,7 @@ class CameraViewModel : ViewModel() {
         imageUploadList.clear()
 
         if (currentImageList.isNotEmpty()) {
-            val dimension = intArrayOf(maxCol, maxRow)
+            var dimension = intArrayOf(maxCol, maxRow)
             Log.d("imageSW grid", "${dimension[0]} ${dimension[1]}")
 
             imageUploadList.addAll(currentImageList.mapIndexed { index, imageDetails ->
@@ -259,9 +262,16 @@ class CameraViewModel : ViewModel() {
                     cropCoordinates = arrayOf(it[0], it[1], it[2] - it[0], it[3] - it[1])
                 }
 
+                var position = imageDetails.position
+
+                if(backendToggle && !overlapToggleChecked) {
+                    position = intArrayOf(0, 0)
+                    dimension = intArrayOf(1, 1)
+                }
+
                 ImageUploadModel(
                     // Map properties from ImageDetailsModel to ImageUploadModel
-                    imageDetails.position.contentToString(),
+                    position.contentToString(),
                     dimension.contentToString(), "", "", "${currentImageList.size}",
                     imageDetails.appTimestamp,
                     imageDetails.orientation,

@@ -16,6 +16,7 @@ import com.google.firebase.storage.StorageReference
 import com.sj.camera_lib_android.Database.AppDatabase
 import com.sj.camera_lib_android.Database.ImageEntity
 import com.sj.camera_lib_android.Database.ReactPendingData
+import com.sj.camera_lib_android.Database.ReactSingleImage
 import com.sj.camera_lib_android.ScopeHelper
 import com.sj.camera_lib_android.models.ImageUploadModel
 import com.sj.camera_lib_android.utils.CameraSDK
@@ -85,6 +86,12 @@ class MyServices : Service() {
             LocalBroadcastManager.getInstance(this@MyServices.applicationContext).sendBroadcast(intent)
     }
 
+    private fun broadCastImage(image: ReactSingleImage) {
+        val intent = Intent("did-receive-image-upload-status")
+        intent.putExtra("image", image)
+        LocalBroadcastManager.getInstance(this@MyServices.applicationContext).sendBroadcast(intent)
+    }
+
 
 
     override fun onDestroy() {
@@ -98,6 +105,16 @@ class MyServices : Service() {
         if(imageDao.getImageByUri(image.uri) == null)
             imageDao.insertImage(ImageEntity(image = image, uri = image.uri, isUploaded = false))
         Log.d("imageSW add", image.uri)
+    }
+
+    private fun modifyImage(image: ImageUploadModel, error: String) {
+        val imageDao = AppDatabase.getInstance(this.applicationContext).imageDao()
+        val imageEntity = imageDao.getImageByUri(image.uri)
+        imageEntity?.error = error
+        if (imageEntity != null) {
+            imageDao.updateImage(imageEntity)
+        }
+        Log.d("imageSW modify", image.uri)
     }
 
     private fun removeImageFromQueue(image: ImageUploadModel) {
@@ -200,6 +217,12 @@ class MyServices : Service() {
                                 Bugfender.d("native-image-upload-success", "reference: $fbRef name: $name")
                                 removeImageFromQueue(mediaModelClass)
                                 broadCastQueue()
+                                broadCastImage(ReactSingleImage(
+                                    uri = mediaModelClass.uri,
+                                    error = "",
+                                    status = true,
+                                    imageData = mediaModelClass
+                                ))
                             }
 
                             // Handle successful upload
@@ -220,6 +243,12 @@ class MyServices : Service() {
 
                         }?.addOnFailureListener { exception ->
                             // Handle failed upload
+                            broadCastImage(ReactSingleImage(
+                                uri = mediaModelClass.uri,
+                                error = exception.message.toString(),
+                                status = false,
+                                imageData = mediaModelClass
+                            ))
                             Log.e("imageSW Firebase Upload", "Fail: ${exception.printStackTrace()}, message: " + exception.message)
 
                         }?.addOnProgressListener { progress ->
