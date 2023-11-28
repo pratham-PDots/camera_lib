@@ -13,6 +13,7 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Rect
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -1392,106 +1393,115 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         )
         val photoFile = File(outputDirectory, "$nameTimeStamp.jpg")
 
-        // Create time-stamped output file to hold the image
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
         imageCapture.takePicture(
-            outputOptions,
             ContextCompat.getMainExecutor(this),
-            object : ImageCapture.OnImageSavedCallback {
+            object : ImageCapture.OnImageCapturedCallback() {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e("imageSW", "Photo capture failed: ${exc.message}", exc)
                 }
 
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val savedImageUri = output.savedUri ?: Uri.fromFile(photoFile)
-                    Log.d("imageSW takePhoto", " END , img: $savedImageUri at time $nameTimeStamp")
+                override fun onCaptureSuccess(imageProxy: ImageProxy) {
+                    var bitmap = imageProxy.toBitmap()
+
+                    var requiredHeight = resizedHeightNew!!
+                    var requiredWidth = resizedWidthNew!!
+                    val needsRotation = imageProxy.imageInfo.rotationDegrees == 90 && viewModel.mode == "portrait"
+
+                    if(needsRotation) {
+                        val temp = requiredHeight
+                        requiredHeight = requiredWidth
+                        requiredWidth = temp
+                    }
+
+                    bitmap = resizeImgBitmap(bitmap, requiredWidth, requiredHeight)
+
+                    if (needsRotation) bitmap = rotateImage(bitmap, 90F)
+
+                    viewModel.imageSavedCount++
+
+                    saveImageToFile(photoFile, bitmap, this@CameraActivity)
+
+                    mFile = photoFile
+                    mBitmap = bitmap
+                    captureTime = nameTimeStamp
+                    viewModel.imageName = nameTimeStamp
+
+                    viewModel.hideLoader()
 
 
-                    // set the saved uri to the image view
+                    // Condition Check Work Flow:
+                    // Blur ==> lowLight ==> rotation ==> cropping ==> Saving Final Image
+                    if (isBlurFeature.isNotEmpty() && isBlurFeature == "true") {
 
-                    Glide.with(this@CameraActivity)
-                        .asBitmap()
-                        .load(savedImageUri)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .override(resizedWidthNew!!, resizedHeightNew!!)
-                        .into(object : SimpleTarget<Bitmap>() {
-                            override fun onResourceReady(
-                                resource: Bitmap,
-                                transition: Transition<in Bitmap>?
-                            ) {
-
-                                val bitmap = resource
-
-                                viewModel.imageSavedCount++
-
-                                Log.d("imageSW", "Saved Image Count : ${viewModel.imageSavedCount}")
-
-                                saveImageToFile(photoFile, bitmap, this@CameraActivity)
-
-                                mFile = photoFile
-                                mBitmap = bitmap
-                                captureTime = nameTimeStamp
-                                viewModel.imageName = nameTimeStamp
-
-                                val msg = "Photo capture succeeded: $savedImageUri"
-                                Log.d(TAG, msg)
-                                viewModel.hideLoader()
+                        val bitmap1 = mBitmap
+                        val targetBmp: Bitmap =
+                            bitmap1!!.copy(Bitmap.Config.ARGB_8888, false)
 
 
-                                // Condition Check Work Flow:
-                                // Blur ==> lowLight ==> rotation ==> cropping ==> Saving Final Image
-                                if (isBlurFeature != null && isBlurFeature.isNotEmpty() && isBlurFeature == "true") {
+                        val isImgBlur = BlurDetection.runDetection(
+                            this@CameraActivity,
+                            targetBmp
+                        ) // Blur check
+                        Log.d(
+                            "imageSW Blur: ",
+                            "isBlurFeature: $isBlurFeature  ,isImgBlur: $isImgBlur"
+                        )
+                        Bugfender.d(
+                            "android_image_blur",
+                            "isBlurFeature: $isBlurFeature  ,isImgBlur: $isImgBlur"
+                        )
+                        if (isImgBlur.first) {
+                            // Image is blurred
+                            imageBlur.setImageBitmap(mBitmap)
 
-                                    val bitmap1 = mBitmap
-                                    val targetBmp: Bitmap =
-                                        bitmap1!!.copy(Bitmap.Config.ARGB_8888, false)
-
-
-                                    val isImgBlur = BlurDetection.runDetection(
-                                        this@CameraActivity,
-                                        targetBmp
-                                    ) // Blur check
-                                    Log.d(
-                                        "imageSW Blur: ",
-                                        "isBlurFeature: $isBlurFeature  ,isImgBlur: $isImgBlur"
-                                    )
-                                    Bugfender.d(
-                                        "android_image_blur",
-                                        "isBlurFeature: $isBlurFeature  ,isImgBlur: $isImgBlur"
-                                    )
-                                    if (isImgBlur.first) {
-                                        // Image is blurred
-                                        imageBlur.setImageBitmap(mBitmap)
-
-                                        //Show Hide Layouts
-                                        cameraLayout.visibility = View.GONE
-                                        previewImgLayout.visibility = View.GONE
-                                        cropLayout.visibility = View.GONE
-                                        blurLayout.visibility = View.VISIBLE
+                            //Show Hide Layouts
+                            cameraLayout.visibility = View.GONE
+                            previewImgLayout.visibility = View.GONE
+                            cropLayout.visibility = View.GONE
+                            blurLayout.visibility = View.VISIBLE
 
 
-                                    } else {
-                                        // Image is not blurred
-                                        cropLowLightCheck(
-                                            mBitmap!!,
-                                            mFile!!,
-                                            isCropFeature
-                                        ) //not blurred
+                        } else {
+                            // Image is not blurred
+                            cropLowLightCheck(
+                                mBitmap!!,
+                                mFile!!,
+                                isCropFeature
+                            ) //not blurred
 
-                                    }
-                                } else {
-                                    // check Low Light Image
-                                    cropLowLightCheck(
-                                        mBitmap!!,
-                                        mFile!!,
-                                        isCropFeature
-                                    ) // No blur features
-                                }
-                            }
-
-                        })
+                        }
+                    } else {
+                        // check Low Light Image
+                        cropLowLightCheck(
+                            mBitmap!!,
+                            mFile!!,
+                            isCropFeature
+                        ) // No blur features
+                    }
+                    imageProxy.close()
                 }
             })
+    }
+
+    private fun resizeImgBitmap(bitmap: Bitmap, newWidth: Int, newHeight: Int): Bitmap {
+        val width = bitmap.width
+        val height = bitmap.height
+
+        val scaleWidth = newWidth.toFloat() / width
+        val scaleHeight = newHeight.toFloat() / height
+
+        val matrix = Matrix()
+        matrix.postScale(scaleWidth, scaleHeight)
+
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+
+    }
+
+    private fun rotateImage(bitmap: Bitmap, angle: Float): Bitmap {
+        Log.d("imageSW rotateImage", angle.toString())
+        val matrix = Matrix()
+        matrix.postRotate(angle)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     fun saveImageToFile(file1: File, bitmap1: Bitmap, context: Context? = null) {
