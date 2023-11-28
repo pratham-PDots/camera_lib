@@ -41,6 +41,9 @@ class CameraViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(CameraUiState())
     val uiState: StateFlow<CameraUiState> = _uiState.asStateFlow()
 
+    private val _previewFlow = MutableStateFlow<Int>(0)
+    val previewFlow: StateFlow<Int> = _previewFlow.asStateFlow()
+
     var mode = ""
     var overlapBE = 0.2f
     var upload_param = ""
@@ -815,6 +818,7 @@ class CameraViewModel : ViewModel() {
         imageCapturedListLive.value = currentImageList
         directionSelected = ""
         if(currentImageList.isNotEmpty()) handleDeletedImage()
+        _previewFlow.update { currentImageList.size }
 
         Log.d("imageSW delete", "after Size2: ${currentImageList.size}")
 

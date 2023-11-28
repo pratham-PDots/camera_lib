@@ -427,9 +427,12 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
+        lifecycleScope.launch { viewModel.previewFlow.collect { updatePreview() } }
+
         lifecycleScope.launch {
             viewModel.uiState.collect { it ->
                 withContext(Dispatchers.Main) {
+                    Log.d("imageSW preview entered ui state", viewModel.currentImageList.size.toString())
                     Log.d(
                         "imageSW state_livedata:",
                         "leftArrow: ${it.showLeftArrow}, rightArrow: ${it.showRightArrow}, downArrow: ${it.showDownArrow}, All Directions: ${it.showArrowAllDirection}"
@@ -626,24 +629,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         }
                     )
 
+                    Log.d("imageSW preview", viewModel.currentImageList.size.toString())
                     // PreviewScreen work
-                    if (viewModel.currentImageList.size > 0) {
-                        previewImgRecycler.adapter =
-                            PreviewListAdapter(this@CameraActivity, viewModel.currentImageList,
-                                onClick = { clickedImg: Bitmap, croppingPoints1: Array<Int>, file1: File, position1: Int ->
-                                    setImageInPreview(clickedImg, croppingPoints1, file1, position1)
-                                })
-
-                        viewModel.currentImageList.last().let {
-                            setImageInPreview(
-                                it.image,
-                                it.croppedCoordinates,
-                                it.file,
-                                viewModel.currentImageList.size - 1
-                            )
-                        }
-
-                    }
+                    updatePreview()
                 }
             }
 
@@ -742,6 +730,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 isArrowSelected = true // size = 0
             }
 
+            Log.d("imageSW preview render", "${viewModel.currentImageList.size}")
             viewModel.renderUi() // deleteImg
         }
 
@@ -1007,6 +996,26 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private fun resetToggle() {
         binding.overlapToggle?.apply {
             isVisible = viewModel.backendToggle
+        }
+    }
+
+    private fun updatePreview() {
+        if (viewModel.currentImageList.size > 0) {
+            previewImgRecycler.adapter =
+                PreviewListAdapter(this@CameraActivity, viewModel.currentImageList,
+                    onClick = { clickedImg: Bitmap, croppingPoints1: Array<Int>, file1: File, position1: Int ->
+                        setImageInPreview(clickedImg, croppingPoints1, file1, position1)
+                    })
+
+            viewModel.currentImageList.last().let {
+                setImageInPreview(
+                    it.image,
+                    it.croppedCoordinates,
+                    it.file,
+                    viewModel.currentImageList.size - 1
+                )
+            }
+
         }
     }
 

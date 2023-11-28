@@ -261,12 +261,15 @@ class MyServices : Service() {
 
                         }?.addOnFailureListener { exception ->
                             // Handle failed upload
-                            broadCastImage(ReactSingleImage(
-                                uri = mediaModelClass.uri,
-                                error = exception.message.toString(),
-                                status = false,
-                                imageData = getStringifiedMetadata(metadata.build())
-                            ))
+                            applicationScope?.launch {
+                                modifyImage(mediaModelClass, exception.message.toString())
+                                broadCastImage(ReactSingleImage(
+                                    uri = mediaModelClass.uri,
+                                    error = exception.message.toString(),
+                                    status = false,
+                                    imageData = getStringifiedMetadata(metadata.build())
+                                ))
+                            }
                             Log.e("imageSW Firebase Upload", "Fail: ${exception.printStackTrace()}, message: " + exception.message)
 
                         }?.addOnProgressListener { progress ->
