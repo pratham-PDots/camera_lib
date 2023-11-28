@@ -93,7 +93,7 @@ object BlurDetection {
 
         @ColorInt val mostLuminousColor = mostLuminousColorFromBitmap(edgesBitmap)
         val colorHex = "#" + Integer.toHexString(mostLuminousColor)
-        val isBlurry = mostLuminousColor < 15000000 //  threshold value 11908536
+        val isBlurry = mostLuminousColor < 8000000 //  threshold value 11908536
         // Note - in Android, Color.BLACK is -16777216 and Color.WHITE is -1, so range is somewhere in between. Higher is more luminous
         Log.d("imageSW ","blur value: $mostLuminousColor")
 
