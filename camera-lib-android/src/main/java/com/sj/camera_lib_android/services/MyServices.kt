@@ -264,12 +264,12 @@ class MyServices : Service() {
                             applicationScope?.launch {
                                 modifyImage(mediaModelClass, exception.message.toString())
                                 broadCastQueue()
-                                broadCastImage(ReactSingleImage(
-                                    uri = mediaModelClass.uri,
-                                    error = exception.message.toString(),
-                                    status = false,
-                                    imageData = getStringifiedMetadata(metadata.build())
-                                ))
+//                                broadCastImage(ReactSingleImage(
+//                                    uri = mediaModelClass.uri,
+//                                    error = exception.message.toString(),
+//                                    status = false,
+//                                    imageData = getStringifiedMetadata(metadata.build())
+//                                ))
                             }
                             Log.e("imageSW Firebase Upload", "Fail: ${exception.printStackTrace()}, message: " + exception.message)
 
