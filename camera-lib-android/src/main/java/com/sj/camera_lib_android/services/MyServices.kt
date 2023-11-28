@@ -263,6 +263,7 @@ class MyServices : Service() {
                             // Handle failed upload
                             applicationScope?.launch {
                                 modifyImage(mediaModelClass, exception.message.toString())
+                                broadCastQueue()
                                 broadCastImage(ReactSingleImage(
                                     uri = mediaModelClass.uri,
                                     error = exception.message.toString(),
