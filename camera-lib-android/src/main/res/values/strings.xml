@@ -16,7 +16,7 @@
     <string name="processing_please_wait">Processing... Please wait</string>
     <string name="submit">Submit</string>
     <string name="upload">Upload</string>
-    <string name="camera_tilted_straighten_please">Camera tilted, straighten please.</string>
+    <string name="camera_tilted_straighten_please">Tilt alert! Adjust for straight photos.</string>
 
     <string name="result_from_renderscript">Renderscript : %1s \n Most luminous color is %2s</string>
     <string name="choose_the_orientation_of_your_picture_taking">Choose the orientation of your picture taking</string>

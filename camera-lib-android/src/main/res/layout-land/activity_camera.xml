@@ -72,7 +72,9 @@
                     android:id="@+id/tilt_Warning_Message"
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="35dp"
+                    android:layout_marginStart="35dp"
+                    android:layout_marginEnd="35dp"
+                    android:layout_marginTop="55dp"
                     android:backgroundTint="@color/design_default_color_error"
                     android:visibility="gone"
                     app:cardCornerRadius="8dp"
@@ -99,9 +101,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
+                            android:textColor="@color/white"
                             android:gravity="start|center_vertical"
                             android:text="@string/camera_tilted_straighten_please"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
@@ -119,6 +122,13 @@
                     android:layout_height="wrap_content"
                     app:constraint_referenced_ids="right_arrow_ll, left_arrow_ll, down_arrow_ll,
                      img_left_ll, img_right_ll, img_top_ll" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/overlap_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:constraint_referenced_ids="right_arrow_ll,left_arrow_ll, down_arrow_ll" />
 
                 <FrameLayout
                     android:id="@+id/zoomLayout"
@@ -456,6 +466,17 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                      />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/overlap_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:checked="false"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
