@@ -40,7 +40,8 @@ class DummyActivity : AppCompatActivity() {
                             "seq_no": 1,
                             "level": 1,
                             "uploadOnlyOnWifi": 0,
-                            "app_session_id": "8e2faa6b-d6fe-413a-a693-76a0cbe0ce71"
+                            "app_session_id": "8e2faa6b-d6fe-413a-a693-76a0cbe0ce71",
+                            "metadata": { "device_name": "Samsung" }
                         }
                         """)
     private lateinit var viewModel: CameraViewModel

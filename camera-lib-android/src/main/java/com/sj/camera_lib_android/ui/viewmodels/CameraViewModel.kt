@@ -310,6 +310,12 @@ class CameraViewModel : ViewModel() {
                     dimension = intArrayOf(1, 1)
                 }
 
+                val uploadParam = JSONObject(upload_param)
+
+                val metadata = JSONObject(uploadParam.getString("metadata"))
+                metadata.put("is_wide_angle", if (wideAngleSet) 1 else 0)
+                uploadParam.put("metadata", metadata)
+
                 ImageUploadModel(
                     // Map properties from ImageDetailsModel to ImageUploadModel
                     position.contentToString(),
@@ -318,7 +324,7 @@ class CameraViewModel : ViewModel() {
                     imageDetails.orientation,
                     imageDetails.zoomLevel, uuid.toString(),
                     cropCoordinates.contentToString(), "${imageDetails.overlapPercent}",
-                    upload_param, "${imageDetails.file}", "image/jpeg",
+                    uploadParam.toString(), "${imageDetails.file}", "image/jpeg",
                     imageDetails.file.toString().substringAfterLast("/"),
                     last_image_flag = if(index == currentImageList.size - 1) "1" else "0"
                 )
