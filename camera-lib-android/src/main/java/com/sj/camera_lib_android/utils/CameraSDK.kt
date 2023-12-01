@@ -26,7 +26,8 @@ object CameraSDK {
         uploadFrom: String = "Shelfwatch",
         isRetake: Boolean = false,
         zoomLevel: Double = 1.0,
-        showOverlapToggleButton: Boolean = false
+        showOverlapToggleButton: Boolean = false,
+        showGridLines: Boolean = false
     ) {
         Log.d("imageSW here", bucketName)
         val intent = Intent(context, LaunchShelfwatchCamera::class.java)
@@ -41,6 +42,7 @@ object CameraSDK {
         intent.putExtra("isRetake", isRetake)
         intent.putExtra("zoomLevel", zoomLevel)
         intent.putExtra("backendToggle", showOverlapToggleButton)
+        intent.putExtra("gridlines", showGridLines)
 
         if (context is Activity) {
             context.startActivity(intent)

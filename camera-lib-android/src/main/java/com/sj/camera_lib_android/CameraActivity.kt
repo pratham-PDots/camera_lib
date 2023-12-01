@@ -260,6 +260,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         var isBlurFeature = ""
         var isCropFeature = ""
         var uploadFrom = ""
+        var gridlines = false
 
         if (extras != null) {
             modeRotation = extras.getString("mode") ?: ""
@@ -273,6 +274,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             viewModel.isRetake = extras.getBoolean("isRetake", false)
             viewModel.currentZoomRatio = extras.getDouble("zoomLevel", 1.0)
             viewModel.backendToggle = extras.getBoolean("backendToggle", false)
+            gridlines = extras.getBoolean("gridlines", false)
 
 
             var message =
@@ -992,6 +994,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         resetToggle()
 
         binding.verticalTiltView.setHorizontalMode(false)
+
+        binding.gridOverlayView.isVisible = gridlines
     } // END of onCreate
 
     private fun resetToggle() {
