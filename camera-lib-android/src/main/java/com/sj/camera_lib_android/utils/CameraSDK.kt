@@ -27,7 +27,7 @@ object CameraSDK {
         isRetake: Boolean = false,
         zoomLevel: Double = 1.0,
         showOverlapToggleButton: Boolean = false,
-        showGridLines: Boolean = false
+        showGridLines: Boolean = true
     ) {
         Log.d("imageSW here", bucketName)
         val intent = Intent(context, LaunchShelfwatchCamera::class.java)
