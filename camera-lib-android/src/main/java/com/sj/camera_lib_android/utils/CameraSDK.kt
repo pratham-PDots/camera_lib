@@ -16,14 +16,14 @@ object CameraSDK {
     var bucketName = ""
     fun startCamera(
         context: Context,
-        orientation: String,
-        widthPercentage: Int,
+        orientation: String = "",
+        widthPercentage: Int = 20,
         uploadParams: JSONObject,
-        resolution: Int,
-        referenceUrl: String,
-        allowBlurCheck: Boolean,
-        allowCrop: Boolean,
-        uploadFrom: String,
+        resolution: Int = 3000,
+        referenceUrl: String = "",
+        allowBlurCheck: Boolean = true,
+        allowCrop: Boolean = true,
+        uploadFrom: String = "Shelfwatch",
         isRetake: Boolean = false,
         zoomLevel: Double = 1.0,
         showOverlapToggleButton: Boolean = false
