@@ -475,6 +475,8 @@
                     android:layout_marginTop="20dp"
                     android:checked="false"
                     android:visibility="gone"
+                    app:trackTint="@color/white"
+                    app:thumbTint="#484264"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
