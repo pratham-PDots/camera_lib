@@ -14,6 +14,7 @@ import org.json.JSONObject
 
 object CameraSDK {
     var bucketName = ""
+    var consumer = ""
     fun startCamera(
         context: Context,
         orientation: String = "",
@@ -29,6 +30,7 @@ object CameraSDK {
         showOverlapToggleButton: Boolean = false,
         showGridLines: Boolean = true
     ) {
+        consumer = uploadFrom
         Log.d("imageSW here", bucketName)
         val intent = Intent(context, LaunchShelfwatchCamera::class.java)
         intent.putExtra("mode", orientation) //portrait / landscape

@@ -122,9 +122,11 @@ class MyServices : Service() {
         val imageEntity = imageDao.getImageByUri(image.uri)
         Log.d("imageSW remove", "${imageEntity?.uri}")
         imageEntity?.let { imageDao.deleteImage(it) }
-        image.uri.let {
-            val file = File(it)
-            Log.d("imageSW file deleted", file.delete().toString())
+        if(CameraSDK.consumer == "Shelfwatch") {
+            image.uri.let {
+                val file = File(it)
+                Log.d("imageSW file deleted", file.delete().toString())
+            }
         }
     }
 
