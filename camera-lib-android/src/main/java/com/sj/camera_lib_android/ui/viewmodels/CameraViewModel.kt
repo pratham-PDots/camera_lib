@@ -312,7 +312,7 @@ class CameraViewModel : ViewModel() {
 
                 val uploadParam = JSONObject(upload_param)
 
-                val metadata = JSONObject(uploadParam.getString("metadata"))
+                val metadata = JSONObject(uploadParam.optString("metadata", "{}"))
                 metadata.put("is_wide_angle", if (wideAngleSet) 1 else 0)
                 uploadParam.put("metadata", metadata)
 
