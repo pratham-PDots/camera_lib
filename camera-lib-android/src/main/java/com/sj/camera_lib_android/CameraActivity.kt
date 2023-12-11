@@ -25,6 +25,7 @@ import android.hardware.camera2.CameraManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.util.Size
 import android.util.SizeF
 import android.view.OrientationEventListener
 import android.view.ScaleGestureDetector
@@ -79,6 +80,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.opencv.android.OpenCVLoader
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -233,6 +235,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         // Initialize Views ID
         initializeIDs()
         // Initialize OpenCV
+        OpenCVLoader.initDebug()
 
         if (FirebaseApp.getApps(applicationContext).isEmpty()) {
             FirebaseApp.initializeApp(applicationContext)
@@ -1419,7 +1422,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
                     bitmap = resizeImgBitmap(bitmap, requiredWidth, requiredHeight)
 
-                    if (needsRotation) bitmap = rotateImage(bitmap, 90F)
+                    if (needsRotation) bitmap = ImageProcessingUtils.rotateBitmapWithOpenCV(bitmap)
 
                     viewModel.imageSavedCount++
 
@@ -1502,7 +1505,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     private fun rotateImage(bitmap: Bitmap, angle: Float): Bitmap {
-        Log.d("imageSW rotateImage", angle.toString())
         val matrix = Matrix()
         matrix.postRotate(angle)
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
