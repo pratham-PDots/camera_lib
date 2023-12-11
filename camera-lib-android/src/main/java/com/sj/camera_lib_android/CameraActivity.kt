@@ -1089,8 +1089,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             val tiltYVal = String.format("%.2f", filteredTiltY).toFloat()
 
             // Update the tilt views with the filtered values
-            binding.horizontalTiltView.setValue(tiltXVal)
-            binding.verticalTiltView.setValue(tiltYVal)
+            binding.horizontalTiltView.setValue(tiltYVal)
+            binding.verticalTiltView.setValue(tiltXVal)
             binding.tiltWarningMessage.isVisible = ((abs(tiltXVal) > 6f) || (abs(tiltYVal) > 6f))
         }
 
@@ -1915,6 +1915,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     override fun onResume() {
         super.onResume()
         registerSensors()
+        setZoomRatio(viewModel.currentZoomRatio)
         backpressedlistener = this
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(myBroadcastReceiver, IntentFilter("thisIsForMyPartner"))// onResume

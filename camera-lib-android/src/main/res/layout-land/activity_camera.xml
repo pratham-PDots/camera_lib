@@ -221,7 +221,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    app:layout_constraintGuide_percent="0.5" />
+                    app:layout_constraintGuide_percent="0.6" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/top_arrow_guideline"
@@ -453,7 +453,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:padding="5dp"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="40dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/img_12"
                     app:layout_constraintTop_toTopOf="parent"
@@ -512,6 +512,7 @@
                     android:background="@android:color/transparent"
                     android:visibility="visible"
                     app:cropAutoZoomEnabled="false"
+                    app:cropShowProgressBar="false"
                     app:cropGuidelines="on"
                     app:cropInitialCropWindowPaddingRatio="0"
                     app:layout_constraintBottom_toTopOf="@+id/LL1"
@@ -803,6 +804,7 @@
                         android:background="@android:color/transparent"
                         android:visibility="visible"
                         app:cropAutoZoomEnabled="false"
+                        app:cropShowProgressBar="false"
                         app:layout_constraintBottom_toTopOf="@+id/LL1_ps"
                         app:layout_constraintDimensionRatio="3:4"
                         app:layout_constraintEnd_toEndOf="parent"
