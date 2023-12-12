@@ -186,6 +186,10 @@ class MyServices : Service() {
                 val crop_coordinates = mediaModelClass.crop_coordinates
                 val overlap_values = mediaModelClass.overlap_values
                 val last_image_flag = mediaModelClass.last_image_flag
+                val gyrohorizontal = mediaModelClass.gyroHorizontalValue
+                val gyrovertical = mediaModelClass.gyroVerticalValue
+
+                Log.d("imageSW gyroValues", "$gyrohorizontal $gyrovertical")
 
                 val uri = mediaModelClass.uri
                 val type = mediaModelClass.type
@@ -216,6 +220,8 @@ class MyServices : Service() {
                         .setCustomMetadata("type", type)
                         .setCustomMetadata("name", name)
                         .setCustomMetadata("last_image_flag", last_image_flag)
+                        .setCustomMetadata("gyro_horizontal", gyrohorizontal)
+                        .setCustomMetadata("gyro_vertical", gyrovertical)
 
                     val uploadParamJson = JSONObject(upload_params)
                     uploadParamJson.put("app_session_id", sessionId)
