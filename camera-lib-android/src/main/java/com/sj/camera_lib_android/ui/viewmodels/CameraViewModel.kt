@@ -15,7 +15,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.sj.camera_lib_android.CameraActivity
 import com.sj.camera_lib_android.models.ImageDetailsModel
 import com.sj.camera_lib_android.models.ImageModel
@@ -74,6 +73,9 @@ class CameraViewModel : ViewModel() {
 
     var imageWidth: Int = 0
     var imageHeight: Int = 0
+
+    var gyroValueX: Float = 0f
+    var gyroValueY: Float = 0f
 
     val currentImageList = arrayListOf<ImageDetailsModel>()
     val imageCapturedListLive: MutableLiveData<ArrayList<ImageDetailsModel>> = MutableLiveData()
@@ -197,6 +199,8 @@ class CameraViewModel : ViewModel() {
         overlapArray = getOverlapArray()
         Log.d("imageSW overlapArray", overlapArray.contentToString())
 
+        Log.d("imageSW gyroValues", "$gyroValueX $gyroValueY")
+
 
         currentImageList.add(
             ImageDetailsModel(
@@ -217,7 +221,9 @@ class CameraViewModel : ViewModel() {
                 ImageModel("$file1", "image/jpeg", "$captureTime.jpg"),
                 file1,
                 bmp1,
-                coordinatesCropped
+                coordinatesCropped,
+                gyroValueX,
+                gyroValueY
             )
         )
 
@@ -326,7 +332,8 @@ class CameraViewModel : ViewModel() {
                     cropCoordinates.contentToString(), "${imageDetails.overlapPercent}",
                     uploadParam.toString(), "${imageDetails.file}", "image/jpeg",
                     imageDetails.file.toString().substringAfterLast("/"),
-                    last_image_flag = if(index == currentImageList.size - 1) "1" else "0"
+                    last_image_flag = if(index == currentImageList.size - 1) "1" else "0",
+                    gyroHorizontalValue = imageDetails.gyroHorizontal.toString(), gyroVerticalValue = imageDetails.gyroVertical.toString()
                 )
 
             })
