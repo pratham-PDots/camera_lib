@@ -111,6 +111,8 @@ class CameraViewModel : ViewModel() {
         context: Context
     ) {
 
+        Log.d("imageSW overlap bug", directionSelected)
+
         rowSum = if (currentImageList.isEmpty()) { // condition for 1st image capture
             1
         } else {
@@ -128,6 +130,10 @@ class CameraViewModel : ViewModel() {
 
         if (directionSelected.isNotEmpty() && !directionSelected.equals("down", true)) {
             directionID = directionSelected
+        }
+
+        if(directionSelected.isNotEmpty() && directionSelected.equals("down", true)) {
+            directionID = ""
         }
 
         // stepsTaken Work
@@ -226,6 +232,8 @@ class CameraViewModel : ViewModel() {
                 gyroValueY
             )
         )
+
+        Log.d("imageSW overlap bug", currentImageList.last().toString())
 
         Log.d(
             "imageSW handle_img",

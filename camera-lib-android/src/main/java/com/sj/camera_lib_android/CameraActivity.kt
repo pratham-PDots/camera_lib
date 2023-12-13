@@ -78,6 +78,7 @@ import com.canhub.cropper.CropImageView
 import com.sj.camera_lib_android.databinding.ActivityCameraBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.opencv.android.OpenCVLoader
@@ -1244,12 +1245,11 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 viewModel.overlapToggleChecked = binding.overlapToggle?.isChecked == true
             }
             viewModel.uploadImages(context) // uploadSaveImages
-
-        }
-        if (viewModel.currentImageList.size == viewModel.imageUploadList.size) {
-            viewModel.hideLoader()
-            viewModel.discardAllImages()
-            finish()
+            if (viewModel.currentImageList.size == viewModel.imageUploadList.size) {
+                viewModel.hideLoader()
+                viewModel.discardAllImages()
+                finish()
+            }
         }
     }
 
