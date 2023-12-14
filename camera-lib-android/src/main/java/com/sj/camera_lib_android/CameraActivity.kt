@@ -1373,6 +1373,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     getString(R.string.yes_btn),
                     getString(R.string.no_btn),
                     onClick = {
+                        viewModel.deleteAllImages()
                         viewModel.discardAllImages() // back button discard
                         resetZoom()
                     }
