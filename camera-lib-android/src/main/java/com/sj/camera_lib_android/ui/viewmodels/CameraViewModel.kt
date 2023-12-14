@@ -327,6 +327,8 @@ class CameraViewModel : ViewModel() {
                 val uploadParam = JSONObject(upload_param)
 
                 val metadata = JSONObject(uploadParam.optString("metadata", "{}"))
+                metadata.put("gyro_horizontal", imageDetails.gyroHorizontal.toString())
+                metadata.put("gyro_vertical", imageDetails.gyroVertical.toString())
                 metadata.put("is_wide_angle", if (wideAngleSet) 1 else 0)
                 uploadParam.put("metadata", metadata)
 
