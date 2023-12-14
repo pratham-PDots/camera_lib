@@ -3,6 +3,7 @@ package com.sj.camera_lib_android
 /**
  * @author Saurabh Kumar 11 September 2023
  * **/
+
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
@@ -24,8 +25,8 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
-import android.util.Size
 import android.util.SizeF
 import android.view.OrientationEventListener
 import android.view.ScaleGestureDetector
@@ -59,26 +60,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bugfender.sdk.Bugfender
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
-import com.sj.camera_lib_android.ui.interfaces.Backpressedlistener
+import com.canhub.cropper.CropImageView
 import com.google.firebase.FirebaseApp
+import com.sj.camera_lib_android.databinding.ActivityCameraBinding
 import com.sj.camera_lib_android.services.MyServices
 import com.sj.camera_lib_android.ui.ImageDialog
 import com.sj.camera_lib_android.ui.SubmitDialog
 import com.sj.camera_lib_android.ui.adapters.PreviewListAdapter
+import com.sj.camera_lib_android.ui.interfaces.Backpressedlistener
 import com.sj.camera_lib_android.ui.viewmodels.CameraViewModel
 import com.sj.camera_lib_android.utils.Common
 import com.sj.camera_lib_android.utils.Utils
 import com.sj.camera_lib_android.utils.imageutils.BlurDetection
 import com.sj.camera_lib_android.utils.imageutils.ImageProcessingUtils
-import com.canhub.cropper.CropImageView
-import com.sj.camera_lib_android.databinding.ActivityCameraBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.opencv.android.OpenCVLoader
@@ -869,6 +865,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         cropImageViewCL.setOnCropImageCompleteListener { _, result ->
             // Get the cropped image and display it in the ImageView
 
+            deleteCroppedImage(result.uriContent)
             // Get the coordinates of the four corners
             val cropRect = result.cropRect
             val left = cropRect?.left
@@ -950,6 +947,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         cropImageViewPS.setOnCropImageCompleteListener { _, result ->
             // Get the cropped image and display it in the ImageView
 
+            deleteCroppedImage(result.uriContent)
             // Get the coordinates of the four corners
             val cropRect = result.cropRect
 
@@ -1009,6 +1007,18 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private fun resetToggle() {
         binding.overlapToggle?.apply {
             isVisible = viewModel.backendToggle
+        }
+    }
+
+    private fun deleteCroppedImage(content: Uri?) {
+        content?.let {
+            try {
+                contentResolver.delete(it, null, null).let {rowsDeleted->
+                    Log.d("imageSW", "cropped image $it $rowsDeleted")
+                }
+            } catch(e: Exception) {
+                Log.e("imageSW", "cropped image exception $e")
+            }
         }
     }
 
