@@ -253,7 +253,7 @@ class CameraViewModel : ViewModel() {
         } else false
         Log.d("imageSW isAutomaticID", "$isAutomaticID")
 
-        clearSharedPref()
+        //clearSharedPref()
         imageUploadList.clear()
         renderUi() // handleClickedImage
 
@@ -302,7 +302,7 @@ class CameraViewModel : ViewModel() {
         val deviceName = getDeviceModel()
         val utils = Utils()
 
-        clearSharedPref()
+        //clearSharedPref()
         imageUploadList.clear()
 
         if (currentImageList.isNotEmpty()) {
@@ -327,6 +327,8 @@ class CameraViewModel : ViewModel() {
                 val uploadParam = JSONObject(upload_param)
 
                 val metadata = JSONObject(uploadParam.optString("metadata", "{}"))
+                metadata.put("gyro_horizontal", imageDetails.gyroHorizontal.toString())
+                metadata.put("gyro_vertical", imageDetails.gyroVertical.toString())
                 metadata.put("is_wide_angle", if (wideAngleSet) 1 else 0)
                 uploadParam.put("metadata", metadata)
 
@@ -351,7 +353,7 @@ class CameraViewModel : ViewModel() {
             )
 
             //Saving for offlineMode
-            saveToSharedPref(imageUploadList)
+            //saveToSharedPref(imageUploadList)
 
             // Upload to Firebase or send List to 3rd Party
             // upload to Firebase
@@ -834,7 +836,9 @@ class CameraViewModel : ViewModel() {
 
     fun deleteLastCapturedImage() {
         Log.d("imageSW delete ", "before Size1: ${imageCapturedListLive.value?.size}")
-
+        if(currentImageList.last().file.exists()) {
+            Log.d("imageSW deleteLastCaptured", "${currentImageList.last().file.delete()}")
+        }
         currentImageList.removeLast()
         imageCapturedListLive.value = currentImageList
         directionSelected = ""
@@ -849,6 +853,14 @@ class CameraViewModel : ViewModel() {
         }
 
 
+    }
+
+    fun deleteAllImages() {
+        currentImageList.forEach {
+            Log.d("imageSW", "${it.file} ${it.file.exists()}")
+            if(it.file.exists())
+                Log.d("imageSW deleteAllFiles", "${it.file.delete()}")
+         }
     }
 
     fun discardAllImages() {

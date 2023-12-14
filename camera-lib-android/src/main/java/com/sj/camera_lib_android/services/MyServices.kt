@@ -1,4 +1,5 @@
 package com.sj.camera_lib_android.services
+
 /**
  * @author Saurabh Kumar 11 September 2023
  * **/
@@ -122,11 +123,10 @@ class MyServices : Service() {
         val imageEntity = imageDao.getImageByUri(image.uri)
         Log.d("imageSW remove", "${imageEntity?.uri}")
         imageEntity?.let { imageDao.deleteImage(it) }
-        if(CameraSDK.consumer == "Shelfwatch") {
-            image.uri.let {
-                val file = File(it)
-                Log.d("imageSW file deleted", file.delete().toString())
-            }
+        image.uri.let {
+            val file = File(it)
+            if(file.exists())
+                Log.d("imageSW file deleted", "${file.delete()} ${image.uri}")
         }
     }
 
@@ -220,8 +220,6 @@ class MyServices : Service() {
                         .setCustomMetadata("type", type)
                         .setCustomMetadata("name", name)
                         .setCustomMetadata("last_image_flag", last_image_flag)
-                        .setCustomMetadata("gyro_horizontal", gyrohorizontal)
-                        .setCustomMetadata("gyro_vertical", gyrovertical)
 
                     val uploadParamJson = JSONObject(upload_params)
                     uploadParamJson.put("app_session_id", sessionId)
