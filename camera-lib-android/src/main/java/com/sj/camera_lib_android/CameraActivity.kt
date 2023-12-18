@@ -83,6 +83,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.ArrayDeque
+import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.abs
@@ -687,8 +688,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         // capture photo button click
         captureImg.setOnClickListener {
             //Gyro work
-            viewModel.gyroValueX = String.format("%.2f", filteredTiltY).toFloat()
-            viewModel.gyroValueY = String.format("%.2f", filteredTiltX).toFloat()
+            viewModel.gyroValueX = String.format(Locale.US, "%.2f", filteredTiltY).toFloat()
+            viewModel.gyroValueY = String.format(Locale.US, "%.2f", filteredTiltX).toFloat()
 
             if (viewModel.currentImageList.size == 0) {
                 isArrowSelected = true
@@ -1103,8 +1104,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             filteredTiltX += alphaTilt * (mapTilt(tiltXDegrees, true) - filteredTiltX)
             filteredTiltY += alphaTilt * (mapTilt(tiltYDegrees, false) - filteredTiltY)
 
-            val tiltXVal = String.format("%.2f", filteredTiltX).toFloat()
-            val tiltYVal = String.format("%.2f", filteredTiltY).toFloat()
+            val tiltXVal = String.format(Locale.US, "%.2f", filteredTiltX).toFloat()
+            val tiltYVal = String.format(Locale.US, "%.2f", filteredTiltY).toFloat()
 
             // Update the tilt views with the filtered values
             binding.horizontalTiltView.setValue(tiltYVal)
@@ -1142,7 +1143,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         cameraInstance.cameraControl.setZoomRatio(newZoomRatio.toFloat())
 
         viewModel.currentZoomRatio = newZoomRatio
-        zoomText.text = String.format("%.1fx", viewModel.currentZoomRatio)
+        zoomText.text = String.format(Locale.US, "%.1fx", viewModel.currentZoomRatio)
     }
 
     private fun resetZoom() {
