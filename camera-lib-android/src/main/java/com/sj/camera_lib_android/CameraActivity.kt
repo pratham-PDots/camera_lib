@@ -25,7 +25,6 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.util.SizeF
 import android.view.OrientationEventListener
@@ -64,6 +63,7 @@ import com.canhub.cropper.CropImageView
 import com.google.firebase.FirebaseApp
 import com.sj.camera_lib_android.databinding.ActivityCameraBinding
 import com.sj.camera_lib_android.services.MyServices
+import com.sj.camera_lib_android.ui.FlashType
 import com.sj.camera_lib_android.ui.ImageDialog
 import com.sj.camera_lib_android.ui.SubmitDialog
 import com.sj.camera_lib_android.ui.adapters.PreviewListAdapter
@@ -114,6 +114,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private lateinit var previewPageImgCS: ImageView
     private lateinit var crossImg: ImageView
     private lateinit var referenceImg: ImageView
+    private lateinit var flashButton: ImageButton
     private lateinit var overlayGroup: Group
     private lateinit var zoomText: TextView
 
@@ -196,6 +197,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private lateinit var wideAngleButton: ImageButton
     private var wideAngleClicked = false
+
+    //Flash
+    private var currentFlashType: FlashType = FlashType.AUTO
 
     private lateinit var scaleGestureDetector: ScaleGestureDetector
 
@@ -662,6 +666,10 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         referenceImg.setOnClickListener {
             val imageDialog = ImageDialog(this, referenceUrl)
             imageDialog.show()
+        }
+
+        flashButton.setOnClickListener {
+            toggleFlash()
         }
 
         wideAngleButton.setOnClickListener {
@@ -1405,8 +1413,34 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         ).show(supportFragmentManager, "DialogFragment")
     }
 
+    private fun toggleFlash() {
+        val newFlashType = when(currentFlashType) {
+            FlashType.AUTO -> FlashType.OFF
+            FlashType.OFF -> FlashType.ON
+            FlashType.ON -> FlashType.AUTO
+        }
+        currentFlashType = newFlashType
+        setFlashDrawable()
+    }
+
+    private fun setFlashDrawable() {
+        val flashDrawable = when(currentFlashType) {
+            FlashType.AUTO -> R.drawable.flash_auto
+            FlashType.ON -> R.drawable.flash_on
+            FlashType.OFF -> R.drawable.flash_off
+        }
+        flashButton.setImageResource(flashDrawable)
+    }
+    private fun getFlashMode() =
+        when (currentFlashType) {
+            FlashType.OFF -> ImageCapture.FLASH_MODE_OFF
+            FlashType.AUTO -> ImageCapture.FLASH_MODE_AUTO
+            FlashType.ON -> ImageCapture.FLASH_MODE_ON
+        }
+
     private fun takePhoto(isBlurFeature: String, isCropFeature: String) {
         viewModel.showLoader()
+        imageCapture?.flashMode = getFlashMode()
         val imageCapture = imageCapture ?: return
         val nameTimeStamp = viewModel.uuid.toString() + "_" + (viewModel.currentImageList.size + 1)
         val outputDirectory = this.filesDir
@@ -1764,6 +1798,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         wideAngleButton = findViewById(R.id.wideAngleButton)
         crossImg = findViewById(R.id.cross_iv)
         referenceImg = findViewById(R.id.imgReference_iv)
+        flashButton = findViewById(R.id.flashButton)
         overlayGroup = findViewById(R.id.overlayGroup)
         submitBtn1 = findViewById(R.id.submitImgLL)
         loader = findViewById(R.id.loader)
