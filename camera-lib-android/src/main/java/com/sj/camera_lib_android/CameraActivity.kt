@@ -70,6 +70,8 @@ import com.sj.camera_lib_android.ui.adapters.PreviewListAdapter
 import com.sj.camera_lib_android.ui.interfaces.Backpressedlistener
 import com.sj.camera_lib_android.ui.viewmodels.CameraViewModel
 import com.sj.camera_lib_android.utils.Common
+import com.sj.camera_lib_android.utils.Events
+import com.sj.camera_lib_android.utils.LogUtils
 import com.sj.camera_lib_android.utils.Utils
 import com.sj.camera_lib_android.utils.imageutils.BlurDetection
 import com.sj.camera_lib_android.utils.imageutils.ImageProcessingUtils
@@ -77,6 +79,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import org.opencv.android.OpenCVLoader
 import java.io.File
 import java.io.FileOutputStream
@@ -301,6 +304,13 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
 
         }
+
+
+        logCameraLaunchEvent(uploadParams)
+        LogUtils.logGlobally(
+            "native-sdk-params",
+            "orientation: $modeRotation, widthPercentage: $overlayBE, resolution: $resolution, referenceUrl: $referenceUrl, allowBlurCheck: $isBlurFeature, allowCrop: $isCropFeature, isRetake: ${viewModel.isRetake}, zoomLevel: ${viewModel.currentZoomRatio}, showOverlapToggleButton: ${viewModel.backendToggle}, showGrideLines: $gridlines"
+        )
 
         viewModel.discardAllImages() // cameraActivity Launch
         // register BroadcastReceiver
@@ -705,7 +715,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
             if (isArrowSelected || (viewModel.backendToggle && binding.overlapToggle?.isChecked == false)) {
                 captureImg.setBackgroundResource(R.drawable.black_solid_circle)
-                Log.d("imageSW takePhoto", " START")
+                logCapturePressEvent()
                 takePhoto(isBlurFeature, isCropFeature)
             } else {
                 openDirectionDialog()
@@ -758,6 +768,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 getString(R.string.no_btn),
                 onClick = {
                     viewModel.submitClicked = true
+                    LogUtils.logGlobally(Events.UPLOAD_BUTTON_PRESSED, "Total Images: ${viewModel.currentImageList.size}")
                     Log.d(
                         "imageSW",
                         "Saved Image Count : ${viewModel.imageSavedCount} Submit : ${viewModel.submitClicked}"
@@ -780,6 +791,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 getString(R.string.no_btn),
                 onClick = {
                     viewModel.submitClicked = true
+                    LogUtils.logGlobally(Events.UPLOAD_BUTTON_PRESSED_PREVIEW, "Total Images: ${viewModel.currentImageList.size}")
                     Log.d(
                         "imageSW",
                         "Saved Image Count : ${viewModel.imageSavedCount} Submit : ${viewModel.submitClicked}"
@@ -884,9 +896,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
             // format sd be like this [Xmin, Ymin, Xmax, Ymax]
             coordinatesCrop = arrayOf(left!!, top!!, right!!, bottom!!)
-            Log.d(
-                "imageSW Cropping",
-                "DONE coordinatesCrop: Xmin, Ymin, Xmax, Ymax: ${coordinatesCrop.contentToString()}"
+            LogUtils.logGlobally(
+                Events.IMAGE_CROPPED,
+                "coordinatesCrop: Xmin, Ymin, Xmax, Ymax: ${coordinatesCrop.contentToString()}"
             )
 
 
@@ -967,9 +979,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
             // format sd be like this [Xmin, Ymin, Xmax, Ymax]
             val coordinatesCrop = arrayOf(left!!, top!!, right!!, bottom!!)
-            Log.d(
-                "imageSW Cropping22",
-                "DONE coordinatesCrop: Xmin, Ymin, Xmax, Ymax: ${coordinatesCrop.contentToString()}"
+            LogUtils.logGlobally(
+                Events.IMAGE_CROPPED_PREVIEW,
+                "coordinatesCrop: Xmin, Ymin, Xmax, Ymax: ${coordinatesCrop.contentToString()}"
             )
 
             if (coordinatesCrop != null && mFile != null) {
@@ -1016,6 +1028,43 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private fun resetToggle() {
         binding.overlapToggle?.apply {
             isVisible = viewModel.backendToggle
+        }
+    }
+
+    private fun logCameraLaunchEvent(uploadParam: String) {
+        try {
+            val uploadJson = JSONObject(uploadParam)
+            val latitude = uploadJson.optString("latitude")
+            val longitude = uploadJson.optString("longitude")
+            val shopName = uploadJson.optString("shop_name")
+            val shopId = uploadJson.optString("shop_id")
+            val categoryName = uploadJson.optString("category_name")
+            val categoryId = uploadJson.optString("category_id")
+
+            val shop_data = JSONObject()
+            shop_data.put("shop_id", shopId)
+            shop_data.put("shop_name", shopName)
+            shop_data.put("category_id", categoryId)
+            shop_data.put("category_name", categoryName)
+
+            val logJson = JSONObject()
+            logJson.put("latitude", latitude)
+            logJson.put("longitude", longitude)
+            logJson.put("shop_data", shop_data)
+            LogUtils.logGlobally(Events.CAMERA_LAUNCHED_EVENT, logJson.toString())
+        } catch(e : Exception) {
+            LogUtils.logGlobally("upload-param-parse-failure", uploadParam)
+        }
+    }
+
+    private fun logCapturePressEvent() {
+        try {
+            var attributes = "hasWideAngle: ${wideAngleButton.isVisible}, flash: ${currentFlashType.name}"
+            if(wideAngleButton.isVisible) attributes += "wideAngleSelected: ${viewModel.wideAngleSet}"
+            if (viewModel.backendToggle) attributes += ", overlapToggleState: ${binding.overlapToggle.isChecked}"
+            LogUtils.logGlobally(Events.CAPTURE_BUTTON_PRESSED, attributes)
+        } catch(_: Exception) {
+
         }
     }
 
@@ -1348,7 +1397,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 this@CameraActivity
             )
 
-            Bugfender.d("android_image_update_react", "done")
 
             //Show Hide Layouts
             cameraLayout.visibility = View.VISIBLE
@@ -1454,25 +1502,27 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageCapturedCallback() {
                 override fun onError(exc: ImageCaptureException) {
-                    Log.e("imageSW", "Photo capture failed: ${exc.message}", exc)
+                    LogUtils.logGlobally(Events.CAPTURE_FAILED)
                 }
 
                 override fun onCaptureSuccess(imageProxy: ImageProxy) {
+                    LogUtils.logGlobally(Events.CAPTURE_SUCCESS)
                     var bitmap = imageProxy.toBitmap()
-
+                    LogUtils.logGlobally(Events.IMAGE_PROXY_CONVERSION)
                     var requiredHeight = resizedHeightNew!!
                     var requiredWidth = resizedWidthNew!!
                     val needsRotation = imageProxy.imageInfo.rotationDegrees == 90 && viewModel.mode == "portrait"
-
                     if(needsRotation) {
                         val temp = requiredHeight
                         requiredHeight = requiredWidth
                         requiredWidth = temp
                     }
-
+                    val originalWidthHeight = "Original Width: ${bitmap.width}, Original Height: ${bitmap.height}"
                     bitmap = resizeImgBitmap(bitmap, requiredWidth, requiredHeight)
+                    LogUtils.logGlobally(Events.RESIZE_IMAGE, "$originalWidthHeight, resizedWidth: ${bitmap.width}, resizedHeight: ${bitmap.height}")
 
                     if (needsRotation) bitmap = ImageProcessingUtils.rotateBitmapWithOpenCV(bitmap)
+                    LogUtils.logGlobally(Events.ROTATE_IMAGE, "Rotation Needed: $needsRotation Rotation Degrees: ${imageProxy.imageInfo.rotationDegrees}")
 
                     viewModel.imageSavedCount++
 
@@ -1499,14 +1549,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                             this@CameraActivity,
                             targetBmp
                         ) // Blur check
-                        Log.d(
-                            "imageSW Blur: ",
-                            "isBlurFeature: $isBlurFeature  ,isImgBlur: $isImgBlur"
-                        )
-                        Bugfender.d(
-                            "android_image_blur",
-                            "isBlurFeature: $isBlurFeature  ,isImgBlur: $isImgBlur"
-                        )
+                        LogUtils.logGlobally(Events.IMAGE_BLUR, "Is Image Blur: ${isImgBlur.first}")
                         if (isImgBlur.first) {
                             // Image is blurred
                             imageBlur.setImageBitmap(mBitmap)
