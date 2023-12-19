@@ -1016,6 +1016,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         wideAngleButton.setColorFilter(Color.argb(255, 181, 71, 71))
         wideAngleButton.isVisible =
             (viewModel.currentImageList.size == 0 && !isWideAngleCameraSameAsDefault())
+        viewModel.hasWideAngle = !isWideAngleCameraSameAsDefault()
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 

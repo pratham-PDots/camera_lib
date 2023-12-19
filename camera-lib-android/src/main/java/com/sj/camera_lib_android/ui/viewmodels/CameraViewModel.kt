@@ -61,6 +61,7 @@ class CameraViewModel : ViewModel() {
     var maxRow = 0
     var maxCol = 0
 
+    var hasWideAngle = true
     var wideAngleSet = true
     var imageSavedCount = 0
     var submitClicked = false
@@ -329,7 +330,7 @@ class CameraViewModel : ViewModel() {
                 val metadata = JSONObject(uploadParam.optString("metadata", "{}"))
                 metadata.put("gyro_horizontal", imageDetails.gyroHorizontal.toString())
                 metadata.put("gyro_vertical", imageDetails.gyroVertical.toString())
-                metadata.put("is_wide_angle", if (wideAngleSet) 1 else 0)
+                metadata.put("is_wide_angle", if (hasWideAngle && wideAngleSet) 1 else 0)
                 uploadParam.put("metadata", metadata)
 
                 ImageUploadModel(
