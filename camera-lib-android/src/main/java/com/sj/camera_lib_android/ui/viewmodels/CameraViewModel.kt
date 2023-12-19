@@ -54,7 +54,7 @@ class CameraViewModel : ViewModel() {
     var imageName = ""
     var lastDirection = ""
 
-    private var directionSelected = ""
+    var directionSelected = ""
     var directionForOverlap = ""
     var rowSum: Int = 0
     val uuid = UUID.randomUUID()

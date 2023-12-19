@@ -204,6 +204,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     //Flash
     private var currentFlashType: FlashType = FlashType.AUTO
 
+    private var maxGridSize = -1
+
     private lateinit var scaleGestureDetector: ScaleGestureDetector
 
     private val scaleGestureListener =
@@ -713,7 +715,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 isArrowSelected = true
             }
 
-            if (isArrowSelected || (viewModel.backendToggle && binding.overlapToggle?.isChecked == false)) {
+            if(checkMaxImageLimitReached()) { openMaxLimitDialog() }
+            else if (isArrowSelected || (viewModel.backendToggle && binding.overlapToggle?.isChecked == false)) {
                 captureImg.setBackgroundResource(R.drawable.black_solid_circle)
                 logCapturePressEvent()
                 takePhoto(isBlurFeature, isCropFeature)
@@ -763,9 +766,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         submitBtn1.setOnClickListener {
 
             SubmitDialog( // submitBtn1
-                getString(R.string.dialog_submit),
-                getString(R.string.yes_btn),
-                getString(R.string.no_btn),
+                prompt = getString(R.string.dialog_submit),
+                yesText = getString(R.string.yes_btn),
+                noText = getString(R.string.no_btn),
                 onClick = {
                     viewModel.submitClicked = true
                     LogUtils.logGlobally(Events.UPLOAD_BUTTON_PRESSED, "Total Images: ${viewModel.currentImageList.size}")
@@ -786,9 +789,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         uploadBtnPS.setOnClickListener {
 
             SubmitDialog( // uploadBtnPS
-                getString(R.string.dialog_submit),
-                getString(R.string.yes_btn),
-                getString(R.string.no_btn),
+                prompt = getString(R.string.dialog_submit),
+                yesText = getString(R.string.yes_btn),
+                noText = getString(R.string.no_btn),
                 onClick = {
                     viewModel.submitClicked = true
                     LogUtils.logGlobally(Events.UPLOAD_BUTTON_PRESSED_PREVIEW, "Total Images: ${viewModel.currentImageList.size}")
@@ -1436,9 +1439,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         if (backpressedlistener != null) {
             if (viewModel.currentImageList.size > 0) {
                 SubmitDialog( // onBackPressed
-                    getString(R.string.discard_submit),
-                    getString(R.string.yes_btn),
-                    getString(R.string.no_btn),
+                    prompt = getString(R.string.discard_submit),
+                    yesText = getString(R.string.yes_btn),
+                    noText = getString(R.string.no_btn),
                     onClick = {
                         LogUtils.logGlobally(Events.CROSS_CLICK, "Discard Images")
                         viewModel.deleteAllImages()
@@ -1456,9 +1459,39 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private fun openDirectionDialog() {
         SubmitDialog( // select a direction
-            getString(R.string.dialogTitle),
-            getString(R.string.ok_btn),
-            "",
+            prompt = getString(R.string.dialogTitle),
+            yesText = getString(R.string.ok_btn),
+            noText = "",
+            onClick = { }
+        ).show(supportFragmentManager, "DialogFragment")
+    }
+
+    private fun checkMaxImageLimitReached(): Boolean {
+        Log.d("imageSW max limit", "current Image size: ${viewModel.currentImageList.size}")
+
+        if (viewModel.currentImageList.size == MAX_IMAGE_LIMIT) return true
+
+        if (viewModel.currentImageList.indexOfFirst { it.direction != "" && !it.isAutomatic } == -1) {
+            if ((viewModel.directionSelected == "left" || viewModel.directionSelected == "right") && viewModel.currentImageList.size > 1) {
+                maxGridSize = (viewModel.currentImageList.size) * (MAX_IMAGE_LIMIT / viewModel.currentImageList.size)
+                Log.d("imageSW max limit", "Calculated: Row:${viewModel.currentImageList.size} Column:${MAX_IMAGE_LIMIT / viewModel.currentImageList.size} Grid size:$maxGridSize")
+            } else maxGridSize = -1
+        }
+
+        Log.d(
+            "imageSW max limit",
+            "Comparing: current Image size:${viewModel.currentImageList.size} maxGridSize: $maxGridSize"
+        )
+
+        return maxGridSize != -1 && viewModel.currentImageList.size == maxGridSize
+    }
+
+    private fun openMaxLimitDialog() {
+        SubmitDialog( // select a direction
+            title = getString(R.string.max_limit_dialog_title),
+            prompt = getString(R.string.max_limit_dialog_message),
+            yesText = getString(R.string.ok_btn),
+            noText = "",
             onClick = { }
         ).show(supportFragmentManager, "DialogFragment")
     }
@@ -2005,6 +2038,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         private const val ORIENTATION_LANDSCAPE = 2
         private const val ORIENTATION_REVERSE_LANDSCAPE = 3
         private const val ORIENTATION_PARALLEL = -1
+
+        const val MAX_IMAGE_LIMIT = 60
 
         const val BLURRED_IMAGE = "BLURRED IMAGE"
         const val NOT_BLURRED_IMAGE = "NOT BLURRED IMAGE"
