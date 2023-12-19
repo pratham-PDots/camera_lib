@@ -1440,12 +1440,14 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     getString(R.string.yes_btn),
                     getString(R.string.no_btn),
                     onClick = {
+                        LogUtils.logGlobally(Events.CROSS_CLICK, "Discard Images")
                         viewModel.deleteAllImages()
                         viewModel.discardAllImages() // back button discard
                         resetZoom()
                     }
                 ).show(supportFragmentManager, "DialogFragment")
             } else {
+                LogUtils.logGlobally(Events.CROSS_CLICK, "Close Camera Screen")
                 finish()
             }
 
