@@ -12,6 +12,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Matrix
@@ -222,6 +224,18 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        try {
+            intent.extras?.getString("language")?.let { desiredLanguage ->
+                Log.d(
+                    "imageSW",
+                    "current locale: ${resources.configuration.locale.language} desired language: $desiredLanguage"
+                )
+                if (resources.configuration.locale.language != desiredLanguage) {
+                    setSDKLanguage(desiredLanguage)
+                }
+            }
+        } catch (_: Exception) {
+        }
         super.onCreate(savedInstanceState)
         binding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -1101,6 +1115,21 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 )
             }
 
+        }
+    }
+
+    private fun setSDKLanguage(localeString: String = "en") {
+        try {
+            val locale = Locale(localeString)
+            Locale.setDefault(locale)
+
+            val resources: Resources = this.resources
+            val configuration = Configuration(resources.configuration)
+
+            configuration.setLocale(locale)
+            resources.updateConfiguration(configuration, resources.displayMetrics)
+        } catch (e: Exception) {
+            LogUtils.logGlobally(Events.FAILED_TO_CHANGE_LANGUAGE)
         }
     }
 

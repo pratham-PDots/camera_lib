@@ -19,4 +19,5 @@ object Events {
     val DELETE_UPLOADED_FILE = "native-delete-uploaded-image"
     val CROSS_CLICK = "native-cross-clicked"
     val NATIVE_PARAMS = "native-sdk-params"
+    val FAILED_TO_CHANGE_LANGUAGE = "native-language-change failure"
 }

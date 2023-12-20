@@ -3,6 +3,8 @@ package com.sj.camera_lib_android.ui.activities
  * @author Saurabh Kumar 11 September 2023
  * **/
 import android.content.Intent
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.widget.LinearLayout
@@ -10,6 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
 import com.sj.camera_lib_android.CameraActivity
 import com.sj.camera_lib_android.R
+import com.sj.camera_lib_android.utils.Events
+import com.sj.camera_lib_android.utils.LogUtils
+import java.lang.NumberFormatException
+import java.util.Locale
 
 class LaunchShelfwatchCamera : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,6 +100,7 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
         gridlines: Boolean = false
     ) {
         if (modeRotation.isNotEmpty()){
+            setSDKLanguage("pl")
             val intent = Intent(this@LaunchShelfwatchCamera, CameraActivity::class.java)
             intent.putExtra("mode", modeRotation) //portrait / landscape
             intent.putExtra("overlapBE", overlayBE)
@@ -107,8 +114,24 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
             intent.putExtra("zoomLevel", zoomLevel)
             intent.putExtra("backendToggle", backendToggle)
             intent.putExtra("gridlines", gridlines)
+            intent.putExtra("language", "pl")
             startActivity(intent)
             finish()
+        }
+    }
+
+    private fun setSDKLanguage(localeString: String = "en") {
+        try {
+            val locale = Locale(localeString)
+            Locale.setDefault(locale)
+
+            val resources: Resources = this.resources
+            val configuration = Configuration(resources.configuration)
+
+            configuration.setLocale(locale)
+            resources.updateConfiguration(configuration, resources.displayMetrics)
+        } catch (e: Exception) {
+            LogUtils.logGlobally(Events.FAILED_TO_CHANGE_LANGUAGE)
         }
     }
 }
