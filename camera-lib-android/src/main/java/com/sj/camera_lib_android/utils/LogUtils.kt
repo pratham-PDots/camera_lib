@@ -4,7 +4,7 @@ import android.util.Log
 import com.bugfender.sdk.Bugfender
 
 object LogUtils {
-    fun logLocally(event: String, description: String) {
+    fun logLocally(event: String, description: String = "") {
         Log.d(event, description)
     }
 
