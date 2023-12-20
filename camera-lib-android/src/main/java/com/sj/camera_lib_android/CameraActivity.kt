@@ -224,18 +224,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        try {
-            intent.extras?.getString("language")?.let { desiredLanguage ->
-                Log.d(
-                    "imageSW",
-                    "current locale: ${resources.configuration.locale.language} desired language: $desiredLanguage"
-                )
-                if (resources.configuration.locale.language != desiredLanguage) {
-                    setSDKLanguage(desiredLanguage)
-                }
-            }
-        } catch (_: Exception) {
-        }
+        checkAndSetLanguage()
         super.onCreate(savedInstanceState)
         binding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -400,13 +389,16 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                     orientationBl.visibility = View.INVISIBLE
 
                                 } else {
-                                    orientationTv.text = "Change orientation to landscape"
+                                    orientationTv.text = getString(R.string.change_orientation, getString(R.string.landscape_small))
                                     orientationBl.visibility = View.VISIBLE
                                 }
                             }
 
                             ORIENTATION_REVERSE_PORTRAIT -> {
-                                orientationTv.text = "Change orientation to $modeRotation"
+                                orientationTv.text = getString(R.string.change_orientation, if(modeRotation.equals(
+                                        "portrait",
+                                        true
+                                    )) getString(R.string.portrait_small) else getString(R.string.landscape_small))
                                 orientationBl.visibility = View.VISIBLE
                             }
 
@@ -415,13 +407,16 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                     orientationBl.visibility = View.INVISIBLE
 
                                 } else {
-                                    orientationTv.text = "Change orientation to portrait"
+                                    orientationTv.text = getString(R.string.change_orientation, getString(R.string.portrait_small))
                                     orientationBl.visibility = View.VISIBLE
                                 }
                             }
 
                             ORIENTATION_REVERSE_LANDSCAPE -> {
-                                orientationTv.text = "Change orientation to $modeRotation"
+                                orientationTv.text = getString(R.string.change_orientation, if(modeRotation.equals(
+                                        "portrait",
+                                        true
+                                    )) getString(R.string.portrait_small) else getString(R.string.landscape_small))
                                 orientationBl.visibility = View.VISIBLE
 
                             }
@@ -1115,6 +1110,21 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 )
             }
 
+        }
+    }
+
+    private fun checkAndSetLanguage() {
+        try {
+            intent.extras?.getString("language")?.let { desiredLanguage ->
+                Log.d(
+                    "imageSW",
+                    "current locale: ${resources.configuration.locale.language} desired language: $desiredLanguage"
+                )
+                if (resources.configuration.locale.language != desiredLanguage) {
+                    setSDKLanguage(desiredLanguage)
+                }
+            }
+        } catch (_: Exception) {
         }
     }
 

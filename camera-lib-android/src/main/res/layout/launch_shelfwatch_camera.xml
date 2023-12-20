@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:gravity="center"
-                android:text="@string/portrait"
+                android:text="@string/portrait_small"
                 android:textColor="@color/black"/>
 
         </LinearLayout>
@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:gravity="center"
-                android:text="@string/landscape"
+                android:text="@string/landscape_small"
                 android:textColor="@color/black"/>
 
         </LinearLayout>

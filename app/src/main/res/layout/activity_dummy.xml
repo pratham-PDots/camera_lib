@@ -165,7 +165,7 @@
                     android:id="@+id/editTextProjectId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="5ee26436-97c5-477d-a0a0-e3dcd21c1a84" />
+                    android:text="79b7c955-f253-4f19-b1ab-710585614dd4" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- New TextInputLayout for shop_id -->
@@ -179,7 +179,7 @@
                     android:id="@+id/editTextShopId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="2399452" />
+                    android:text="1288" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- New TextInputLayout for category_id -->
@@ -193,7 +193,7 @@
                     android:id="@+id/editTextCategoryId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="7607" />
+                    android:text="309" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -206,7 +206,7 @@
                     android:id="@+id/editUserId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="39385" />
+                    android:text="133" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <ScrollView

@@ -19,6 +19,7 @@ import java.util.Locale
 
 class LaunchShelfwatchCamera : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        checkAndSetLanguage()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launch_shelfwatch_camera)
 
@@ -43,6 +44,7 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
         var zoomLevel = 0.0
         var backendToggle = false
         var gridlines = false
+        var language: String = "en"
         if (extras != null) {
             modeRotation = extras.getString("mode") ?: ""
             overlayBE = extras.getString("overlapBE")?.toFloat() ?: 20f
@@ -56,6 +58,8 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
             zoomLevel = extras.getDouble("zoomLevel", 1.0)
             backendToggle = extras.getBoolean("backendToggle", false)
             gridlines = extras.getBoolean("gridlines", false)
+            language = extras.getString("language", language)
+
 
             var message =
                 "Mode: $modeRotation ,uploadParams: $uploadParams , overlayBE: $overlayBE," +
@@ -66,19 +70,19 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
 
         }
         if (modeRotation.isNotEmpty()){
-            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel, backendToggle, gridlines)
+            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel, backendToggle, gridlines, language)
 
         }
 
         portraitButton.setOnClickListener {
             modeRotation = "portrait"
-            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel, backendToggle, gridlines)
+            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel, backendToggle, gridlines, language)
             Log.d("imageSW selectRotationDialog", " $modeRotation")
         }
 
         landscapeButton.setOnClickListener {
             modeRotation = "landscape"
-            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel, backendToggle, gridlines)
+            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel, backendToggle, gridlines, language)
 
             Log.d("imageSW selectRotationDialog", " $modeRotation")
         }
@@ -97,10 +101,10 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
         isRetake: Boolean = false,
         zoomLevel: Double = 1.0,
         backendToggle: Boolean = false,
-        gridlines: Boolean = false
+        gridlines: Boolean = false,
+        language: String = "en"
     ) {
         if (modeRotation.isNotEmpty()){
-            setSDKLanguage("pl")
             val intent = Intent(this@LaunchShelfwatchCamera, CameraActivity::class.java)
             intent.putExtra("mode", modeRotation) //portrait / landscape
             intent.putExtra("overlapBE", overlayBE)
@@ -114,9 +118,24 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
             intent.putExtra("zoomLevel", zoomLevel)
             intent.putExtra("backendToggle", backendToggle)
             intent.putExtra("gridlines", gridlines)
-            intent.putExtra("language", "pl")
+            intent.putExtra("language", language)
             startActivity(intent)
             finish()
+        }
+    }
+
+    private fun checkAndSetLanguage() {
+        try {
+            intent.extras?.getString("language")?.let { desiredLanguage ->
+                Log.d(
+                    "imageSW",
+                    "current locale: ${resources.configuration.locale.language} desired language: $desiredLanguage"
+                )
+                if (resources.configuration.locale.language != desiredLanguage) {
+                    setSDKLanguage(desiredLanguage)
+                }
+            }
+        } catch (_: Exception) {
         }
     }
 

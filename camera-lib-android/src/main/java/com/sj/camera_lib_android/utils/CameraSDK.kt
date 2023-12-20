@@ -28,7 +28,8 @@ object CameraSDK {
         isRetake: Boolean = false,
         zoomLevel: Double = 1.0,
         showOverlapToggleButton: Boolean = false,
-        showGridLines: Boolean = true
+        showGridLines: Boolean = true,
+        language: String = "en"
     ) {
         consumer = uploadFrom
         Log.d("imageSW here", bucketName)
@@ -45,6 +46,7 @@ object CameraSDK {
         intent.putExtra("zoomLevel", zoomLevel)
         intent.putExtra("backendToggle", showOverlapToggleButton)
         intent.putExtra("gridlines", showGridLines)
+        intent.putExtra("language", language)
 
         if (context is Activity) {
             context.startActivity(intent)
