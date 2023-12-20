@@ -1497,23 +1497,32 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     private fun checkMaxImageLimitReached(): Boolean {
-        Log.d("imageSW max limit", "current Image size: ${viewModel.currentImageList.size}")
+        try {
+            Log.d("imageSW max limit", "current Image size: ${viewModel.currentImageList.size}")
 
-        if (viewModel.currentImageList.size == MAX_IMAGE_LIMIT) return true
+            if (viewModel.currentImageList.size == MAX_IMAGE_LIMIT) return true
 
-        if (viewModel.currentImageList.indexOfFirst { it.direction != "" && !it.isAutomatic } == -1) {
-            if ((viewModel.directionSelected == "left" || viewModel.directionSelected == "right") && viewModel.currentImageList.size > 1) {
-                maxGridSize = (viewModel.currentImageList.size) * (MAX_IMAGE_LIMIT / viewModel.currentImageList.size)
-                Log.d("imageSW max limit", "Calculated: Row:${viewModel.currentImageList.size} Column:${MAX_IMAGE_LIMIT / viewModel.currentImageList.size} Grid size:$maxGridSize")
-            } else maxGridSize = -1
+            if (viewModel.currentImageList.indexOfFirst { it.direction != "" && !it.isAutomatic } == -1) {
+                if ((viewModel.directionSelected == "left" || viewModel.directionSelected == "right") && viewModel.currentImageList.size > 1) {
+                    maxGridSize =
+                        (viewModel.currentImageList.size) * (MAX_IMAGE_LIMIT / viewModel.currentImageList.size)
+                    Log.d(
+                        "imageSW max limit",
+                        "Calculated: Row:${viewModel.currentImageList.size} Column:${MAX_IMAGE_LIMIT / viewModel.currentImageList.size} Grid size:$maxGridSize"
+                    )
+                } else maxGridSize = -1
+            }
+
+            Log.d(
+                "imageSW max limit",
+                "Comparing: current Image size:${viewModel.currentImageList.size} maxGridSize: $maxGridSize"
+            )
+
+            return maxGridSize != -1 && viewModel.currentImageList.size == maxGridSize
+        } catch (e: Exception) {
+            LogUtils.logGlobally("max-limit-calculation-failure $e")
+            return false
         }
-
-        Log.d(
-            "imageSW max limit",
-            "Comparing: current Image size:${viewModel.currentImageList.size} maxGridSize: $maxGridSize"
-        )
-
-        return maxGridSize != -1 && viewModel.currentImageList.size == maxGridSize
     }
 
     private fun openMaxLimitDialog() {
