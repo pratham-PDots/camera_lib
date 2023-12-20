@@ -310,7 +310,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         logCameraLaunchEvent(uploadParams)
         LogUtils.logGlobally(
-            "native-sdk-params",
+            Events.NATIVE_PARAMS,
             "orientation: $modeRotation, widthPercentage: $overlayBE, resolution: $resolution, referenceUrl: $referenceUrl, allowBlurCheck: $isBlurFeature, allowCrop: $isCropFeature, isRetake: ${viewModel.isRetake}, zoomLevel: ${viewModel.currentZoomRatio}, showOverlapToggleButton: ${viewModel.backendToggle}, showGrideLines: $gridlines"
         )
 

@@ -18,4 +18,5 @@ object Events {
     val IMAGE_UPLOAD_FAILURE = "native-image-failure"
     val DELETE_UPLOADED_FILE = "native-delete-uploaded-image"
     val CROSS_CLICK = "native-cross-clicked"
+    val NATIVE_PARAMS = "native-sdk-params"
 }
