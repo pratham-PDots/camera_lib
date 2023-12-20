@@ -1491,7 +1491,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
             return maxGridSize != -1 && viewModel.currentImageList.size == maxGridSize
         } catch (e: Exception) {
-            LogUtils.logGlobally("max-limit-calculation-failure")
+            LogUtils.logGlobally("max-limit-calculation-failure $e")
             return false
         }
     }
