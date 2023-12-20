@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ShelfWatch</string>
     <string name="dialog_submit">Are you sure you want to submit this image?</string>
-    <string name="discard_submit" translatable="false">Are you sure you want to discard the captured image(s)?</string>
+    <string name="discard_submit">Are you sure you want to discard the captured image(s)?</string>
     <string name="dialogTitle">"Please select a direction"</string>
     <string name="max_limit_dialog_title" translatable="false">Image Length Reached</string>
     <string name="max_limit_dialog_message" translatable="false">Warning!! Maximum Clicked Images length Reached</string>
@@ -25,8 +25,6 @@
     <string name="choose_the_orientation_of_your_picture_taking">Choose the orientation of your picture taking</string>
     <string name="portrait_small">portrait</string>
     <string name="landscape_small">landscape</string>
-    <string name="portrait" translatable="false">PORTRAIT</string>
-    <string name="landscape" translatable="false">LANDSCAPE</string>
     <string name="go_down">Go Down</string>
     <string name="go_left">Go Left</string>
     <string name="go_right">Go Right</string>
