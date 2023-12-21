@@ -29,7 +29,7 @@ object CameraSDK {
         zoomLevel: Double = 1.0,
         showOverlapToggleButton: Boolean = false,
         showGridLines: Boolean = true,
-        maxLimitFeature: Boolean = true
+        maxLimitFeature: Boolean = false
     ) {
         consumer = uploadFrom
         Log.d("imageSW here", bucketName)
