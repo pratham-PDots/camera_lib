@@ -21,6 +21,8 @@ import com.sj.camera_lib_android.Database.ReactSingleImage
 import com.sj.camera_lib_android.ScopeHelper
 import com.sj.camera_lib_android.models.ImageUploadModel
 import com.sj.camera_lib_android.utils.CameraSDK
+import com.sj.camera_lib_android.utils.Events
+import com.sj.camera_lib_android.utils.LogUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -126,7 +128,7 @@ class MyServices : Service() {
         image.uri.let {
             val file = File(it)
             if(file.exists())
-                Log.d("imageSW file deleted", "${file.delete()} ${image.uri}")
+                LogUtils.logGlobally(Events.DELETE_UPLOADED_FILE, "File Deleted: ${file.delete()}, File URI: ${image.uri}")
         }
     }
 
@@ -238,7 +240,8 @@ class MyServices : Service() {
                     uploadTask?.addOnSuccessListener { taskSnapshot ->
                             applicationScope?.launch {
                                 Log.d("imageSW", "remove queue")
-                                Bugfender.d("native-image-upload-success", "reference: $fbRef name: $name")
+                                Bugfender.d(Events.IMAGE_UPLOAD_SUCESS, "reference: $fbRef name: $name")
+                                Bugfender.d(Events.UPLOADED_IMAGE_METADATA, getStringifiedMetadata(metadata.build()))
                                 removeImageFromQueue(mediaModelClass)
                                 broadCastQueue()
                                 broadCastImage(ReactSingleImage(
@@ -269,6 +272,7 @@ class MyServices : Service() {
                             // Handle failed upload
                             applicationScope?.launch {
                                 modifyImage(mediaModelClass, exception.message.toString())
+                                LogUtils.logGlobally(Events.IMAGE_UPLOAD_FAILURE, exception.message.toString())
                                 broadCastQueue()
 //                                broadCastImage(ReactSingleImage(
 //                                    uri = mediaModelClass.uri,
