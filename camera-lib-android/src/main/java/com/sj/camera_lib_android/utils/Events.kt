@@ -19,4 +19,5 @@ object Events {
     val DELETE_UPLOADED_FILE = "native-delete-uploaded-image"
     val CROSS_CLICK = "native-cross-clicked"
     val NATIVE_PARAMS = "native-sdk-params"
+    val NATIVE_AVAILABLE_WIDE_ANGLE = "native-available-wide-angle"
 }
