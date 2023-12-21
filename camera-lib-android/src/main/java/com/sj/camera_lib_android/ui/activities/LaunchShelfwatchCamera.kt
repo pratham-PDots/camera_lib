@@ -37,6 +37,8 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
         var zoomLevel = 0.0
         var backendToggle = false
         var gridlines = false
+        var maxLimitFeature = false
+
         if (extras != null) {
             modeRotation = extras.getString("mode") ?: ""
             overlayBE = extras.getString("overlapBE")?.toFloat() ?: 20f
@@ -50,6 +52,7 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
             zoomLevel = extras.getDouble("zoomLevel", 1.0)
             backendToggle = extras.getBoolean("backendToggle", false)
             gridlines = extras.getBoolean("gridlines", false)
+            maxLimitFeature = extras.getBoolean("maxLimitFeature", false)
 
             var message =
                 "Mode: $modeRotation ,uploadParams: $uploadParams , overlayBE: $overlayBE," +
@@ -60,19 +63,19 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
 
         }
         if (modeRotation.isNotEmpty()){
-            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel, backendToggle, gridlines)
+            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel, backendToggle, gridlines, maxLimitFeature)
 
         }
 
         portraitButton.setOnClickListener {
             modeRotation = "portrait"
-            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel, backendToggle, gridlines)
+            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel, backendToggle, gridlines, maxLimitFeature)
             Log.d("imageSW selectRotationDialog", " $modeRotation")
         }
 
         landscapeButton.setOnClickListener {
             modeRotation = "landscape"
-            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel, backendToggle, gridlines)
+            goToCameraScreen(modeRotation, overlayBE, uploadParams, resolution, referenceUrl, isBlurFeature, isCropFeature,uploadFrom, isRetake, zoomLevel, backendToggle, gridlines, maxLimitFeature)
 
             Log.d("imageSW selectRotationDialog", " $modeRotation")
         }
@@ -91,7 +94,8 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
         isRetake: Boolean = false,
         zoomLevel: Double = 1.0,
         backendToggle: Boolean = false,
-        gridlines: Boolean = false
+        gridlines: Boolean = false,
+        maxLimitFeature: Boolean = false
     ) {
         if (modeRotation.isNotEmpty()){
             val intent = Intent(this@LaunchShelfwatchCamera, CameraActivity::class.java)
@@ -107,6 +111,7 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
             intent.putExtra("zoomLevel", zoomLevel)
             intent.putExtra("backendToggle", backendToggle)
             intent.putExtra("gridlines", gridlines)
+            intent.putExtra("maxLimitFeature", maxLimitFeature)
             startActivity(intent)
             finish()
         }

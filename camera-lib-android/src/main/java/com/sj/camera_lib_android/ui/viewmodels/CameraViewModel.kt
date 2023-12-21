@@ -78,6 +78,8 @@ class CameraViewModel : ViewModel() {
     var gyroValueX: Float = 0f
     var gyroValueY: Float = 0f
 
+    var maxLimitFeature = false
+
     val currentImageList = arrayListOf<ImageDetailsModel>()
     val imageCapturedListLive: MutableLiveData<ArrayList<ImageDetailsModel>> = MutableLiveData()
 

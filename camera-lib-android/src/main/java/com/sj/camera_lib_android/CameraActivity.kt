@@ -285,6 +285,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             viewModel.currentZoomRatio = extras.getDouble("zoomLevel", 1.0)
             viewModel.backendToggle = extras.getBoolean("backendToggle", false)
             gridlines = extras.getBoolean("gridlines", false)
+            viewModel.maxLimitFeature = extras.getBoolean("maxLimitFeature", false)
 
 
             var message =
@@ -715,7 +716,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 isArrowSelected = true
             }
 
-            if(checkMaxImageLimitReached()) { openMaxLimitDialog() }
+            if(viewModel.maxLimitFeature && checkMaxImageLimitReached()) { openMaxLimitDialog() }
             else if (isArrowSelected || (viewModel.backendToggle && binding.overlapToggle?.isChecked == false)) {
                 captureImg.setBackgroundResource(R.drawable.black_solid_circle)
                 logCapturePressEvent()
