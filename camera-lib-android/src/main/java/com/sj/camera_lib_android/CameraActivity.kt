@@ -1026,6 +1026,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         wideAngleButton.isVisible =
             (viewModel.currentImageList.size == 0 && !isWideAngleCameraSameAsDefault())
         viewModel.hasWideAngle = !isWideAngleCameraSameAsDefault()
+        logCameras()
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
@@ -1293,6 +1294,38 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         )
 
         cropStartPS.isVisible = croppingPointsPS.isNotEmpty()
+    }
+
+    private fun logCameras(){
+        val cameraList: MutableList<String> = mutableListOf()
+        try {
+            val manager = getSystemService(CAMERA_SERVICE) as CameraManager
+            val cameraIds = manager.cameraIdList
+            for (cameraId in cameraIds) {
+                val characteristics = manager.getCameraCharacteristics(cameraId)
+
+                val lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING)
+                val sensorInfo =
+                    characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
+                val focalLengths =
+                    characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)
+                val minimumFocusDistance =
+                    characteristics.get(CameraCharacteristics.LENS_INFO_MINIMUM_FOCUS_DISTANCE)
+
+                if (lensFacing == CameraCharacteristics.LENS_FACING_BACK &&
+                    sensorInfo != null &&
+                    focalLengths != null &&
+                    minimumFocusDistance != null
+                ) {
+                    val fieldOfView = calculateFieldOfView(sensorInfo, focalLengths)
+                    cameraList.add("cameraId: $cameraId fieldOfView: $fieldOfView")
+                }
+            }
+
+            LogUtils.logGlobally(Events.NATIVE_AVAILABLE_WIDE_ANGLE, cameraList.toString())
+        } catch (e: CameraAccessException) {
+            e.printStackTrace()
+        }
     }
 
     private fun findWideAngleCamera(manager: CameraManager): String? {
