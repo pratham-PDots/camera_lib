@@ -17,8 +17,12 @@
     <string name="upload">Przesyłanie</string>
     <string name="camera_tilted_straighten_please">Krzywa perspektywa. Spróbuj ponownie</string>
     <string name="choose_the_orientation_of_your_picture_taking">Wybierz orientację poziomą / pionową</string>
-    <string name="portrait_small">Orientacja pionowa</string>
-    <string name="landscape_small">Orientacja pozioma</string>
+    <string name="change_orientation_portrait">Zmień widok na pionowy</string>
+    <string name="change_orientation_landscape">Zmień widok na poziomy</string>
+    <string name="portrait">Orientacja pionowa</string>
+    <string name="landscape">Orientacja pozioma</string>
+    <string name="portrait_small">pionowy</string>
+    <string name="landscape_small">poziomy</string>
     <string name="go_down">Dół</string>
     <string name="go_left">Lewo</string>
     <string name="go_right">Prawo</string>

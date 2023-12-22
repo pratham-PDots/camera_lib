@@ -389,7 +389,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                     orientationBl.visibility = View.INVISIBLE
 
                                 } else {
-                                    orientationTv.text = getString(R.string.change_orientation, getString(R.string.landscape_small))
+                                    orientationTv.text = getString(R.string.change_orientation_landscape)
                                     orientationBl.visibility = View.VISIBLE
                                 }
                             }
@@ -407,7 +407,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                     orientationBl.visibility = View.INVISIBLE
 
                                 } else {
-                                    orientationTv.text = getString(R.string.change_orientation, getString(R.string.portrait_small))
+                                    orientationTv.text = getString(R.string.change_orientation_portrait)
                                     orientationBl.visibility = View.VISIBLE
                                 }
                             }
