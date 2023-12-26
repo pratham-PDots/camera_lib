@@ -9,8 +9,8 @@ enum class LanguageType(val serverType: String) {
             return values().find { it.serverType == serverType } ?: ENGLISH
         }
 
-        fun isLanguagePresent(language: LanguageType): Boolean {
-            return values().contains(language)
+        fun isLanguagePresent(serverType: String): Boolean {
+            return values().any { it.serverType == serverType }
         }
     }
 }

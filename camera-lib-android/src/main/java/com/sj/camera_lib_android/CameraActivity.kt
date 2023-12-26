@@ -74,6 +74,7 @@ import com.sj.camera_lib_android.ui.interfaces.Backpressedlistener
 import com.sj.camera_lib_android.ui.viewmodels.CameraViewModel
 import com.sj.camera_lib_android.utils.Common
 import com.sj.camera_lib_android.utils.Events
+import com.sj.camera_lib_android.utils.LanguageUtils
 import com.sj.camera_lib_android.utils.LogUtils
 import com.sj.camera_lib_android.utils.Utils
 import com.sj.camera_lib_android.utils.imageutils.BlurDetection
@@ -227,7 +228,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        checkAndSetLanguage()
+        intent.extras?.getString("language")?.let { LanguageUtils.checkAndSetLanguage(it, this.resources) }
         super.onCreate(savedInstanceState)
         binding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(binding.root)

@@ -14,13 +14,14 @@ import com.sj.camera_lib_android.CameraActivity
 import com.sj.camera_lib_android.R
 import com.sj.camera_lib_android.types.LanguageType
 import com.sj.camera_lib_android.utils.Events
+import com.sj.camera_lib_android.utils.LanguageUtils
 import com.sj.camera_lib_android.utils.LogUtils
 import java.lang.NumberFormatException
 import java.util.Locale
 
 class LaunchShelfwatchCamera : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        checkAndSetLanguage()
+        intent.extras?.getString("language")?.let { LanguageUtils.checkAndSetLanguage(it, this.resources) }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launch_shelfwatch_camera)
 
@@ -122,36 +123,6 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
             intent.putExtra("language", language)
             startActivity(intent)
             finish()
-        }
-    }
-
-    private fun checkAndSetLanguage() {
-        try {
-            intent.extras?.getString("language")?.let { desiredLanguage ->
-                Log.d(
-                    "imageSW",
-                    "current locale: ${resources.configuration.locale.language} desired language: $desiredLanguage ${LanguageType.getLanguageFromServerType(desiredLanguage)}"
-                )
-                if (resources.configuration.locale.language != desiredLanguage) {
-                    setSDKLanguage(LanguageType.getLanguageFromServerType(desiredLanguage).serverType)
-                }
-            }
-        } catch (_: Exception) {
-        }
-    }
-
-    private fun setSDKLanguage(localeString: String = "en") {
-        try {
-            val locale = Locale(localeString)
-            Locale.setDefault(locale)
-
-            val resources: Resources = this.resources
-            val configuration = Configuration(resources.configuration)
-
-            configuration.setLocale(locale)
-            resources.updateConfiguration(configuration, resources.displayMetrics)
-        } catch (e: Exception) {
-            LogUtils.logGlobally(Events.FAILED_TO_CHANGE_LANGUAGE)
         }
     }
 }
