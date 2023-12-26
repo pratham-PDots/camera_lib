@@ -1119,36 +1119,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
     }
 
-    private fun checkAndSetLanguage() {
-        try {
-            intent.extras?.getString("language")?.let { desiredLanguage ->
-                Log.d(
-                    "imageSW",
-                    "current locale: ${resources.configuration.locale.language} desired language: $desiredLanguage ${LanguageType.getLanguageFromServerType(desiredLanguage)}"
-                )
-                if (resources.configuration.locale.language != desiredLanguage) {
-                    setSDKLanguage(LanguageType.getLanguageFromServerType(desiredLanguage).serverType)
-                }
-            }
-        } catch (_: Exception) {
-        }
-    }
-
-    private fun setSDKLanguage(localeString: String = "en") {
-        try {
-            val locale = Locale(localeString)
-            Locale.setDefault(locale)
-
-            val resources: Resources = this.resources
-            val configuration = Configuration(resources.configuration)
-
-            configuration.setLocale(locale)
-            resources.updateConfiguration(configuration, resources.displayMetrics)
-        } catch (e: Exception) {
-            LogUtils.logGlobally(Events.FAILED_TO_CHANGE_LANGUAGE)
-        }
-    }
-
     private fun initSensors() {
         // Initialize SensorManager
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
