@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
 import com.sj.camera_lib_android.CameraActivity
 import com.sj.camera_lib_android.R
+import com.sj.camera_lib_android.types.LanguageType
 import com.sj.camera_lib_android.utils.Events
 import com.sj.camera_lib_android.utils.LogUtils
 import java.lang.NumberFormatException
@@ -129,10 +130,10 @@ class LaunchShelfwatchCamera : AppCompatActivity() {
             intent.extras?.getString("language")?.let { desiredLanguage ->
                 Log.d(
                     "imageSW",
-                    "current locale: ${resources.configuration.locale.language} desired language: $desiredLanguage"
+                    "current locale: ${resources.configuration.locale.language} desired language: $desiredLanguage ${LanguageType.getLanguageFromServerType(desiredLanguage)}"
                 )
                 if (resources.configuration.locale.language != desiredLanguage) {
-                    setSDKLanguage(desiredLanguage)
+                    setSDKLanguage(LanguageType.getLanguageFromServerType(desiredLanguage).serverType)
                 }
             }
         } catch (_: Exception) {

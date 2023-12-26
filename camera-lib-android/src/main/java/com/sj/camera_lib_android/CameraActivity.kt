@@ -65,6 +65,7 @@ import com.canhub.cropper.CropImageView
 import com.google.firebase.FirebaseApp
 import com.sj.camera_lib_android.databinding.ActivityCameraBinding
 import com.sj.camera_lib_android.services.MyServices
+import com.sj.camera_lib_android.types.LanguageType
 import com.sj.camera_lib_android.ui.FlashType
 import com.sj.camera_lib_android.ui.ImageDialog
 import com.sj.camera_lib_android.ui.SubmitDialog
@@ -208,6 +209,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private var maxGridSize = -1
 
+    private var language: String = "en"
+
     private lateinit var scaleGestureDetector: ScaleGestureDetector
 
     private val scaleGestureListener =
@@ -288,6 +291,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             viewModel.currentZoomRatio = extras.getDouble("zoomLevel", 1.0)
             viewModel.backendToggle = extras.getBoolean("backendToggle", false)
             gridlines = extras.getBoolean("gridlines", false)
+            language = extras.getString("language", "en")
 
 
             var message =
@@ -314,7 +318,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         logCameraLaunchEvent(uploadParams)
         LogUtils.logGlobally(
             Events.NATIVE_PARAMS,
-            "orientation: $modeRotation, widthPercentage: $overlayBE, resolution: $resolution, referenceUrl: $referenceUrl, allowBlurCheck: $isBlurFeature, allowCrop: $isCropFeature, isRetake: ${viewModel.isRetake}, zoomLevel: ${viewModel.currentZoomRatio}, showOverlapToggleButton: ${viewModel.backendToggle}, showGrideLines: $gridlines"
+            "orientation: $modeRotation, widthPercentage: $overlayBE, resolution: $resolution, referenceUrl: $referenceUrl, allowBlurCheck: $isBlurFeature, allowCrop: $isCropFeature, isRetake: ${viewModel.isRetake}, zoomLevel: ${viewModel.currentZoomRatio}, showOverlapToggleButton: ${viewModel.backendToggle}, showGrideLines: $gridlines, langauge: $language"
         )
 
         viewModel.discardAllImages() // cameraActivity Launch
@@ -1119,10 +1123,10 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             intent.extras?.getString("language")?.let { desiredLanguage ->
                 Log.d(
                     "imageSW",
-                    "current locale: ${resources.configuration.locale.language} desired language: $desiredLanguage"
+                    "current locale: ${resources.configuration.locale.language} desired language: $desiredLanguage ${LanguageType.getLanguageFromServerType(desiredLanguage)}"
                 )
                 if (resources.configuration.locale.language != desiredLanguage) {
-                    setSDKLanguage(desiredLanguage)
+                    setSDKLanguage(LanguageType.getLanguageFromServerType(desiredLanguage).serverType)
                 }
             }
         } catch (_: Exception) {
