@@ -201,7 +201,7 @@ class DummyActivity : AppCompatActivity() {
             uploadFrom = binding.editTextUploadFrom.text.toString(),
             isRetake = binding.editTextRetake.text.toString().toBoolean(),
             zoomLevel = binding.editTextZoom.text.toString().toDouble(),
-            language = "pl"
+            language_code = "pl"
         )
     }
 
