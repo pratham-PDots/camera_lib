@@ -20,4 +20,5 @@ object Events {
     val CROSS_CLICK = "native-cross-clicked"
     val NATIVE_PARAMS = "native-sdk-params"
     val NATIVE_AVAILABLE_WIDE_ANGLE = "native-available-wide-angle"
+    val FAILED_TO_CHANGE_LANGUAGE = "native-language-change failure"
 }

@@ -3,27 +3,33 @@
     <string name="dialog_submit">Are you sure you want to submit this image?</string>
     <string name="discard_submit">Are you sure you want to discard the captured image(s)?</string>
     <string name="dialogTitle">"Please select a direction"</string>
-    <string name="max_limit_dialog_title">Image Length Reached</string>
-    <string name="max_limit_dialog_message">Warning!! Maximum Clicked Images length Reached</string>
     <string name="yes_btn">Yes</string>
     <string name="no_btn">No</string>
-    <string name="ok_btn">OK</string>
     <string name="done">Done</string>
     <string name="continue_">Continue</string>
     <string name="reset">Reset</string>
     <string name="retake">Retake</string>
     <string name="crop_review"><![CDATA[Crop & Review]]></string>
-    <string name="not_blurred_continue"><u>Not Blurred? Continue</u></string>
-    <string name="captured_photo_is_blurred">Captured photo is blurred</string>
+    <string name="change_orientation">Change orientation to %1s</string>
     <string name="processing_please_wait">Processing... Please wait</string>
     <string name="submit">Submit</string>
     <string name="upload">Upload</string>
     <string name="camera_tilted_straighten_please">Tilt alert! Adjust for straight photos.</string>
-
-    <string name="result_from_renderscript">Renderscript : %1s \n Most luminous color is %2s</string>
     <string name="choose_the_orientation_of_your_picture_taking">Choose the orientation of your picture taking</string>
+    <string name="change_orientation_portrait">Change orientation to portrait</string>
+    <string name="change_orientation_landscape">Change orientation to landscape</string>
     <string name="portrait">PORTRAIT</string>
     <string name="landscape">LANDSCAPE</string>
-    <string name="image_list_saved_for_offline_mode">Image List saved for offline mode!!!</string>
+    <string name="portrait_small">portrait</string>
+    <string name="landscape_small">landscape</string>
+    <string name="go_down">Go Down</string>
+    <string name="go_left">Go Left</string>
+    <string name="go_right">Go Right</string>
 
+    <string name="ok_btn" translatable="false">OK</string>
+    <string name="not_blurred_continue" translatable="false"><u>Not Blurred? Continue</u></string>
+    <string name="max_limit_dialog_title" translatable="false">Image Length Reached</string>
+    <string name="max_limit_dialog_message" translatable="false">Warning!! Maximum Clicked Images length Reached</string>
+    <string name="result_from_renderscript" translatable="false">Renderscript : %1s \n Most luminous color is %2s</string>
+    <string name="captured_photo_is_blurred" translatable="false">Captured photo is blurred</string>
 </resources>

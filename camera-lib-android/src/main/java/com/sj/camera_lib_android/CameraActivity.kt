@@ -12,6 +12,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Matrix
@@ -63,6 +65,7 @@ import com.canhub.cropper.CropImageView
 import com.google.firebase.FirebaseApp
 import com.sj.camera_lib_android.databinding.ActivityCameraBinding
 import com.sj.camera_lib_android.services.MyServices
+import com.sj.camera_lib_android.types.LanguageType
 import com.sj.camera_lib_android.ui.FlashType
 import com.sj.camera_lib_android.ui.ImageDialog
 import com.sj.camera_lib_android.ui.SubmitDialog
@@ -71,6 +74,7 @@ import com.sj.camera_lib_android.ui.interfaces.Backpressedlistener
 import com.sj.camera_lib_android.ui.viewmodels.CameraViewModel
 import com.sj.camera_lib_android.utils.Common
 import com.sj.camera_lib_android.utils.Events
+import com.sj.camera_lib_android.utils.LanguageUtils
 import com.sj.camera_lib_android.utils.LogUtils
 import com.sj.camera_lib_android.utils.Utils
 import com.sj.camera_lib_android.utils.imageutils.BlurDetection
@@ -206,6 +210,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private var maxGridSize = -1
 
+    private var language: String = "en"
+
     private lateinit var scaleGestureDetector: ScaleGestureDetector
 
     private val scaleGestureListener =
@@ -222,6 +228,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        intent.extras?.getString("language")?.let { LanguageUtils.checkAndSetLanguage(it, this.resources) }
         super.onCreate(savedInstanceState)
         binding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -285,6 +292,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             viewModel.currentZoomRatio = extras.getDouble("zoomLevel", 1.0)
             viewModel.backendToggle = extras.getBoolean("backendToggle", false)
             gridlines = extras.getBoolean("gridlines", false)
+            language = extras.getString("language", "en")
 
 
             var message =
@@ -311,7 +319,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         logCameraLaunchEvent(uploadParams)
         LogUtils.logGlobally(
             Events.NATIVE_PARAMS,
-            "orientation: $modeRotation, widthPercentage: $overlayBE, resolution: $resolution, referenceUrl: $referenceUrl, allowBlurCheck: $isBlurFeature, allowCrop: $isCropFeature, isRetake: ${viewModel.isRetake}, zoomLevel: ${viewModel.currentZoomRatio}, showOverlapToggleButton: ${viewModel.backendToggle}, showGrideLines: $gridlines"
+            "orientation: $modeRotation, widthPercentage: $overlayBE, resolution: $resolution, referenceUrl: $referenceUrl, allowBlurCheck: $isBlurFeature, allowCrop: $isCropFeature, isRetake: ${viewModel.isRetake}, zoomLevel: ${viewModel.currentZoomRatio}, showOverlapToggleButton: ${viewModel.backendToggle}, showGrideLines: $gridlines, langauge: $language"
         )
 
         viewModel.discardAllImages() // cameraActivity Launch
@@ -386,13 +394,16 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                     orientationBl.visibility = View.INVISIBLE
 
                                 } else {
-                                    orientationTv.text = "Change orientation to landscape"
+                                    orientationTv.text = getString(R.string.change_orientation_landscape)
                                     orientationBl.visibility = View.VISIBLE
                                 }
                             }
 
                             ORIENTATION_REVERSE_PORTRAIT -> {
-                                orientationTv.text = "Change orientation to $modeRotation"
+                                orientationTv.text = getString(R.string.change_orientation, if(modeRotation.equals(
+                                        "portrait",
+                                        true
+                                    )) getString(R.string.portrait_small) else getString(R.string.landscape_small))
                                 orientationBl.visibility = View.VISIBLE
                             }
 
@@ -401,13 +412,16 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                     orientationBl.visibility = View.INVISIBLE
 
                                 } else {
-                                    orientationTv.text = "Change orientation to portrait"
+                                    orientationTv.text = getString(R.string.change_orientation_portrait)
                                     orientationBl.visibility = View.VISIBLE
                                 }
                             }
 
                             ORIENTATION_REVERSE_LANDSCAPE -> {
-                                orientationTv.text = "Change orientation to $modeRotation"
+                                orientationTv.text = getString(R.string.change_orientation, if(modeRotation.equals(
+                                        "portrait",
+                                        true
+                                    )) getString(R.string.portrait_small) else getString(R.string.landscape_small))
                                 orientationBl.visibility = View.VISIBLE
 
                             }
