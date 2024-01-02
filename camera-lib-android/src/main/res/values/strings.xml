@@ -25,11 +25,11 @@
     <string name="go_down">Go Down</string>
     <string name="go_left">Go Left</string>
     <string name="go_right">Go Right</string>
+    <string name="not_blurred_continue"><u>Not Blurred? Continue</u></string>
+    <string name="captured_photo_is_blurred">Captured photo is blurred</string>
 
     <string name="ok_btn" translatable="false">OK</string>
-    <string name="not_blurred_continue" translatable="false"><u>Not Blurred? Continue</u></string>
     <string name="max_limit_dialog_title" translatable="false">Image Length Reached</string>
     <string name="max_limit_dialog_message" translatable="false">Warning!! Maximum Clicked Images length Reached</string>
     <string name="result_from_renderscript" translatable="false">Renderscript : %1s \n Most luminous color is %2s</string>
-    <string name="captured_photo_is_blurred" translatable="false">Captured photo is blurred</string>
 </resources>

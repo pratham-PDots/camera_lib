@@ -26,4 +26,6 @@
     <string name="go_down">Dół</string>
     <string name="go_left">Lewo</string>
     <string name="go_right">Prawo</string>
+    <string name="not_blurred_continue"><u>Nie jest zamazane? Kontynuuj</u></string>
+    <string name="captured_photo_is_blurred">Wykonane zdjęcie jest zamazane</string>
 </resources>
