@@ -5,7 +5,7 @@ package com.sj.camera_lib_android.models
 
 import android.graphics.Bitmap
 import java.io.File
-data class ImageDetailsModel (
+data class ImageDetailsModel(
     val position: IntArray,
     val dimension: IntArray,
     val appTimestamp: String,
@@ -24,6 +24,6 @@ data class ImageDetailsModel (
     val file: File,
     val image: Bitmap,
     var croppedCoordinates: Array<Int>,
-
-
+    var gyroHorizontal: Float = 0f,
+    var gyroVertical: Float = 0f
     )

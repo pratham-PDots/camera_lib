@@ -90,6 +90,7 @@ dependencies {
 
 
 
+    implementation "com.quickbirdstudios:opencv:3.4.15"
     //openCV
 //    implementation 'org.opencv:opencv-android:4.5.1'
 }

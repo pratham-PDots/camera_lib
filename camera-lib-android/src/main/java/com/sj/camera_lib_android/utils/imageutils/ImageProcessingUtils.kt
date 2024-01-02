@@ -6,6 +6,9 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.util.Log
 import org.json.JSONArray
+import org.opencv.android.Utils
+import org.opencv.core.Core
+import org.opencv.core.Mat
 
 
 object ImageProcessingUtils {
@@ -33,5 +36,18 @@ object ImageProcessingUtils {
         return Math.abs(averageIntensity) < threshold
     }
 
+    fun rotateBitmapWithOpenCV(srcBitmap: Bitmap): Bitmap {
+        val srcMat = Mat()
+        Utils.bitmapToMat(srcBitmap, srcMat)
 
+        val rotationDegrees = Core.ROTATE_90_CLOCKWISE
+
+        val rotatedMat = Mat()
+        Core.rotate(srcMat, rotatedMat, rotationDegrees)
+
+        val dstBitmap = Bitmap.createBitmap(rotatedMat.cols(), rotatedMat.rows(), Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(rotatedMat, dstBitmap)
+
+        return dstBitmap
+    }
 }

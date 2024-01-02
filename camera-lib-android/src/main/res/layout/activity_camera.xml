@@ -59,6 +59,7 @@
                     android:layout_width="140dp"
                     android:layout_height="65dp"
                     android:layout_marginStart="20dp"
+                    android:contentDescription="gyro_horizontal"
                     android:layout_marginBottom="-10dp"
                     app:layout_constraintBottom_toTopOf="@id/zoomLayout"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -69,6 +70,7 @@
                     android:layout_width="65dp"
                     android:layout_height="140dp"
                     android:layout_marginStart="15dp"
+                    android:contentDescription="gyro_vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -79,14 +81,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="35dp"
                     android:layout_marginEnd="35dp"
-                    android:layout_marginTop="55dp"
+                    android:layout_marginTop="5dp"
                     android:backgroundTint="@color/design_default_color_error"
                     android:visibility="gone"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toBottomOf="@id/flashButton">
 
 
                     <LinearLayout
@@ -99,13 +101,14 @@
                             android:id="@+id/iconImageView"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
+                            app:tint="#FFFF00"
                             android:src="@android:drawable/stat_sys_warning" />
 
                         <TextView
                             android:id="@+id/textTextView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="5dp"
                             android:textColor="@color/white"
                             android:gravity="start|center_vertical"
                             android:text="@string/camera_tilted_straighten_please"
@@ -140,6 +143,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginBottom="15dp"
+                    android:contentDescription="zoom_icon"
                     android:background="@drawable/white_circle"
                     app:layout_constraintBottom_toTopOf="@id/image_capture_button"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -279,6 +283,7 @@
                         android:layout_height="40dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
+                        android:contentDescription="right_arrow"
                         android:focusable="true"
                         android:src="@drawable/img_14"
                         android:visibility="invisible" />
@@ -287,7 +292,7 @@
                         android:id="@+id/right_arrow_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Go Right"
+                        android:text="@string/go_right"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -312,6 +317,7 @@
                         android:layout_height="40dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
+                        android:contentDescription="down_arrow"
                         android:focusable="true"
                         android:src="@drawable/img_15"
                         android:visibility="invisible" />
@@ -320,7 +326,7 @@
                         android:id="@+id/down_arrow_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Go Down"
+                        android:text="@string/go_down"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -343,6 +349,7 @@
                         android:layout_height="40dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
+                        android:contentDescription="left_arrow"
                         android:focusable="true"
                         android:src="@drawable/img_13"
                         android:visibility="invisible" />
@@ -351,7 +358,7 @@
                         android:id="@+id/left_arrow_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Go Left"
+                        android:text="@string/go_left"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -364,6 +371,7 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_margin="20dp"
+                    android:contentDescription="cross_button"
                     android:src="@drawable/cross"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -377,6 +385,20 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/flashButton"
+                    android:background="@color/transparent"
+                    app:layout_constraintTop_toBottomOf="@id/imgReference_iv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="20dp"
+                    android:contentDescription="flash_button"
+                    android:layout_width="37dp"
+                    android:layout_height="37dp"
+                    android:scaleX=".77"
+                    android:scaleY=".77"
+                    android:src="@drawable/flash_auto"/>
 
                 <!--                 <ImageView
                                    android:id="@+id/flash_iv"
@@ -394,6 +416,7 @@
                     android:layout_height="40dp"
                     android:layout_marginStart="40dp"
                     android:layout_marginBottom="30dp"
+                    android:contentDescription="gallery_preview_button"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -428,6 +451,7 @@
                         android:layout_height="45dp"
                         android:layout_marginHorizontal="10dp"
                         android:layout_marginBottom="4dp"
+                        android:contentDescription="submit_button"
                         android:background="@drawable/bg_circular_orange"
                         android:src="@drawable/white_arrow_upward"
                         app:layout_constraintBottom_toTopOf="@id/upload_tv"
@@ -456,6 +480,7 @@
                     android:layout_marginBottom="24dp"
                     android:padding="5dp"
                     android:scaleType="centerCrop"
+                    android:contentDescription="trash_button"
                     android:src="@drawable/img_12"
                     app:layout_constraintBottom_toTopOf="@id/submitImgLL"
                     app:layout_constraintEnd_toEndOf="@id/submitImgLL"
@@ -466,6 +491,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_marginBottom="16dp"
+                    android:contentDescription="capture_button"
                     android:background="@drawable/white_solid_circle"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -512,6 +538,7 @@
                     android:visibility="visible"
                     app:cropAutoZoomEnabled="false"
                     app:cropGuidelines="on"
+                    app:cropShowProgressBar="false"
                     app:cropInitialCropWindowPaddingRatio="0"
                     app:layout_constraintBottom_toTopOf="@+id/LL1"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -533,11 +560,12 @@
 
                     <Button
                         android:id="@+id/croppingResetBtn"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
                         android:background="@color/transparent"
                         android:drawableLeft="@drawable/ic_reset"
+                        android:contentDescription="crop_reset"
+                        android:layout_weight="1"
                         android:text="@string/reset"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textColor="@color/white"
@@ -545,20 +573,23 @@
 
                     <Button
                         android:id="@+id/croppingRetakeBtn"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
                         android:background="@color/transparent"
                         android:drawableLeft="@drawable/ic_retake"
+                        android:contentDescription="crop_retake"
+                        android:layout_weight="1.1"
                         android:text="@string/retake"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textColor="@color/white" />
 
                     <Button
                         android:id="@+id/croppingDoneBtn"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:background="@color/transparent"
+                        android:layout_weight="1"
+                        android:contentDescription="crop_done"
                         android:drawableLeft="@drawable/ic_done_24"
                         android:text="@string/done"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -616,6 +647,7 @@
                         android:layout_height="40dp"
                         android:background="@drawable/bg_orange_rectangle"
                         android:backgroundTint="@color/white"
+                        android:contentDescription="blur_retake"
                         android:drawableStart="@drawable/ic_retake"
                         android:drawableTint="@color/black"
                         android:text="@string/retake"
@@ -629,6 +661,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="10dp"
+                    android:contentDescription="blur_continue"
                     android:translationZ="10dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -802,6 +835,7 @@
                         android:background="@android:color/transparent"
                         android:visibility="visible"
                         app:cropAutoZoomEnabled="false"
+                        app:cropShowProgressBar="false"
                         app:layout_constraintBottom_toTopOf="@+id/LL1_ps"
                         app:layout_constraintDimensionRatio="3:4"
                         app:layout_constraintEnd_toEndOf="parent"

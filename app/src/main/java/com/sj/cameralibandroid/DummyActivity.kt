@@ -200,7 +200,8 @@ class DummyActivity : AppCompatActivity() {
             allowCrop = binding.editTextCropFeature.text.toString().toBoolean(),
             uploadFrom = binding.editTextUploadFrom.text.toString(),
             isRetake = binding.editTextRetake.text.toString().toBoolean(),
-            zoomLevel = binding.editTextZoom.text.toString().toDouble()
+            zoomLevel = binding.editTextZoom.text.toString().toDouble(),
+            language_code = "pl"
         )
     }
 

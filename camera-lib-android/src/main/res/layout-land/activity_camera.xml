@@ -59,6 +59,7 @@
                     android:layout_width="140dp"
                     android:layout_height="65dp"
                     android:layout_marginStart="20dp"
+                    android:contentDescription="gyro_horizontal"
                     android:layout_marginBottom="-10dp"
                     app:layout_constraintBottom_toTopOf="@id/zoomLayout"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -68,24 +69,27 @@
                     android:id="@+id/verticalTiltView"
                     android:layout_width="65dp"
                     android:layout_height="140dp"
+                    android:contentDescription="gyro_vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/delete_btn"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/tilt_Warning_Message"
-                    android:layout_width="250dp"
+                    android:layout_width="140dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="35dp"
-                    android:layout_marginEnd="35dp"
-                    android:layout_marginTop="55dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginTop="5dp"
                     android:backgroundTint="@color/design_default_color_error"
                     android:visibility="gone"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="4dp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginBottom="5dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintEnd_toStartOf="@id/viewFinder"
+                    app:layout_constraintTop_toBottomOf="@id/overlap_toggle"
+                    app:layout_constraintBottom_toTopOf="@id/verticalTiltView">
 
 
                     <LinearLayout
@@ -96,19 +100,20 @@
 
                         <ImageView
                             android:id="@+id/iconImageView"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@android:drawable/stat_sys_warning" />
+                            android:layout_width="17dp"
+                            android:layout_height="17dp"
+                            android:src="@android:drawable/stat_sys_warning"
+                            app:tint="#FFFF00" />
 
                         <TextView
                             android:id="@+id/textTextView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="5dp"
                             android:textColor="@color/white"
                             android:gravity="start|center_vertical"
                             android:text="@string/camera_tilted_straighten_please"
-                            android:textSize="12sp" />
+                            android:textSize="10sp" />
 
                     </LinearLayout>
 
@@ -139,6 +144,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginBottom="15dp"
+                    android:contentDescription="zoom_icon"
                     android:background="@drawable/white_circle"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -221,7 +227,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    app:layout_constraintGuide_percent="0.5" />
+                    app:layout_constraintGuide_percent="0.6" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/top_arrow_guideline"
@@ -278,6 +284,7 @@
                         android:layout_height="40dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
+                        android:contentDescription="right_arrow"
                         android:focusable="true"
                         android:src="@drawable/img_14"
                         android:visibility="invisible" />
@@ -286,7 +293,7 @@
                         android:id="@+id/right_arrow_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Go Right"
+                        android:text="@string/go_right"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -311,6 +318,7 @@
                         android:layout_height="40dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
+                        android:contentDescription="down_arrow"
                         android:focusable="true"
                         android:src="@drawable/img_15"
                         android:visibility="invisible" />
@@ -319,7 +327,7 @@
                         android:id="@+id/down_arrow_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Go Down"
+                        android:text="@string/go_down"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -342,6 +350,7 @@
                         android:layout_height="40dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
+                        android:contentDescription="left_arrow"
                         android:focusable="true"
                         android:src="@drawable/img_13"
                         android:visibility="invisible" />
@@ -350,7 +359,7 @@
                         android:id="@+id/left_arrow_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Go Left"
+                        android:text="@string/go_left"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -363,6 +372,7 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_margin="20dp"
+                    android:contentDescription="cross_button"
                     android:src="@drawable/cross"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -376,6 +386,20 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/flashButton"
+                    android:background="@color/transparent"
+                    app:layout_constraintTop_toBottomOf="@id/imgReference_iv"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="10dp"
+                    android:contentDescription="flash_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleX=".8"
+                    android:scaleY=".8"
+                    android:src="@drawable/flash_auto"/>
 
                 <!--                 <ImageView
                                    android:id="@+id/flash_iv"
@@ -393,6 +417,7 @@
                     android:layout_height="40dp"
                     android:layout_marginStart="40dp"
                     android:layout_marginBottom="30dp"
+                    android:contentDescription="gallery_preview_button"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -427,6 +452,7 @@
                         android:layout_height="45dp"
                         android:layout_marginHorizontal="10dp"
                         android:layout_marginBottom="4dp"
+                        android:contentDescription="submit_button"
                         android:background="@drawable/bg_circular_orange"
                         android:src="@drawable/white_arrow_upward"
                         app:layout_constraintBottom_toTopOf="@id/upload_tv"
@@ -453,7 +479,8 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:padding="5dp"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="40dp"
+                    android:contentDescription="trash_button"
                     android:scaleType="centerCrop"
                     android:src="@drawable/img_12"
                     app:layout_constraintTop_toTopOf="parent"
@@ -465,6 +492,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_marginEnd="5dp"
+                    android:contentDescription="capture_button"
                     android:background="@drawable/white_solid_circle"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -476,7 +504,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="5dp"
                     android:checked="false"
                     android:visibility="gone"
                     app:trackTint="@color/white"
@@ -512,6 +540,7 @@
                     android:background="@android:color/transparent"
                     android:visibility="visible"
                     app:cropAutoZoomEnabled="false"
+                    app:cropShowProgressBar="false"
                     app:cropGuidelines="on"
                     app:cropInitialCropWindowPaddingRatio="0"
                     app:layout_constraintBottom_toTopOf="@+id/LL1"
@@ -539,6 +568,7 @@
                         android:layout_marginEnd="10dp"
                         android:background="@color/transparent"
                         android:drawableLeft="@drawable/ic_reset"
+                        android:contentDescription="crop_reset"
                         android:text="@string/reset"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textColor="@color/white"
@@ -550,6 +580,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
                         android:background="@color/transparent"
+                        android:contentDescription="crop_retake"
                         android:drawableLeft="@drawable/ic_retake"
                         android:text="@string/retake"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -560,6 +591,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@color/transparent"
+                        android:contentDescription="crop_done"
                         android:drawableLeft="@drawable/ic_done_24"
                         android:text="@string/done"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -617,6 +649,7 @@
                         android:layout_height="40dp"
                         android:background="@drawable/bg_orange_rectangle"
                         android:backgroundTint="@color/white"
+                        android:contentDescription="blur_retake"
                         android:drawableStart="@drawable/ic_retake"
                         android:drawableTint="@color/black"
                         android:text="@string/retake"
@@ -631,6 +664,7 @@
                     android:gravity="center"
                     android:padding="10dp"
                     android:translationZ="10dp"
+                    android:contentDescription="blur_continue"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
@@ -803,6 +837,7 @@
                         android:background="@android:color/transparent"
                         android:visibility="visible"
                         app:cropAutoZoomEnabled="false"
+                        app:cropShowProgressBar="false"
                         app:layout_constraintBottom_toTopOf="@+id/LL1_ps"
                         app:layout_constraintDimensionRatio="3:4"
                         app:layout_constraintEnd_toEndOf="parent"

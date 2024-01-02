@@ -1,4 +1,5 @@
 package com.sj.camera_lib_android.services
+
 /**
  * @author Saurabh Kumar 11 September 2023
  * **/
@@ -20,6 +21,8 @@ import com.sj.camera_lib_android.Database.ReactSingleImage
 import com.sj.camera_lib_android.ScopeHelper
 import com.sj.camera_lib_android.models.ImageUploadModel
 import com.sj.camera_lib_android.utils.CameraSDK
+import com.sj.camera_lib_android.utils.Events
+import com.sj.camera_lib_android.utils.LogUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -122,11 +125,10 @@ class MyServices : Service() {
         val imageEntity = imageDao.getImageByUri(image.uri)
         Log.d("imageSW remove", "${imageEntity?.uri}")
         imageEntity?.let { imageDao.deleteImage(it) }
-        if(CameraSDK.consumer == "Shelfwatch") {
-            image.uri.let {
-                val file = File(it)
-                Log.d("imageSW file deleted", file.delete().toString())
-            }
+        image.uri.let {
+            val file = File(it)
+            if(file.exists())
+                LogUtils.logGlobally(Events.DELETE_UPLOADED_FILE, "File Deleted: ${file.delete()}, File URI: ${image.uri}")
         }
     }
 
@@ -186,6 +188,10 @@ class MyServices : Service() {
                 val crop_coordinates = mediaModelClass.crop_coordinates
                 val overlap_values = mediaModelClass.overlap_values
                 val last_image_flag = mediaModelClass.last_image_flag
+                val gyrohorizontal = mediaModelClass.gyroHorizontalValue
+                val gyrovertical = mediaModelClass.gyroVerticalValue
+
+                Log.d("imageSW gyroValues", "$gyrohorizontal $gyrovertical")
 
                 val uri = mediaModelClass.uri
                 val type = mediaModelClass.type
@@ -234,7 +240,8 @@ class MyServices : Service() {
                     uploadTask?.addOnSuccessListener { taskSnapshot ->
                             applicationScope?.launch {
                                 Log.d("imageSW", "remove queue")
-                                Bugfender.d("native-image-upload-success", "reference: $fbRef name: $name")
+                                Bugfender.d(Events.IMAGE_UPLOAD_SUCESS, "reference: $fbRef name: $name")
+                                Bugfender.d(Events.UPLOADED_IMAGE_METADATA, getStringifiedMetadata(metadata.build()))
                                 removeImageFromQueue(mediaModelClass)
                                 broadCastQueue()
                                 broadCastImage(ReactSingleImage(
@@ -265,6 +272,7 @@ class MyServices : Service() {
                             // Handle failed upload
                             applicationScope?.launch {
                                 modifyImage(mediaModelClass, exception.message.toString())
+                                LogUtils.logGlobally(Events.IMAGE_UPLOAD_FAILURE, exception.message.toString())
                                 broadCastQueue()
 //                                broadCastImage(ReactSingleImage(
 //                                    uri = mediaModelClass.uri,

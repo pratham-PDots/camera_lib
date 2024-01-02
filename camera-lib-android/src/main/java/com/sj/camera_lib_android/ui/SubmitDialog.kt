@@ -9,6 +9,7 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 
 class SubmitDialog(
+  val title: String = "",
   val prompt: String,
   val yesText: String,
   val noText: String,
@@ -19,7 +20,9 @@ class SubmitDialog(
     return context?.let {
       // Use the Builder class for convenient dialog construction
       val builder = AlertDialog.Builder(it)
-      builder.setMessage(prompt)
+      builder
+        .setTitle(title)
+        .setMessage(prompt)
         .setPositiveButton(yesText
         ) { dialog, id -> onClick() }
         .setNegativeButton(noText

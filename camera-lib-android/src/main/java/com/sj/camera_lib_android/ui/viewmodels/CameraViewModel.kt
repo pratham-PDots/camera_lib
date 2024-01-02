@@ -15,7 +15,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.sj.camera_lib_android.CameraActivity
 import com.sj.camera_lib_android.models.ImageDetailsModel
 import com.sj.camera_lib_android.models.ImageModel
@@ -55,13 +54,14 @@ class CameraViewModel : ViewModel() {
     var imageName = ""
     var lastDirection = ""
 
-    private var directionSelected = ""
+    var directionSelected = ""
     var directionForOverlap = ""
     var rowSum: Int = 0
     val uuid = UUID.randomUUID()
     var maxRow = 0
     var maxCol = 0
 
+    var hasWideAngle = true
     var wideAngleSet = true
     var imageSavedCount = 0
     var submitClicked = false
@@ -74,6 +74,9 @@ class CameraViewModel : ViewModel() {
 
     var imageWidth: Int = 0
     var imageHeight: Int = 0
+
+    var gyroValueX: Float = 0f
+    var gyroValueY: Float = 0f
 
     val currentImageList = arrayListOf<ImageDetailsModel>()
     val imageCapturedListLive: MutableLiveData<ArrayList<ImageDetailsModel>> = MutableLiveData()
@@ -109,6 +112,8 @@ class CameraViewModel : ViewModel() {
         context: Context
     ) {
 
+        Log.d("imageSW overlap bug", directionSelected)
+
         rowSum = if (currentImageList.isEmpty()) { // condition for 1st image capture
             1
         } else {
@@ -126,6 +131,10 @@ class CameraViewModel : ViewModel() {
 
         if (directionSelected.isNotEmpty() && !directionSelected.equals("down", true)) {
             directionID = directionSelected
+        }
+
+        if(directionSelected.isNotEmpty() && directionSelected.equals("down", true)) {
+            directionID = ""
         }
 
         // stepsTaken Work
@@ -197,6 +206,8 @@ class CameraViewModel : ViewModel() {
         overlapArray = getOverlapArray()
         Log.d("imageSW overlapArray", overlapArray.contentToString())
 
+        Log.d("imageSW gyroValues", "$gyroValueX $gyroValueY")
+
 
         currentImageList.add(
             ImageDetailsModel(
@@ -217,9 +228,13 @@ class CameraViewModel : ViewModel() {
                 ImageModel("$file1", "image/jpeg", "$captureTime.jpg"),
                 file1,
                 bmp1,
-                coordinatesCropped
+                coordinatesCropped,
+                gyroValueX,
+                gyroValueY
             )
         )
+
+        Log.d("imageSW overlap bug", currentImageList.last().toString())
 
         Log.d(
             "imageSW handle_img",
@@ -239,7 +254,7 @@ class CameraViewModel : ViewModel() {
         } else false
         Log.d("imageSW isAutomaticID", "$isAutomaticID")
 
-        clearSharedPref()
+        //clearSharedPref()
         imageUploadList.clear()
         renderUi() // handleClickedImage
 
@@ -288,7 +303,7 @@ class CameraViewModel : ViewModel() {
         val deviceName = getDeviceModel()
         val utils = Utils()
 
-        clearSharedPref()
+        //clearSharedPref()
         imageUploadList.clear()
 
         if (currentImageList.isNotEmpty()) {
@@ -313,7 +328,9 @@ class CameraViewModel : ViewModel() {
                 val uploadParam = JSONObject(upload_param)
 
                 val metadata = JSONObject(uploadParam.optString("metadata", "{}"))
-                metadata.put("is_wide_angle", if (wideAngleSet) 1 else 0)
+                metadata.put("gyro_horizontal", imageDetails.gyroHorizontal.toString())
+                metadata.put("gyro_vertical", imageDetails.gyroVertical.toString())
+                metadata.put("is_wide_angle", if (hasWideAngle && wideAngleSet) 1 else 0)
                 uploadParam.put("metadata", metadata)
 
                 ImageUploadModel(
@@ -326,7 +343,8 @@ class CameraViewModel : ViewModel() {
                     cropCoordinates.contentToString(), "${imageDetails.overlapPercent}",
                     uploadParam.toString(), "${imageDetails.file}", "image/jpeg",
                     imageDetails.file.toString().substringAfterLast("/"),
-                    last_image_flag = if(index == currentImageList.size - 1) "1" else "0"
+                    last_image_flag = if(index == currentImageList.size - 1) "1" else "0",
+                    gyroHorizontalValue = imageDetails.gyroHorizontal.toString(), gyroVerticalValue = imageDetails.gyroVertical.toString()
                 )
 
             })
@@ -336,7 +354,7 @@ class CameraViewModel : ViewModel() {
             )
 
             //Saving for offlineMode
-            saveToSharedPref(imageUploadList)
+            //saveToSharedPref(imageUploadList)
 
             // Upload to Firebase or send List to 3rd Party
             // upload to Firebase
@@ -819,7 +837,9 @@ class CameraViewModel : ViewModel() {
 
     fun deleteLastCapturedImage() {
         Log.d("imageSW delete ", "before Size1: ${imageCapturedListLive.value?.size}")
-
+        if(currentImageList.last().file.exists()) {
+            Log.d("imageSW deleteLastCaptured", "${currentImageList.last().file.delete()}")
+        }
         currentImageList.removeLast()
         imageCapturedListLive.value = currentImageList
         directionSelected = ""
@@ -834,6 +854,14 @@ class CameraViewModel : ViewModel() {
         }
 
 
+    }
+
+    fun deleteAllImages() {
+        currentImageList.forEach {
+            Log.d("imageSW", "${it.file} ${it.file.exists()}")
+            if(it.file.exists())
+                Log.d("imageSW deleteAllFiles", "${it.file.delete()}")
+         }
     }
 
     fun discardAllImages() {
