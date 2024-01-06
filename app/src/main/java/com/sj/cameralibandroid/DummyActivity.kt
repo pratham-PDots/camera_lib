@@ -12,7 +12,6 @@ import android.util.Log
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.sj.camera_lib_android.Database.PendingImage
 import com.sj.camera_lib_android.Database.ReactPendingData
 import com.sj.camera_lib_android.Database.ReactSingleImage
 import com.sj.camera_lib_android.models.ImageUploadModel
@@ -149,6 +148,15 @@ class DummyActivity : AppCompatActivity() {
                 binding.progressTextView.text = imageList.toString()
             }
 
+            if(intent?.action?.equals("did-submit-press") == true) {
+                Log.d(
+                    "imageSW did-submit-press",
+                    "${intent.getStringExtra("upload_params")} ${
+                        intent.getSerializableExtra("images")
+                    } ${intent.getBooleanExtra("is_retake", false)}"
+                )
+            }
+
             if(intent?.action?.equals("did-receive-image-upload-status") == true) {
                 Log.d("imageSW single image broadcast", intent.getParcelableExtra<ReactSingleImage>("image").toString())
             }
@@ -211,6 +219,7 @@ class DummyActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("Progress"))// onResume
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("did-receive-queue-data"))// onResume
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("did-receive-image-upload-status"))// onResume
+        LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("did-submit-press"))
     }
 
     // Unbind from the service in the onDestroy() method of the fragment
