@@ -12,8 +12,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Matrix
@@ -65,7 +63,6 @@ import com.canhub.cropper.CropImageView
 import com.google.firebase.FirebaseApp
 import com.sj.camera_lib_android.databinding.ActivityCameraBinding
 import com.sj.camera_lib_android.services.MyServices
-import com.sj.camera_lib_android.types.LanguageType
 import com.sj.camera_lib_android.ui.FlashType
 import com.sj.camera_lib_android.ui.ImageDialog
 import com.sj.camera_lib_android.ui.SubmitDialog
@@ -778,13 +775,13 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
         submitBtn1.setOnClickListener {
-
             SubmitDialog( // submitBtn1
                 prompt = getString(R.string.dialog_submit),
                 yesText = getString(R.string.yes_btn),
                 noText = getString(R.string.no_btn),
                 onClick = {
                     viewModel.submitClicked = true
+                    broadcastSubmitPress(this@CameraActivity)
                     LogUtils.logGlobally(Events.UPLOAD_BUTTON_PRESSED, "Total Images: ${viewModel.currentImageList.size}")
                     Log.d(
                         "imageSW",
@@ -808,6 +805,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 noText = getString(R.string.no_btn),
                 onClick = {
                     viewModel.submitClicked = true
+                    broadcastSubmitPress(this@CameraActivity)
                     LogUtils.logGlobally(Events.UPLOAD_BUTTON_PRESSED_PREVIEW, "Total Images: ${viewModel.currentImageList.size}")
                     Log.d(
                         "imageSW",
@@ -1117,6 +1115,15 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             }
 
         }
+    }
+
+    private fun broadcastSubmitPress(context: Context) {
+        val x = viewModel.currentImageList.map { "${it.file}" }
+        val intent = Intent("did-submit-press")
+        intent.putExtra("upload_params", viewModel.upload_param)
+        intent.putExtra("images", ArrayList(viewModel.currentImageList.map { "${it.file}" }))
+        intent.putExtra("is_retake", viewModel.isRetake)
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
     }
 
     private fun initSensors() {
