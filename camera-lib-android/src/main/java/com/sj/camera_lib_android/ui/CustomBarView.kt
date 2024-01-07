@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+import kotlin.math.abs
 
 class CustomBarView @JvmOverloads constructor(
     context: Context,
@@ -86,14 +87,7 @@ class CustomBarView @JvmOverloads constructor(
             // Clamp the ballX value to stay within the limits
             val clampedBallX = ballX.coerceIn(minBallX, maxBallX)
 
-            canvas.drawCircle(clampedBallX, centerY, ballRadius, ballPaint)
-
-            // Draw the value text at the top
-            val text = textValue.toString()
-            val textWidth = textPaint.measureText(text)
-            val x = (width - textWidth) / 2
-            val y = 30f
-            canvas.drawText(text, x, y, textPaint)
+            canvas.drawCircle(clampedBallX, centerY, ballRadius, getColor())
         } else {
             // Draw vertical rounded rectangle with increased space inside
             val rectLeft = 40f
@@ -124,15 +118,23 @@ class CustomBarView @JvmOverloads constructor(
             // Clamp the ballY value to stay within the limits
             val clampedBallY = ballY.coerceIn(minBallY, maxBallY)
 
-            canvas.drawCircle(centerX, clampedBallY, ballRadius, ballPaint)
-
-            // Draw the value text to the right
-            val text = textValue.toString()
-            val x = rectRight + 10f
-            val y = (height + 16f) / 2
-            canvas.drawText(text, x, y, textPaint)
+            canvas.drawCircle(centerX, clampedBallY, ballRadius, getColor())
         }
 
     }
 
+    private fun getColor() : Paint {
+        if((abs(textValue) > 6f)) {
+            ballPaint.apply {
+                style = Paint.Style.FILL
+                color = 0xFFFF0000.toInt()
+            }
+        } else {
+            ballPaint.apply {
+                style = Paint.Style.FILL
+                color = 0xFF00FF00.toInt()
+            }
+        }
+        return ballPaint
+    }
 }
