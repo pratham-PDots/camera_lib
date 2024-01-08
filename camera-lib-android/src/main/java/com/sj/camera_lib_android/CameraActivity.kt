@@ -737,6 +737,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
         leftArrowIv.setOnClickListener {
+            LogUtils.logGlobally(Events.LEFT_ARROW_CLICKED)
             it.setBackgroundColor(Color.GREEN)
             this.let { it1 ->
                 isArrowSelected = true
@@ -745,6 +746,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
         rightArrowIv.setOnClickListener {
+            LogUtils.logGlobally(Events.RIGHT_ARROW_CLICKED)
             it.setBackgroundColor(Color.GREEN)
             Log.d("imageSW rightArrow", " clicked")
             this.let { it1 ->
@@ -754,6 +756,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
         downArrowIv.setOnClickListener {
+            LogUtils.logGlobally(Events.DOWN_ARROW_CLICKED)
             it.setBackgroundColor(Color.GREEN)
             this.let { it1 ->
                 isArrowSelected = true
@@ -762,6 +765,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
         deleteImg.setOnClickListener {
+            LogUtils.logGlobally(Events.DELETE_CLICKED)
             mFile?.let { it1 -> viewModel.deleteFile(it1.path) }
             if (viewModel.currentImageList.size > 0) {
                 if (viewModel.currentImageList.size == 1) resetZoom()
