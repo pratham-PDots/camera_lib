@@ -21,6 +21,8 @@ import com.sj.camera_lib_android.models.ImageModel
 import com.sj.camera_lib_android.models.ImageUploadModel
 import com.sj.camera_lib_android.services.MyServices
 import com.sj.camera_lib_android.utils.Common
+import com.sj.camera_lib_android.utils.Events
+import com.sj.camera_lib_android.utils.LogUtils
 import com.sj.camera_lib_android.utils.Utils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -504,6 +506,7 @@ class CameraViewModel : ViewModel() {
         }
 
         if (guideResult.toString() == "left") {
+            LogUtils.logGlobally(Events.SHOW_AUTOMATIC_ARROW, "left")
             _uiState.update { state ->
                 state.copy(
                     showLeftArrow = true,
@@ -512,6 +515,7 @@ class CameraViewModel : ViewModel() {
                 )
             }
         } else if (guideResult.toString() == "down") {
+            LogUtils.logGlobally(Events.SHOW_AUTOMATIC_ARROW, "down")
             _uiState.update { state ->
                 state.copy(
                     showLeftArrow = false,
@@ -520,6 +524,7 @@ class CameraViewModel : ViewModel() {
                 )
             }
         } else if (guideResult.toString() == "right") {
+            LogUtils.logGlobally(Events.SHOW_AUTOMATIC_ARROW, "right")
             _uiState.update { state ->
                 state.copy(
                     showLeftArrow = false,

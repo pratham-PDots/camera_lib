@@ -21,4 +21,9 @@ object Events {
     val NATIVE_PARAMS = "native-sdk-params"
     val NATIVE_AVAILABLE_WIDE_ANGLE = "native-available-wide-angle"
     val FAILED_TO_CHANGE_LANGUAGE = "native-language-change failure"
+    val LEFT_ARROW_CLICKED = "native-left-arrow-clicked"
+    val RIGHT_ARROW_CLICKED = "native-right-arrow-clicked"
+    val DOWN_ARROW_CLICKED = "native-down-arrow-clicked"
+    val SHOW_AUTOMATIC_ARROW = "native-show-automatic-arrow"
+    val DELETE_CLICKED = "native-delete-clicked"
 }

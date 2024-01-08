@@ -497,16 +497,16 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         rightArrowTv.visibility = View.GONE
                         downArrowTv.visibility = View.GONE
 
-                        leftArrowIv.isEnabled = true
-                        rightArrowIv.isEnabled = true
-                        downArrowIv.isEnabled = true
+                        leftArrowIv.isClickable = true
+                        rightArrowIv.isClickable = true
+                        downArrowIv.isClickable = true
                     } else {
 
                         isArrowSelected = true
                         if (it.showLeftArrow) {
                             leftArrowIv.visibility = View.VISIBLE
                             leftArrowTv.visibility = View.VISIBLE
-                            leftArrowIv.isEnabled = false
+                            leftArrowIv.isClickable = false
                             leftArrowIv.setImageResource(R.drawable.img_9)
                             leftArrowIv.setBackgroundColor(Color.TRANSPARENT)
 
@@ -518,7 +518,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         if (it.showRightArrow) {
                             rightArrowIv.visibility = View.VISIBLE
                             rightArrowTv.visibility = View.VISIBLE
-                            rightArrowIv.isEnabled = false
+                            rightArrowIv.isClickable = false
                             rightArrowIv.setImageResource(R.drawable.img_10)
                             rightArrowIv.setBackgroundColor(Color.TRANSPARENT)
 
@@ -530,7 +530,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         if (it.showDownArrow) {
                             downArrowIv.visibility = View.VISIBLE
                             downArrowTv.visibility = View.VISIBLE
-                            downArrowIv.isEnabled = false
+                            downArrowIv.isClickable = false
                             downArrowIv.setImageResource(R.drawable.img_11)
                             downArrowIv.setBackgroundColor(Color.TRANSPARENT)
 
@@ -737,6 +737,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
         leftArrowIv.setOnClickListener {
+            LogUtils.logGlobally(Events.LEFT_ARROW_CLICKED)
             it.setBackgroundColor(Color.GREEN)
             this.let { it1 ->
                 isArrowSelected = true
@@ -745,6 +746,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
         rightArrowIv.setOnClickListener {
+            LogUtils.logGlobally(Events.RIGHT_ARROW_CLICKED)
             it.setBackgroundColor(Color.GREEN)
             Log.d("imageSW rightArrow", " clicked")
             this.let { it1 ->
@@ -754,6 +756,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
         downArrowIv.setOnClickListener {
+            LogUtils.logGlobally(Events.DOWN_ARROW_CLICKED)
             it.setBackgroundColor(Color.GREEN)
             this.let { it1 ->
                 isArrowSelected = true
@@ -762,6 +765,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
 
         deleteImg.setOnClickListener {
+            LogUtils.logGlobally(Events.DELETE_CLICKED)
             mFile?.let { it1 -> viewModel.deleteFile(it1.path) }
             if (viewModel.currentImageList.size > 0) {
                 if (viewModel.currentImageList.size == 1) resetZoom()
