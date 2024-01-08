@@ -329,7 +329,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         // Rotation work
         if (modeRotation.isNotEmpty() && modeRotation == "landscape") {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            //requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             Log.d(
                 "imageSW",
                 "modeRotation: $modeRotation ,==> landscape ==> modeSelected: $modeRotation "
@@ -356,7 +356,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             viewModel.imageHeight = resolution.toInt()
             Log.d("imageSW resizeNEW: ", "Portrait WH: $resizedWidthNew, $resizedHeightNew")
 
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            //requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             Log.d(
                 "imageSW",
                 "modeRotation: $modeRotation ,==> portrait ==> modeSelected: $modeRotation"
