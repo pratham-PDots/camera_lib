@@ -497,16 +497,16 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         rightArrowTv.visibility = View.GONE
                         downArrowTv.visibility = View.GONE
 
-                        leftArrowIv.isEnabled = true
-                        rightArrowIv.isEnabled = true
-                        downArrowIv.isEnabled = true
+                        leftArrowIv.isClickable = true
+                        rightArrowIv.isClickable = true
+                        downArrowIv.isClickable = true
                     } else {
 
                         isArrowSelected = true
                         if (it.showLeftArrow) {
                             leftArrowIv.visibility = View.VISIBLE
                             leftArrowTv.visibility = View.VISIBLE
-                            leftArrowIv.isEnabled = false
+                            leftArrowIv.isClickable = false
                             leftArrowIv.setImageResource(R.drawable.img_9)
                             leftArrowIv.setBackgroundColor(Color.TRANSPARENT)
 
@@ -518,7 +518,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         if (it.showRightArrow) {
                             rightArrowIv.visibility = View.VISIBLE
                             rightArrowTv.visibility = View.VISIBLE
-                            rightArrowIv.isEnabled = false
+                            rightArrowIv.isClickable = false
                             rightArrowIv.setImageResource(R.drawable.img_10)
                             rightArrowIv.setBackgroundColor(Color.TRANSPARENT)
 
@@ -530,7 +530,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         if (it.showDownArrow) {
                             downArrowIv.visibility = View.VISIBLE
                             downArrowTv.visibility = View.VISIBLE
-                            downArrowIv.isEnabled = false
+                            downArrowIv.isClickable = false
                             downArrowIv.setImageResource(R.drawable.img_11)
                             downArrowIv.setBackgroundColor(Color.TRANSPARENT)
 
