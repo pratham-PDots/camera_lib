@@ -444,7 +444,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
                     }
                 }
-            orientationEventListener.enable()
+            //orientationEventListener.enable()
 
         } else finish()
 
