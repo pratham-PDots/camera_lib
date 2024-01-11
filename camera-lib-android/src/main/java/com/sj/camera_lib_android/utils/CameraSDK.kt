@@ -6,10 +6,15 @@ import android.content.Intent
 import android.util.Log
 import com.bugfender.sdk.Bugfender
 import com.google.firebase.FirebaseApp
+import com.sj.camera_lib_android.Database.AppDatabase
+import com.sj.camera_lib_android.ScopeHelper
 import com.sj.camera_lib_android.services.FailedRetryService
 import com.sj.camera_lib_android.services.InitService
 import com.sj.camera_lib_android.services.MyServices
 import com.sj.camera_lib_android.ui.activities.LaunchShelfwatchCamera
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 object CameraSDK {
@@ -70,5 +75,14 @@ object CameraSDK {
         Log.d("imageSW", "uploadFailedImage")
         val intent = Intent(context.applicationContext, FailedRetryService()::class.java)
         context.startService(intent)
+    }
+
+    fun logout(context: Context) {
+        val imageDao = AppDatabase.getInstance(context.applicationContext).imageDao()
+        ScopeHelper.applicationScope.launch {
+            withContext(Dispatchers.IO) {
+                imageDao.deleteAllImages()
+            }
+        }
     }
 }
