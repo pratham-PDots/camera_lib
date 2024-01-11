@@ -78,6 +78,7 @@ object CameraSDK {
     }
 
     fun logout(context: Context) {
+        LogUtils.logGlobally(Events.LOGOUT)
         val imageDao = AppDatabase.getInstance(context.applicationContext).imageDao()
         ScopeHelper.applicationScope.launch {
             withContext(Dispatchers.IO) {

@@ -26,4 +26,5 @@ object Events {
     val DOWN_ARROW_CLICKED = "native-down-arrow-clicked"
     val SHOW_AUTOMATIC_ARROW = "native-show-automatic-arrow"
     val DELETE_CLICKED = "native-delete-clicked"
+    val LOGOUT = "native-logout"
 }
