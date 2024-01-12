@@ -32,4 +32,5 @@ object Events {
     val CROP_METHOD = "native-crop-method"
     val CROP_START = "native-crop-start"
     val BUCKET_NAME = "native-bucket-names"
+    val BUCKET_CATCH_BLOCK = "native-bucket-catch-block"
 }

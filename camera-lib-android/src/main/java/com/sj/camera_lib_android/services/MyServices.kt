@@ -6,6 +6,7 @@ package com.sj.camera_lib_android.services
 
 import android.app.Service
 import android.content.Intent
+import android.media.metrics.Event
 import android.net.Uri
 import android.os.IBinder
 import android.util.Log
@@ -60,6 +61,7 @@ class MyServices : Service() {
                 this.applicationContext,
                 "bucket_prev"
             )
+            LogUtils.logGlobally(Events.BUCKET_CATCH_BLOCK, "current bucket:${CameraSDK.bucketName} previous bucket:$previousBucketName")
             storage = FirebaseStorage.getInstance(previousBucketName)
         }
         storageReference = storage!!.reference
