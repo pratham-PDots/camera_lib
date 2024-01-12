@@ -320,9 +320,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         )
 
         viewModel.discardAllImages() // cameraActivity Launch
-        // register BroadcastReceiver
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(myBroadcastReceiver, IntentFilter("thisIsForMyPartner"))
 
 
         modeRotation = viewModel.mode
@@ -2080,23 +2077,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
     }
 
-    private val myBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            var index = intent!!.getIntExtra("index", 0)
-            Log.e("imageSW myBroadcastReceiver", "All images Uploaded Successfully of size $index")
-
-            viewModel.discardAllImages() // Delete images after Successful Update
-
-            //Show Hide Layouts
-            cameraLayout.visibility = View.VISIBLE
-            previewImgLayout.visibility = View.GONE
-            cropLayout.visibility = View.GONE
-            blurLayout.visibility = View.GONE
-
-        }
-    }
-
-
     companion object {
         private const val TAG = "CameraSDK_Android"
         const val FILENAME_FORMAT = "yyyy-MM-dd HH:mm:ss"
@@ -2121,8 +2101,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         registerSensors()
         setZoomRatio(viewModel.currentZoomRatio)
         backpressedlistener = this
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(myBroadcastReceiver, IntentFilter("thisIsForMyPartner"))// onResume
 
     }
 
@@ -2153,8 +2131,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         super.onDestroy()
         cameraExecutor.shutdown()
         stopService(Intent(this, MyServices()::class.java)) // onDestroy
-        LocalBroadcastManager.getInstance(this)
-            .unregisterReceiver(myBroadcastReceiver) // Unbind broadcastR in onDestroy
     }
 
 }
