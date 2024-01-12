@@ -53,8 +53,16 @@ class MyServices : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // get the Firebase storage reference
-        Log.d("imageSW bucket", CameraSDK.bucketName)
-        storage = FirebaseStorage.getInstance(CameraSDK.bucketName)
+        try {
+            storage = FirebaseStorage.getInstance(CameraSDK.bucketName)
+        } catch (e : Exception) {
+            storage = FirebaseStorage.getInstance(
+                CameraSDK.retrieveStringFromSharedPreferences(
+                    this.applicationContext,
+                    "bucket_prev"
+                )
+            )
+        }
         storageReference = storage!!.reference
 
 

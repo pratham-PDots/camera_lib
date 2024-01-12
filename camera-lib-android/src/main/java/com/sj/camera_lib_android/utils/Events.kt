@@ -26,4 +26,10 @@ object Events {
     val DOWN_ARROW_CLICKED = "native-down-arrow-clicked"
     val SHOW_AUTOMATIC_ARROW = "native-show-automatic-arrow"
     val DELETE_CLICKED = "native-delete-clicked"
+    val CROP_RETAKE = "native-crop-retake-pressed"
+    val CROP_DONE = "native-crop-done-pressed"
+    val BLUR_RETAKE = "native-blur-retake-pressed"
+    val CROP_METHOD = "native-crop-method"
+    val CROP_START = "native-crop-start"
+    val BUCKET_NAME = "native-bucket-names"
 }

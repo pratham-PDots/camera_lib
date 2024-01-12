@@ -58,6 +58,16 @@ object CameraSDK {
     }
 
     fun init(context: Context, bucketName: String) {
+        saveBucketName(context, bucketName)
+        LogUtils.logGlobally(
+            Events.BUCKET_NAME,
+            "${
+                retrieveStringFromSharedPreferences(
+                    context,
+                    "bucket_prev"
+                )
+            } ${retrieveStringFromSharedPreferences(context, "bucket_cur")}"
+        )
         this.bucketName = bucketName
         FirebaseApp.initializeApp(context.applicationContext)
         Bugfender.init(context.applicationContext, "lz6sMkQQVpEZXeY9o7Bi7VwyCG7wTPU6", true)
@@ -70,5 +80,41 @@ object CameraSDK {
         Log.d("imageSW", "uploadFailedImage")
         val intent = Intent(context.applicationContext, FailedRetryService()::class.java)
         context.startService(intent)
+    }
+
+    fun saveBucketName(context: Context, bucketName: String) {
+        saveStringToSharedPreferences(
+                context,
+        "bucket_prev",
+        retrieveStringFromSharedPreferences(context, "bucket_cur")
+        )
+        saveStringToSharedPreferences(
+            context,
+            "bucket_cur",
+            bucketName
+        )
+    }
+
+
+    fun saveStringToSharedPreferences(context: Context, key: String, value: String) {
+        // Get SharedPreferences instance
+        val sharedPreferences = context.getSharedPreferences("bucket_pref", Context.MODE_PRIVATE)
+
+        // Get SharedPreferences Editor
+        val editor = sharedPreferences.edit()
+
+        // Save a string with a key
+        editor.putString(key, value)
+
+        // Apply the changes
+        editor.apply()
+    }
+
+    fun retrieveStringFromSharedPreferences(context: Context, key: String): String {
+        // Get SharedPreferences instance
+        val sharedPreferences = context.getSharedPreferences("bucket_pref", Context.MODE_PRIVATE)
+
+        // Retrieve the string with the key
+        return sharedPreferences.getString(key, "") ?: ""
     }
 }
