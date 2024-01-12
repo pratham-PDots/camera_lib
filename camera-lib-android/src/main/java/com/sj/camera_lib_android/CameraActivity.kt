@@ -1496,23 +1496,28 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     override fun onBackPressed() {
         if (backpressedlistener != null) {
-            if (viewModel.currentImageList.size > 0) {
-                SubmitDialog( // onBackPressed
-                    prompt = getString(R.string.discard_submit),
-                    yesText = getString(R.string.yes_btn),
-                    noText = getString(R.string.no_btn),
-                    onClick = {
-                        LogUtils.logGlobally(Events.CROSS_CLICK, "Discard Images")
-                        viewModel.deleteAllImages()
-                        viewModel.discardAllImages() // back button discard
-                        resetZoom()
-                    }
-                ).show(supportFragmentManager, "DialogFragment")
+            if(!previewImgLayout.isVisible) {
+                if (viewModel.currentImageList.size > 0) {
+                    SubmitDialog( // onBackPressed
+                        prompt = getString(R.string.discard_submit),
+                        yesText = getString(R.string.yes_btn),
+                        noText = getString(R.string.no_btn),
+                        onClick = {
+                            LogUtils.logGlobally(Events.CROSS_CLICK, "Discard Images")
+                            viewModel.deleteAllImages()
+                            viewModel.discardAllImages() // back button discard
+                            resetZoom()
+                        }
+                    ).show(supportFragmentManager, "DialogFragment")
+                } else {
+                    LogUtils.logGlobally(Events.CROSS_CLICK, "Close Camera Screen")
+                    finish()
+                }
             } else {
-                LogUtils.logGlobally(Events.CROSS_CLICK, "Close Camera Screen")
-                finish()
+                cameraLayout.visibility = View.VISIBLE
+                previewImgLayout.visibility = View.GONE
+                startCameraW()
             }
-
         }
     }
 
