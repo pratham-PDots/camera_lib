@@ -65,7 +65,7 @@ class MyServices : Service() {
                 this.applicationContext,
                 "bucket_prev"
             )
-            LogUtils.logGlobally(Events.BUCKET_CATCH_BLOCK, "current bucket:${CameraSDK.bucketName} previous bucket:$currentBucketName")
+            LogUtils.logGlobally(Events.BUCKET_CATCH_BLOCK, "bucket passed:${CameraSDK.bucketName} current bucket: $currentBucketName previous bucket:$previousBucketName")
             if(currentBucketName.isNotEmpty())
                 storage = FirebaseStorage.getInstance(currentBucketName)
             else

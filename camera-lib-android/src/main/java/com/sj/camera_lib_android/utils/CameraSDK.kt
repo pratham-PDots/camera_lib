@@ -65,12 +65,12 @@ object CameraSDK {
         Bugfender.enableCrashReporting()
         LogUtils.logGlobally(
             Events.BUCKET_NAME,
-            "${
+            "previous bucket: ${
                 retrieveStringFromSharedPreferences(
                     context,
                     "bucket_prev"
                 )
-            } ${retrieveStringFromSharedPreferences(context, "bucket_cur")}"
+            } current bucket : ${retrieveStringFromSharedPreferences(context, "bucket_cur")}"
         )
         val intent = Intent(context.applicationContext, InitService()::class.java) // image Upload from gallery
         context.startService(intent)
