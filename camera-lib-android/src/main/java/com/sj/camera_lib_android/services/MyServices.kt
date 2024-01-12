@@ -56,12 +56,11 @@ class MyServices : Service() {
         try {
             storage = FirebaseStorage.getInstance(CameraSDK.bucketName)
         } catch (e : Exception) {
-            storage = FirebaseStorage.getInstance(
-                CameraSDK.retrieveStringFromSharedPreferences(
-                    this.applicationContext,
-                    "bucket_prev"
-                )
+            val previousBucketName = CameraSDK.retrieveStringFromSharedPreferences(
+                this.applicationContext,
+                "bucket_prev"
             )
+            storage = FirebaseStorage.getInstance(previousBucketName)
         }
         storageReference = storage!!.reference
 

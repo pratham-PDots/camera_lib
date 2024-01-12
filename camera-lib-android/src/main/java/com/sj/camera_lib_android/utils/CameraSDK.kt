@@ -58,7 +58,11 @@ object CameraSDK {
     }
 
     fun init(context: Context, bucketName: String) {
-        saveBucketName(context, bucketName)
+        if(bucketName.isNotEmpty()) saveBucketName(context, bucketName)
+        this.bucketName = bucketName
+        FirebaseApp.initializeApp(context.applicationContext)
+        Bugfender.init(context.applicationContext, "lz6sMkQQVpEZXeY9o7Bi7VwyCG7wTPU6", true)
+        Bugfender.enableCrashReporting()
         LogUtils.logGlobally(
             Events.BUCKET_NAME,
             "${
@@ -68,10 +72,6 @@ object CameraSDK {
                 )
             } ${retrieveStringFromSharedPreferences(context, "bucket_cur")}"
         )
-        this.bucketName = bucketName
-        FirebaseApp.initializeApp(context.applicationContext)
-        Bugfender.init(context.applicationContext, "lz6sMkQQVpEZXeY9o7Bi7VwyCG7wTPU6", true)
-        Bugfender.enableCrashReporting()
         val intent = Intent(context.applicationContext, InitService()::class.java) // image Upload from gallery
         context.startService(intent)
     }
