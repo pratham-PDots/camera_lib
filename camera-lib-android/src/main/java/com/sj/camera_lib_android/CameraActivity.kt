@@ -850,6 +850,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         // Retake from Crop screen
         retakeCropBtnCL.setOnClickListener {
+            LogUtils.logGlobally(Events.CROP_RETAKE)
             //Show Hide Layouts
             cameraLayout.visibility = View.VISIBLE
             previewImgLayout.visibility = View.GONE
@@ -867,7 +868,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
         // Retake from Blur screen
         retakeBlurImg.setOnClickListener {
-
+            LogUtils.logGlobally(Events.BLUR_RETAKE)
             //Show Hide Layouts
             cameraLayout.visibility = View.VISIBLE
             previewImgLayout.visibility = View.GONE
@@ -886,7 +887,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         //Done Button
         cropDoneBtnCL.setOnClickListener {
-
+            LogUtils.logGlobally(Events.CROP_DONE)
             // this is for CROP DONE Button
             cropImageViewCL.croppedImageAsync()
         }
@@ -1384,6 +1385,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     private fun cropLowLightCheck(mBitmap1: Bitmap, mFile1: File, isCropFeature1: String) {
+        LogUtils.logGlobally(Events.CROP_METHOD)
         if (isCropFeature1.isNotEmpty() && isCropFeature1.equals("true", true)) {
             croppingStart(mBitmap1)
         } else {
@@ -1394,6 +1396,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     private fun croppingStart(resizedEnhancedRotatedBitmap: Bitmap) {
+        LogUtils.logGlobally(Events.CROP_START, "Bitmap: $resizedEnhancedRotatedBitmap")
         // Cropping Work
         Log.d(
             "imageSW cropping: ", "start with bitmap => $resizedEnhancedRotatedBitmap" +
