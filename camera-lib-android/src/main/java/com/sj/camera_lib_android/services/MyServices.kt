@@ -6,6 +6,7 @@ package com.sj.camera_lib_android.services
 
 import android.app.Service
 import android.content.Intent
+import android.media.metrics.Event
 import android.net.Uri
 import android.os.IBinder
 import android.util.Log
@@ -53,8 +54,23 @@ class MyServices : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // get the Firebase storage reference
-        Log.d("imageSW bucket", CameraSDK.bucketName)
-        storage = FirebaseStorage.getInstance(CameraSDK.bucketName)
+        try {
+            storage = FirebaseStorage.getInstance(CameraSDK.bucketName)
+        } catch (e : Exception) {
+            val currentBucketName = CameraSDK.retrieveStringFromSharedPreferences(
+                this.applicationContext,
+                "bucket_cur"
+            )
+            val previousBucketName = CameraSDK.retrieveStringFromSharedPreferences(
+                this.applicationContext,
+                "bucket_prev"
+            )
+            LogUtils.logGlobally(Events.BUCKET_CATCH_BLOCK, "bucket passed:${CameraSDK.bucketName} current bucket: $currentBucketName previous bucket:$previousBucketName")
+            if(currentBucketName.isNotEmpty())
+                storage = FirebaseStorage.getInstance(currentBucketName)
+            else
+                storage = FirebaseStorage.getInstance(previousBucketName)
+        }
         storageReference = storage!!.reference
 
 
