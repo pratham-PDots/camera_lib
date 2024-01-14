@@ -1089,12 +1089,16 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private fun deleteCroppedImage(content: Uri?) {
         content?.let {
-            try {
-                contentResolver.delete(it, null, null).let {rowsDeleted->
-                    Log.d("imageSW", "cropped image $it $rowsDeleted")
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    try {
+                        contentResolver.delete(it, null, null).let { rowsDeleted ->
+                            Log.d("imageSW", "cropped image $it $rowsDeleted")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("imageSW", "cropped image exception $e")
+                    }
                 }
-            } catch(e: Exception) {
-                Log.e("imageSW", "cropped image exception $e")
             }
         }
     }
