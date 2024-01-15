@@ -33,4 +33,6 @@ object Events {
     val CROP_START = "native-crop-start"
     val BUCKET_NAME = "native-bucket-names"
     val BUCKET_CATCH_BLOCK = "native-bucket-catch-block"
+    val LOGOUT = "native-logout"
+    val UPLOAD_SERVICE_FAILURE = "native-upload-service-error"
 }

@@ -6,10 +6,15 @@ import android.content.Intent
 import android.util.Log
 import com.bugfender.sdk.Bugfender
 import com.google.firebase.FirebaseApp
+import com.sj.camera_lib_android.Database.AppDatabase
+import com.sj.camera_lib_android.ScopeHelper
 import com.sj.camera_lib_android.services.FailedRetryService
 import com.sj.camera_lib_android.services.InitService
 import com.sj.camera_lib_android.services.MyServices
 import com.sj.camera_lib_android.ui.activities.LaunchShelfwatchCamera
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 object CameraSDK {
@@ -116,5 +121,15 @@ object CameraSDK {
 
         // Retrieve the string with the key
         return sharedPreferences.getString(key, "") ?: ""
+    }
+
+    fun logout(context: Context) {
+        LogUtils.logGlobally(Events.LOGOUT)
+        val imageDao = AppDatabase.getInstance(context.applicationContext).imageDao()
+        ScopeHelper.applicationScope.launch {
+            withContext(Dispatchers.IO) {
+                imageDao.deleteAllImages()
+            }
+        }
     }
 }

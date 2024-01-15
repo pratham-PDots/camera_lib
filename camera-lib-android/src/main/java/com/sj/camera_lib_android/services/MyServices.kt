@@ -55,38 +55,53 @@ class MyServices : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // get the Firebase storage reference
         try {
-            storage = FirebaseStorage.getInstance(CameraSDK.bucketName)
-        } catch (e : Exception) {
-            val currentBucketName = CameraSDK.retrieveStringFromSharedPreferences(
-                this.applicationContext,
-                "bucket_cur"
-            )
-            val previousBucketName = CameraSDK.retrieveStringFromSharedPreferences(
-                this.applicationContext,
-                "bucket_prev"
-            )
-            LogUtils.logGlobally(Events.BUCKET_CATCH_BLOCK, "bucket passed:${CameraSDK.bucketName} current bucket: $currentBucketName previous bucket:$previousBucketName")
-            if(currentBucketName.isNotEmpty())
-                storage = FirebaseStorage.getInstance(currentBucketName)
-            else
-                storage = FirebaseStorage.getInstance(previousBucketName)
-        }
-        storageReference = storage!!.reference
-
-
-        if (intent != null) {
-            imageUploadList = intent.getParcelableArrayListExtra<ImageUploadModel>("mediaList") as ArrayList<ImageUploadModel>
-            deviceName = intent.getStringExtra("deviceName") ?: "deviceName"
-            Log.d("imageSW uploadToFirebase", ", ListSize: ${imageUploadList.size}, deviceName: $deviceName")
-
-        }
-
-        if (imageUploadList.size > 0){
             try {
-                uploadImage(imageUploadList, sessionId = intent?.getStringExtra("uuid") ?: "pratham", projectId = intent?.getStringExtra("project_id") ?: "pratham") // Upload images to the firebase
-            }catch (exception:Exception){
-                Log.e("imageSW exceptionFirebase","$exception")
+                storage = FirebaseStorage.getInstance(CameraSDK.bucketName)
+            } catch (e: Exception) {
+                val currentBucketName = CameraSDK.retrieveStringFromSharedPreferences(
+                    this.applicationContext,
+                    "bucket_cur"
+                )
+                val previousBucketName = CameraSDK.retrieveStringFromSharedPreferences(
+                    this.applicationContext,
+                    "bucket_prev"
+                )
+                LogUtils.logGlobally(
+                    Events.BUCKET_CATCH_BLOCK,
+                    "bucket passed:${CameraSDK.bucketName} current bucket: $currentBucketName previous bucket:$previousBucketName"
+                )
+                if (currentBucketName.isNotEmpty())
+                    storage = FirebaseStorage.getInstance(currentBucketName)
+                else
+                    storage = FirebaseStorage.getInstance(previousBucketName)
             }
+            storageReference = storage!!.reference
+
+
+            if (intent != null) {
+                imageUploadList =
+                    intent.getParcelableArrayListExtra<ImageUploadModel>("mediaList") as ArrayList<ImageUploadModel>
+                deviceName = intent.getStringExtra("deviceName") ?: "deviceName"
+                Log.d(
+                    "imageSW uploadToFirebase",
+                    ", ListSize: ${imageUploadList.size}, deviceName: $deviceName"
+                )
+
+            }
+
+            if (imageUploadList.size > 0) {
+                try {
+                    uploadImage(
+                        imageUploadList,
+                        sessionId = intent?.getStringExtra("uuid") ?: "pratham",
+                        projectId = intent?.getStringExtra("project_id") ?: "pratham"
+                    ) // Upload images to the firebase
+                } catch (exception: Exception) {
+                    Log.e("imageSW exceptionFirebase", "$exception")
+                }
+            }
+        } catch (e : Exception) {
+            LogUtils.logGlobally(Events.UPLOAD_SERVICE_FAILURE)
         }
 
         return START_STICKY

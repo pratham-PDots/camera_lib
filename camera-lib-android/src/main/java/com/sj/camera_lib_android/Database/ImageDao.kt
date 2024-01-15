@@ -28,4 +28,7 @@ interface ImageDao {
 
     @Delete
     fun deleteImage(image: ImageEntity)
+
+    @Query("DELETE FROM images")
+    fun deleteAllImages()
 }
