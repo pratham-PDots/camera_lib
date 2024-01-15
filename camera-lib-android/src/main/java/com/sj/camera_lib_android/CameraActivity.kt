@@ -1518,6 +1518,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     finish()
                 }
             } else {
+                cropLayoutPS.visibility = View.GONE
+                imageShowLayoutPS.visibility = View.VISIBLE
                 cameraLayout.visibility = View.VISIBLE
                 previewImgLayout.visibility = View.GONE
                 startCameraW()
