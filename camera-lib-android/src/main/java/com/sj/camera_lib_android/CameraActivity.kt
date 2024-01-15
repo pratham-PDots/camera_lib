@@ -1762,7 +1762,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private fun isWideAngleCameraSameAsDefault(): Boolean {
         val manager = getSystemService(CAMERA_SERVICE) as CameraManager
-        val wideAngleCameraId = findWideAngleCamera(manager)
+        val wideAngleCameraId = findWideAngleCamera(manager) ?: return true
         val defaultCameraId = manager.cameraIdList.find { cameraId ->
             val characteristics = manager.getCameraCharacteristics(cameraId)
             val lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING)
