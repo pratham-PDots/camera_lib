@@ -69,6 +69,7 @@
                     android:id="@+id/verticalTiltView"
                     android:layout_width="65dp"
                     android:layout_height="140dp"
+                    android:layout_marginStart="20dp"
                     android:contentDescription="gyro_vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/delete_btn"

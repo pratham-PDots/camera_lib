@@ -323,9 +323,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         )
 
         viewModel.discardAllImages() // cameraActivity Launch
-        // register BroadcastReceiver
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(myBroadcastReceiver, IntentFilter("thisIsForMyPartner"))
 
 
         modeRotation = viewModel.mode
@@ -853,6 +850,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         // Retake from Crop screen
         retakeCropBtnCL.setOnClickListener {
+            LogUtils.logGlobally(Events.CROP_RETAKE)
             //Show Hide Layouts
             cameraLayout.visibility = View.VISIBLE
             previewImgLayout.visibility = View.GONE
@@ -870,7 +868,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
         // Retake from Blur screen
         retakeBlurImg.setOnClickListener {
-
+            LogUtils.logGlobally(Events.BLUR_RETAKE)
             //Show Hide Layouts
             cameraLayout.visibility = View.VISIBLE
             previewImgLayout.visibility = View.GONE
@@ -889,7 +887,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         //Done Button
         cropDoneBtnCL.setOnClickListener {
-
+            LogUtils.logGlobally(Events.CROP_DONE)
             // this is for CROP DONE Button
             cropImageViewCL.croppedImageAsync()
         }
@@ -1094,12 +1092,16 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private fun deleteCroppedImage(content: Uri?) {
         content?.let {
-            try {
-                contentResolver.delete(it, null, null).let {rowsDeleted->
-                    Log.d("imageSW", "cropped image $it $rowsDeleted")
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    try {
+                        contentResolver.delete(it, null, null).let { rowsDeleted ->
+                            Log.d("imageSW", "cropped image $it $rowsDeleted")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("imageSW", "cropped image exception $e")
+                    }
                 }
-            } catch(e: Exception) {
-                Log.e("imageSW", "cropped image exception $e")
             }
         }
     }
@@ -1387,6 +1389,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     private fun cropLowLightCheck(mBitmap1: Bitmap, mFile1: File, isCropFeature1: String) {
+        LogUtils.logGlobally(Events.CROP_METHOD)
         if (isCropFeature1.isNotEmpty() && isCropFeature1.equals("true", true)) {
             croppingStart(mBitmap1)
         } else {
@@ -1397,6 +1400,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     private fun croppingStart(resizedEnhancedRotatedBitmap: Bitmap) {
+        LogUtils.logGlobally(Events.CROP_START, "Bitmap: $resizedEnhancedRotatedBitmap")
         // Cropping Work
         Log.d(
             "imageSW cropping: ", "start with bitmap => $resizedEnhancedRotatedBitmap" +
@@ -1499,23 +1503,30 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     override fun onBackPressed() {
         if (backpressedlistener != null) {
-            if (viewModel.currentImageList.size > 0) {
-                SubmitDialog( // onBackPressed
-                    prompt = getString(R.string.discard_submit),
-                    yesText = getString(R.string.yes_btn),
-                    noText = getString(R.string.no_btn),
-                    onClick = {
-                        LogUtils.logGlobally(Events.CROSS_CLICK, "Discard Images")
-                        viewModel.deleteAllImages()
-                        viewModel.discardAllImages() // back button discard
-                        resetZoom()
-                    }
-                ).show(supportFragmentManager, "DialogFragment")
+            if(!previewImgLayout.isVisible) {
+                if (viewModel.currentImageList.size > 0) {
+                    SubmitDialog( // onBackPressed
+                        prompt = getString(R.string.discard_submit),
+                        yesText = getString(R.string.yes_btn),
+                        noText = getString(R.string.no_btn),
+                        onClick = {
+                            LogUtils.logGlobally(Events.CROSS_CLICK, "Discard Images")
+                            viewModel.deleteAllImages()
+                            viewModel.discardAllImages() // back button discard
+                            resetZoom()
+                        }
+                    ).show(supportFragmentManager, "DialogFragment")
+                } else {
+                    LogUtils.logGlobally(Events.CROSS_CLICK, "Close Camera Screen")
+                    finish()
+                }
             } else {
-                LogUtils.logGlobally(Events.CROSS_CLICK, "Close Camera Screen")
-                finish()
+                cropLayoutPS.visibility = View.GONE
+                imageShowLayoutPS.visibility = View.VISIBLE
+                cameraLayout.visibility = View.VISIBLE
+                previewImgLayout.visibility = View.GONE
+                startCameraW()
             }
-
         }
     }
 
@@ -1754,7 +1765,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private fun isWideAngleCameraSameAsDefault(): Boolean {
         val manager = getSystemService(CAMERA_SERVICE) as CameraManager
-        val wideAngleCameraId = findWideAngleCamera(manager)
+        val wideAngleCameraId = findWideAngleCamera(manager) ?: return true
         val defaultCameraId = manager.cameraIdList.find { cameraId ->
             val characteristics = manager.getCameraCharacteristics(cameraId)
             val lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING)
@@ -2080,23 +2091,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
     }
 
-    private val myBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            var index = intent!!.getIntExtra("index", 0)
-            Log.e("imageSW myBroadcastReceiver", "All images Uploaded Successfully of size $index")
-
-            viewModel.discardAllImages() // Delete images after Successful Update
-
-            //Show Hide Layouts
-            cameraLayout.visibility = View.VISIBLE
-            previewImgLayout.visibility = View.GONE
-            cropLayout.visibility = View.GONE
-            blurLayout.visibility = View.GONE
-
-        }
-    }
-
-
     companion object {
         private const val TAG = "CameraSDK_Android"
         const val FILENAME_FORMAT = "yyyy-MM-dd HH:mm:ss"
@@ -2121,8 +2115,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         registerSensors()
         setZoomRatio(viewModel.currentZoomRatio)
         backpressedlistener = this
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(myBroadcastReceiver, IntentFilter("thisIsForMyPartner"))// onResume
 
     }
 
@@ -2153,8 +2145,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         super.onDestroy()
         cameraExecutor.shutdown()
         stopService(Intent(this, MyServices()::class.java)) // onDestroy
-        LocalBroadcastManager.getInstance(this)
-            .unregisterReceiver(myBroadcastReceiver) // Unbind broadcastR in onDestroy
     }
 
 }
