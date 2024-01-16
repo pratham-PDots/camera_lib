@@ -110,6 +110,7 @@ class MyServices : Service() {
     private fun broadCastQueue() {
             val imageDao = AppDatabase.getInstance(this@MyServices.applicationContext).imageDao()
             val loadedPendingImages = imageDao.getPendingImages()
+            Log.d("imageSW queue received", "Pending Images: $loadedPendingImages")
             val intent = Intent("did-receive-queue-data")
             intent.putParcelableArrayListExtra(
                 "imageList",
@@ -142,11 +143,14 @@ class MyServices : Service() {
     }
 
     private fun addAllImagesToQueue(imageList : MutableList<ImageUploadModel>) {
+        val newImageList: MutableList<ImageEntity> = mutableListOf()
+        val imageDao = AppDatabase.getInstance(this.applicationContext).imageDao()
         imageList.forEach { image ->
-            val imageDao = AppDatabase.getInstance(this.applicationContext).imageDao()
             if(imageDao.getImageByUri(image.uri) == null)
-                imageDao.insertImage(ImageEntity(image = image, uri = image.uri, isUploaded = false))
+                newImageList.add(ImageEntity(image = image, uri = image.uri, isUploaded = false))
         }
+        imageDao.insertImages(newImageList)
+        Log.d("imageSW queue received", "New image list: $newImageList")
     }
 
 
