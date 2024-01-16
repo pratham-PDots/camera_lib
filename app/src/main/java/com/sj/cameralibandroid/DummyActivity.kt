@@ -145,6 +145,7 @@ class DummyActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if(intent?.action?.equals("did-receive-queue-data") == true) {
                 val imageList = intent.getParcelableArrayListExtra<ReactPendingData>("imageList")
+                Log.d("imageSW queue received", imageList.toString())
                 binding.progressTextView.text = imageList.toString()
             }
 
@@ -220,6 +221,11 @@ class DummyActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("did-receive-queue-data"))// onResume
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("did-receive-image-upload-status"))// onResume
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("did-submit-press"))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(myBroadcastReceiver)
     }
 
     // Unbind from the service in the onDestroy() method of the fragment

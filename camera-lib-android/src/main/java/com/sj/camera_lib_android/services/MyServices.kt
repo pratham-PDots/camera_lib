@@ -141,6 +141,15 @@ class MyServices : Service() {
         Log.d("imageSW add", image.uri)
     }
 
+    private fun addAllImagesToQueue(imageList : MutableList<ImageUploadModel>) {
+        imageList.forEach { image ->
+            val imageDao = AppDatabase.getInstance(this.applicationContext).imageDao()
+            if(imageDao.getImageByUri(image.uri) == null)
+                imageDao.insertImage(ImageEntity(image = image, uri = image.uri, isUploaded = false))
+        }
+    }
+
+
     private fun modifyImage(image: ImageUploadModel, error: String) {
         val imageDao = AppDatabase.getInstance(this.applicationContext).imageDao()
         val imageEntity = imageDao.getImageByUri(image.uri)
@@ -198,13 +207,13 @@ class MyServices : Service() {
 
         var count =0
         if (list.size> 0) {
+            applicationScope?.launch {
+                addAllImagesToQueue(list)
+                Log.d("imageSW queue received", "all images")
+                broadCastQueue()
+            }
             list.forEachIndexed { index, mediaModelClass ->
-                applicationScope?.launch {
-                    addImageToQueue(mediaModelClass)
-                    broadCastQueue()
-                }
                 Log.e("imageSW Service uploadImageFB", "Count: $count, listSize: ${list.size} at $index")
-
 
                 val upload_params = mediaModelClass.upload_params
                 val position = mediaModelClass.position
@@ -274,6 +283,7 @@ class MyServices : Service() {
                                 Bugfender.d(Events.IMAGE_UPLOAD_SUCESS, "reference: $fbRef name: $name")
                                 Bugfender.d(Events.UPLOADED_IMAGE_METADATA, getStringifiedMetadata(metadata.build()))
                                 removeImageFromQueue(mediaModelClass)
+                                Log.d("imageSW queue received", "success")
                                 broadCastQueue()
                                 broadCastImage(ReactSingleImage(
                                     uri = mediaModelClass.uri,
@@ -304,6 +314,7 @@ class MyServices : Service() {
                             applicationScope?.launch {
                                 modifyImage(mediaModelClass, exception.message.toString())
                                 LogUtils.logGlobally(Events.IMAGE_UPLOAD_FAILURE, exception.message.toString())
+                                Log.d("imageSW queue received", "failure")
                                 broadCastQueue()
 //                                broadCastImage(ReactSingleImage(
 //                                    uri = mediaModelClass.uri,
