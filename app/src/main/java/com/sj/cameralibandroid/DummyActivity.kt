@@ -223,11 +223,6 @@ class DummyActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).registerReceiver(myBroadcastReceiver, IntentFilter("did-submit-press"))
     }
 
-    override fun onPause() {
-        super.onPause()
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(myBroadcastReceiver)
-    }
-
     // Unbind from the service in the onDestroy() method of the fragment
      override fun onDestroy() {
         super.onDestroy()
