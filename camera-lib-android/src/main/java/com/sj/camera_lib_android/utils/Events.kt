@@ -35,4 +35,5 @@ object Events {
     val BUCKET_CATCH_BLOCK = "native-bucket-catch-block"
     val LOGOUT = "native-logout"
     val UPLOAD_SERVICE_FAILURE = "native-upload-service-error"
+    val INIT_SERVICE_BACKGROUND_FAILURE = "native-init-service-background"
 }

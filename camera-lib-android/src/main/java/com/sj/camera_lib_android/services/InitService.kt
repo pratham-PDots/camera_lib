@@ -17,6 +17,8 @@ import com.sj.camera_lib_android.Database.PendingImage
 import com.sj.camera_lib_android.Database.ReactPendingData
 import com.sj.camera_lib_android.ScopeHelper
 import com.sj.camera_lib_android.models.ImageUploadModel
+import com.sj.camera_lib_android.utils.Events
+import com.sj.camera_lib_android.utils.LogUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -78,12 +80,18 @@ class InitService: Service() {
         projectId: String,
         uuid: String
     ) {
-        Log.d("imageSW", "project id = $projectId session id = $uuid image list = $imageList")
-        val intent = Intent(applicationContext, MyServices()::class.java) // image Upload from gallery
-        intent.putParcelableArrayListExtra("mediaList", ArrayList(imageList))
-        intent.putExtra("project_id", projectId)
-        intent.putExtra("uuid", uuid)
-        applicationContext.startService(intent)
+        try {
+            Log.d("imageSW", "project id = $projectId session id = $uuid image list = $imageList")
+            val intent =
+                Intent(applicationContext, MyServices()::class.java) // image Upload from gallery
+            intent.putParcelableArrayListExtra("mediaList", ArrayList(imageList))
+            intent.putExtra("project_id", projectId)
+            intent.putExtra("uuid", uuid)
+            applicationContext.startService(intent)
+        } catch (e : Exception) {
+            LogUtils.logGlobally(Events.INIT_SERVICE_BACKGROUND_FAILURE, e.message.toString())
+        }
+
     }
 
     private fun initNetworkCallback() {
