@@ -34,7 +34,8 @@ object CameraSDK {
         zoomLevel: Double = 1.0,
         showOverlapToggleButton: Boolean = false,
         showGridLines: Boolean = true,
-        language_code: String = "en"
+        language_code: String = "en",
+        isLambda: Boolean = false
     ) {
         consumer = uploadFrom
         Log.d("imageSW here", bucketName)
@@ -52,6 +53,7 @@ object CameraSDK {
         intent.putExtra("backendToggle", showOverlapToggleButton)
         intent.putExtra("gridlines", showGridLines)
         intent.putExtra("language", language_code)
+        intent.putExtra("isLambda", isLambda)
 
         if (context is Activity) {
             context.startActivity(intent)
