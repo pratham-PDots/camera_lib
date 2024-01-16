@@ -219,6 +219,7 @@ class MyServices : Service() {
             list.forEachIndexed { index, mediaModelClass ->
                 Log.e("imageSW Service uploadImageFB", "Count: $count, listSize: ${list.size} at $index")
 
+
                 val upload_params = mediaModelClass.upload_params
                 val position = mediaModelClass.position
                 val dimension = mediaModelClass.dimension
