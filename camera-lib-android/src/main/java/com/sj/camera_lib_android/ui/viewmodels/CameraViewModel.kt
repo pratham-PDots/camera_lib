@@ -335,6 +335,8 @@ class CameraViewModel : ViewModel() {
                 metadata.put("gyro_horizontal", imageDetails.gyroHorizontal.toString())
                 metadata.put("gyro_vertical", imageDetails.gyroVertical.toString())
                 metadata.put("is_wide_angle", if (hasWideAngle && wideAngleSet) 1 else 0)
+                metadata.put("device_name", getDeviceModel())
+                metadata.put("device_id ", "")
                 uploadParam.put("metadata", metadata)
 
                 ImageUploadModel(
