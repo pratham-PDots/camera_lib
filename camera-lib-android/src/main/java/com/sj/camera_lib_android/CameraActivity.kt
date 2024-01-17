@@ -1135,6 +1135,11 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
     }
 
+    private fun broadcastCameraClose(context: Context) {
+        val intent = Intent("did-camera-close")
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+    }
+
     private fun initSensors() {
         // Initialize SensorManager
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -1518,6 +1523,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     ).show(supportFragmentManager, "DialogFragment")
                 } else {
                     LogUtils.logGlobally(Events.CROSS_CLICK, "Close Camera Screen")
+                    broadcastCameraClose(this)
                     finish()
                 }
             } else {
