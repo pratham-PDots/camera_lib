@@ -20,6 +20,9 @@ interface ImageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertImage(image: ImageEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertImages(images: List<ImageEntity>)
+
     @Query("SELECT * FROM images WHERE uri = :uri")
     fun getImageByUri(uri: String): ImageEntity?
 

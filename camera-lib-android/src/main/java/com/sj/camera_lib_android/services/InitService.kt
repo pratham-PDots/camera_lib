@@ -52,6 +52,7 @@ class InitService: Service() {
                 val pendingImageList = loadedPendingImages.map { it.toPendingImage() }
                 val handler = Handler(Looper.getMainLooper())
                 handler.post {
+                    Log.d("imageSW queue received", "init")
                     val intent = Intent("did-receive-queue-data")
                     intent.putParcelableArrayListExtra(
                         "imageList",

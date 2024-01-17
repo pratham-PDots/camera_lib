@@ -145,6 +145,7 @@ class DummyActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if(intent?.action?.equals("did-receive-queue-data") == true) {
                 val imageList = intent.getParcelableArrayListExtra<ReactPendingData>("imageList")
+                Log.d("imageSW queue received", imageList.toString())
                 binding.progressTextView.text = imageList.toString()
             }
 
