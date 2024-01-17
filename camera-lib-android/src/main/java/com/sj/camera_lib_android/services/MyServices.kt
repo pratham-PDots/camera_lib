@@ -272,6 +272,7 @@ class MyServices : Service() {
                     uploadParamJson.put("app_session_id", sessionId)
                     uploadParamJson.put("seq_no", (index + 1).toString())
                     if(list.size > 1) uploadParamJson.put("image_type", "multiple")
+                    else uploadParamJson.put("image_type", "single")
 
                     for(key in uploadParamJson.keys()) {
                         metadata.setCustomMetadata(key, uploadParamJson[key].toString())
