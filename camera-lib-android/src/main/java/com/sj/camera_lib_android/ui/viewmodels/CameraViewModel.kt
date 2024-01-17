@@ -187,6 +187,8 @@ class CameraViewModel : ViewModel() {
         } else {
             positionMatrix = intArrayOf(0, 0)
             dimensionMatrix = intArrayOf(1, 1)
+            maxCol = 1
+            maxRow = 1
 
             Log.d(
                 "imageSW sum 1stImg",
