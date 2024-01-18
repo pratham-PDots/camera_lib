@@ -1049,7 +1049,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private fun resetToggle() {
         binding.overlapToggle?.apply {
-            isVisible = viewModel.backendToggle
+            isVisible = viewModel.backendToggle && !viewModel.isRetake
         }
     }
 
@@ -1132,6 +1132,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         intent.putExtra("upload_params", viewModel.upload_param)
         intent.putExtra("images", ArrayList(viewModel.currentImageList.map { "${it.file}" }))
         intent.putExtra("is_retake", viewModel.isRetake)
+        intent.putExtra("session_id", viewModel.uuid)
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
     }
 
