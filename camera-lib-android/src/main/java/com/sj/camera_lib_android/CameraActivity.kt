@@ -641,7 +641,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                                 (viewModel.currentImageList.size == 0)
                             viewModel.zoomEnabled = (imageModel.size == 0)
 
-                            binding.overlapToggle?.isEnabled = (viewModel.currentImageList.size == 0)
+                            binding.overlapToggle?.isEnabled = (viewModel.currentImageList.size == 0 && !viewModel.isRetake)
 
                             if (viewModel.currentImageList.size > 0) {
                                 previewPageImgCS.setImageBitmap(imageModel.last().image)
@@ -1050,6 +1050,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private fun resetToggle() {
         binding.overlapToggle?.apply {
             isVisible = viewModel.backendToggle
+            isEnabled = !viewModel.isRetake
         }
     }
 
