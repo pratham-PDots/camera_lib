@@ -225,8 +225,6 @@ object BlurDetection {
     private fun destroyAllocation(allocation: Allocation) {
         try {
             allocation.destroy()
-        } catch (_: Exception) {
-            Log.d("imageSW destroy", allocation.name)
-        }
+        } catch (_: Exception) { }
     }
 }
