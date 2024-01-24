@@ -1141,7 +1141,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         intent.putExtra("upload_params", viewModel.upload_param)
         intent.putExtra("images", ArrayList(viewModel.currentImageList.map { "${it.file}" }))
         intent.putExtra("is_retake", viewModel.isRetake)
-        intent.putExtra("session_id", viewModel.uuid)
+        intent.putExtra("session_id", viewModel.uuid.toString())
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
     }
 
@@ -1771,6 +1771,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         outputStream.flush()
                         outputStream.close()
                     }
+
+                    LogUtils.logGlobally(Events.IMAGE_SAVED, file1.name)
 
                     viewModel.imageSavedCount--
 
