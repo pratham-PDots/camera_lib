@@ -345,15 +345,24 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             // calculation for resizing
             resizedWidthNew = resolution.toInt()
             resizedHeightNew = (resolution.toInt() * 3) / 4
+
             viewModel.imageWidth = resolution.toInt()
             viewModel.imageHeight = (resolution.toInt() * 3) / 4
+
+            viewModel.sampleImageWidth = 2048
+            viewModel.sampleImageHeight = 1536
             Log.d("imageSW resizeNEW: ", "Landscape WH: $resizedWidthNew, $resizedHeightNew")
 
         } else {
             resizedWidthNew = (resolution.toInt() * 3) / 4
             resizedHeightNew = resolution.toInt()
+
             viewModel.imageWidth = (resolution.toInt() * 3) / 4
             viewModel.imageHeight = resolution.toInt()
+
+            viewModel.sampleImageWidth = 1536
+            viewModel.sampleImageHeight = 2048
+
             Log.d("imageSW resizeNEW: ", "Portrait WH: $resizedWidthNew, $resizedHeightNew")
 
             if(!isLambda) requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -1439,9 +1448,14 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     private fun checkLowLightSave(bitmap2: Bitmap): Bitmap {
-        val targetBmp: Bitmap = bitmap2.copy(Bitmap.Config.ARGB_8888, false)
+        var isLowLight = false
+        try {
+            val targetBmp: Bitmap = bitmap2.copy(Bitmap.Config.ARGB_8888, false)
 
-        val isLowLight = ImageProcessingUtils.isLowLightImage(targetBmp)
+            val isLowLight = ImageProcessingUtils.isLowLightImage(targetBmp)
+        } catch (e : Exception) {
+            isLowLight = false
+        }
         Log.d("imageSW isLowLight 1: ", "" + isLowLight)
 
         var enhancedRotatedBitmap: Bitmap? = null
@@ -1642,10 +1656,24 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         requiredWidth = temp
                     }
                     val originalWidthHeight = "Original Width: ${bitmap.width}, Original Height: ${bitmap.height}"
+                    val oldBitmap = bitmap
                     bitmap = resizeImgBitmap(bitmap, requiredWidth, requiredHeight)
+
+                    if (bitmap !== oldBitmap && !oldBitmap.isRecycled) {
+                        LogUtils.logGlobally(Events.BITMAP_RECYCLED, "oldBitmap")
+                        oldBitmap.recycle()
+                    }
+
                     LogUtils.logGlobally(Events.RESIZE_IMAGE, "$originalWidthHeight, resizedWidth: ${bitmap.width}, resizedHeight: ${bitmap.height}")
 
-                    if (needsRotation) bitmap = ImageProcessingUtils.rotateBitmapWithOpenCV(bitmap)
+                    if (needsRotation) {
+                        val preRotataionBitmap = bitmap
+                        bitmap = ImageProcessingUtils.rotateBitmapWithOpenCV(bitmap)
+                        if(bitmap !== preRotataionBitmap) {
+                            LogUtils.logGlobally(Events.BITMAP_RECYCLED, "preRotataionBitmap")
+                            preRotataionBitmap.recycle()
+                        }
+                    }
                     LogUtils.logGlobally(Events.ROTATE_IMAGE, "Rotation Needed: $needsRotation Rotation Degrees: ${imageProxy.imageInfo.rotationDegrees}")
 
                     viewModel.imageSavedCount++
@@ -1653,7 +1681,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     saveImageToFile(photoFile, bitmap, this@CameraActivity)
 
                     mFile = photoFile
-                    mBitmap = bitmap
+                    mBitmap = resizeImgBitmap(bitmap, viewModel.sampleImageWidth, viewModel.sampleImageHeight)
                     captureTime = nameTimeStamp
                     viewModel.imageName = nameTimeStamp
 
@@ -1664,15 +1692,18 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     // Blur ==> lowLight ==> rotation ==> cropping ==> Saving Final Image
                     if (isBlurFeature.isNotEmpty() && isBlurFeature == "true") {
 
-                        val bitmap1 = mBitmap
-                        val targetBmp: Bitmap =
-                            bitmap1!!.copy(Bitmap.Config.ARGB_8888, false)
-
-
-                        val isImgBlur = BlurDetection.runDetection(
-                            this@CameraActivity,
-                            targetBmp
-                        ) // Blur check
+                        var isImgBlur = Pair(false, "")
+                        if(viewModel.currentImageList.size < 20) {
+                            val bitmap1 = mBitmap
+                            val targetBmp: Bitmap =
+                                bitmap1!!.copy(Bitmap.Config.ARGB_8888, false)
+                            isImgBlur = BlurDetection.runDetection(
+                                this@CameraActivity,
+                                targetBmp
+                            )
+                        } else {
+                            isImgBlur = BlurDetection.checkBlurryImage(bitmap)
+                        }
                         LogUtils.logGlobally(Events.IMAGE_BLUR, "Is Image Blur: ${isImgBlur.first}")
                         if (isImgBlur.first) {
                             // Image is blurred

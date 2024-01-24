@@ -4,6 +4,7 @@ package com.sj.camera_lib_android.utils.imageutils
  * **/
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Matrix
 import android.util.Log
 import org.json.JSONArray
 import org.opencv.android.Utils
@@ -37,17 +38,30 @@ object ImageProcessingUtils {
     }
 
     fun rotateBitmapWithOpenCV(srcBitmap: Bitmap): Bitmap {
-        val srcMat = Mat()
-        Utils.bitmapToMat(srcBitmap, srcMat)
+        try {
+            val srcMat = Mat()
+            Utils.bitmapToMat(srcBitmap, srcMat)
 
-        val rotationDegrees = Core.ROTATE_90_CLOCKWISE
+            val rotationDegrees = Core.ROTATE_90_CLOCKWISE
 
-        val rotatedMat = Mat()
-        Core.rotate(srcMat, rotatedMat, rotationDegrees)
+            val rotatedMat = Mat()
+            Core.rotate(srcMat, rotatedMat, rotationDegrees)
 
-        val dstBitmap = Bitmap.createBitmap(rotatedMat.cols(), rotatedMat.rows(), Bitmap.Config.ARGB_8888)
-        Utils.matToBitmap(rotatedMat, dstBitmap)
+            val dstBitmap =
+                Bitmap.createBitmap(rotatedMat.cols(), rotatedMat.rows(), Bitmap.Config.ARGB_8888)
+            Utils.matToBitmap(rotatedMat, dstBitmap)
 
-        return dstBitmap
+            return dstBitmap
+        } catch (e : Exception) {
+            return rotateImage(srcBitmap, 90F)
+        }
+    }
+
+    private fun rotateImage(bitmap: Bitmap, angle: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(angle)
+
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+
     }
 }
