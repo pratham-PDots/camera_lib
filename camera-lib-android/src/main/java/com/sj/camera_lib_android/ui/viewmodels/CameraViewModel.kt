@@ -330,10 +330,6 @@ class CameraViewModel : ViewModel() {
                     val heightRatio = imageHeight.toDouble()/sampleImageHeight
                     val widthRatio = imageWidth.toDouble()/sampleImageWidth
 
-                    Log.d(
-                        "imageSW crop",
-                        "$heightRatio $widthRatio ${(cropCoordinates[2] * widthRatio).toInt()} ${(cropCoordinates[3] * heightRatio).toInt()}"
-                    )
                     if(!isCropEmpty) {
                         cropCoordinates = arrayOf(
                             (cropCoordinates[0] * widthRatio).toInt(),
