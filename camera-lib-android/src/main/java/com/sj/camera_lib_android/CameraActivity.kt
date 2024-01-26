@@ -25,6 +25,7 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.util.SizeF
 import android.view.OrientationEventListener
@@ -886,7 +887,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
 
         //Done Button
-        cropDoneBtnCL.setOnClickListener {
+        cropDoneBtnCL.clickWithDebounce {
             LogUtils.logGlobally(Events.CROP_DONE)
             // this is for CROP DONE Button
             cropImageViewCL.croppedImageAsync()
@@ -980,7 +981,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
 
 
-        cropDoneBtnPS.setOnClickListener {
+        cropDoneBtnPS.clickWithDebounce {
             cropImageViewPS.croppedImageAsync()
         }
 
@@ -1104,6 +1105,19 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 }
             }
         }
+    }
+
+    private fun View.clickWithDebounce(debounceTime: Long = 600L, action: () -> Unit) {
+        this.setOnClickListener(object : View.OnClickListener {
+            private var lastClickTime: Long = 0
+
+            override fun onClick(v: View) {
+                if (SystemClock.elapsedRealtime() - lastClickTime < debounceTime) return
+                else action()
+
+                lastClickTime = SystemClock.elapsedRealtime()
+            }
+        })
     }
 
     private fun updatePreview() {
