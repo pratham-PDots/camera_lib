@@ -1168,7 +1168,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
 
     var azimuthDegrees = 0f
-    var landscapeOrientation = false
     var isInitialSet = false
     var initialDegrees = 0f
 
@@ -1181,7 +1180,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     val accelZ = event.values[2]
 
                     // Detect landscape orientation based on accelerometer data
-                    landscapeOrientation = (abs(accelX) > abs(accelY))
+                    val landscapeOrientation = (abs(accelX) > abs(accelY))
 
                     if (landscapeOrientation) {
                         // Landscape orientation: adjust pitch and roll calculation
