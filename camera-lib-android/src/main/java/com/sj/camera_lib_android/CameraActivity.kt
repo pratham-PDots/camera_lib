@@ -6,10 +6,8 @@ package com.sj.camera_lib_android
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -190,6 +188,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private lateinit var sensorManager: SensorManager
     private var accelerometerSensor: Sensor? = null
     private var gyroscopeSensor: Sensor? = null
+    private var rotationVectorSensor: Sensor? = null
     private var timestamp: Long = 0
     private var pitch = 0.0f
     private var roll = 0.0f
@@ -719,6 +718,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         // capture photo button click
         captureImg.setOnClickListener {
+            Log.d("imageSW rotation", "${azimuthDegrees}")
             //Gyro work
             viewModel.gyroValueX = String.format(Locale.US, "%.2f", filteredTiltY).toFloat()
             viewModel.gyroValueY = String.format(Locale.US, "%.2f", filteredTiltX).toFloat()
@@ -1162,9 +1162,15 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         // Get accelerometer and gyroscope sensors
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        rotationVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 
         binding.tiltGroup.isVisible = !(accelerometerSensor == null && gyroscopeSensor == null)
     }
+
+    var azimuthDegrees = 0f
+    var landscapeOrientation = false
+    var isInitialSet = false
+    var initialDegrees = 0f
 
     private val sensorListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
@@ -1175,7 +1181,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     val accelZ = event.values[2]
 
                     // Detect landscape orientation based on accelerometer data
-                    val landscapeOrientation = (abs(accelX) > abs(accelY))
+                    landscapeOrientation = (abs(accelX) > abs(accelY))
 
                     if (landscapeOrientation) {
                         // Landscape orientation: adjust pitch and roll calculation
@@ -1204,6 +1210,31 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         roll = alpha * (roll + gyroscopeY * dT) + (1 - alpha) * roll
                     }
                 }
+                Sensor.TYPE_ROTATION_VECTOR -> {
+                    val rotationMatrix = FloatArray(9)
+                    SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
+
+                    var outRotationMatrix = FloatArray(9)
+
+                    SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_X,
+                        SensorManager.AXIS_Z, outRotationMatrix)
+
+
+                    // Get orientation values (azimuth, pitch, roll)
+                    val orientationValues = FloatArray(3)
+                    SensorManager.getOrientation(outRotationMatrix, orientationValues)
+
+                    // Convert azimuth from radians to degrees
+                    azimuthDegrees = Math.toDegrees(orientationValues[0].toDouble()).toFloat()
+
+                    if(!isInitialSet) {
+                        isInitialSet = true
+                        initialDegrees = azimuthDegrees
+                    }
+
+                    azimuthDegrees -= initialDegrees
+
+                }
             }
 
             timestamp = event.timestamp
@@ -1220,7 +1251,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             val tiltYVal = String.format(Locale.US, "%.2f", filteredTiltY).toFloat()
 
             // Update the tilt views with the filtered values
-            binding.horizontalTiltView.setValue(tiltYVal)
+            binding.horizontalTiltView.setValue(azimuthDegrees/8)
             binding.verticalTiltView.setValue(tiltXVal)
             binding.tiltWarningMessage.isVisible = ((abs(tiltXVal) > 6f) || (abs(tiltYVal) > 6f))
         }
@@ -1234,7 +1265,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         val degreeDiff = tiltDegree - (if (xAxis) 90 else 0)
         return degreeDiff / 5f
     }
-
     @SuppressLint("ClickableViewAccessibility")
     private fun setZoomListener() {
         scaleGestureDetector = ScaleGestureDetector(this, scaleGestureListener)
@@ -2160,6 +2190,14 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 sensorListener,
                 it,
                 SensorManager.SENSOR_DELAY_FASTEST
+            )
+        }
+
+        rotationVectorSensor?.let {
+            sensorManager.registerListener(
+                sensorListener,
+                it,
+                SensorManager.SENSOR_DELAY_NORMAL
             )
         }
     }
