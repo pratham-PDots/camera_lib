@@ -26,5 +26,6 @@ data class ImageUploadModel(
     val name: String,
     val last_image_flag: String  = "0",
     var gyroHorizontalValue: String? = "0",
-    var gyroVerticalValue: String? = "0"
+    var gyroVerticalValue: String? = "0",
+    var sequenceNumber: String? = "0"
 ) : Parcelable

@@ -350,7 +350,8 @@ class CameraViewModel : ViewModel() {
                     uploadParam.toString(), "${imageDetails.file}", "image/jpeg",
                     imageDetails.file.toString().substringAfterLast("/"),
                     last_image_flag = if(index == currentImageList.size - 1) "1" else "0",
-                    gyroHorizontalValue = imageDetails.gyroHorizontal.toString(), gyroVerticalValue = imageDetails.gyroVertical.toString()
+                    gyroHorizontalValue = imageDetails.gyroHorizontal.toString(), gyroVerticalValue = imageDetails.gyroVertical.toString(),
+                    sequenceNumber = (index + 1).toString()
                 )
 
             })
