@@ -268,11 +268,16 @@ class MyServices : Service() {
                         .setCustomMetadata("name", name)
                         .setCustomMetadata("last_image_flag", last_image_flag)
 
+                    var sequenceNumber = "0"
+                    if(mediaModelClass.sequenceNumber == "0") {
+                        sequenceNumber = (index + 1).toString()
+                    } else sequenceNumber = mediaModelClass.sequenceNumber.toString()
+
                     val totalImages = try { total_image_captured.toInt() } catch (e : Exception) { 1 }
 
                     val uploadParamJson = JSONObject(upload_params)
                     uploadParamJson.put("app_session_id", sessionId)
-                    uploadParamJson.put("seq_no", mediaModelClass.sequenceNumber)
+                    uploadParamJson.put("seq_no", sequenceNumber)
                     if(totalImages > 1) uploadParamJson.put("image_type", "multiple")
                     else uploadParamJson.put("image_type", "single")
 
