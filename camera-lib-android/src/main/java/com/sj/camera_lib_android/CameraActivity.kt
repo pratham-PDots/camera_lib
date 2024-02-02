@@ -110,6 +110,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private var captureTime: String = ""
     private var deviceName: String = ""
 
+    private var newImageClick = true
+
     //    private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var viewFinder: PreviewView
@@ -887,7 +889,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
 
         //Done Button
-        cropDoneBtnCL.clickWithDebounce {
+        cropDoneBtnCL.cropClickWithDebounce {
             LogUtils.logGlobally(Events.CROP_DONE)
             // this is for CROP DONE Button
             cropImageViewCL.croppedImageAsync()
@@ -981,7 +983,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
 
 
-        cropDoneBtnPS.clickWithDebounce {
+        cropDoneBtnPS.setOnClickListener {
+            LogUtils.logGlobally(Events.CROP_DONE_PREVIEW)
             cropImageViewPS.croppedImageAsync()
         }
 
@@ -1106,14 +1109,17 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             }
         }
     }
+    private fun View.cropClickWithDebounce(debounceTime: Long = 20000L, action: () -> Unit) {
 
-    private fun View.clickWithDebounce(debounceTime: Long = 600L, action: () -> Unit) {
         this.setOnClickListener(object : View.OnClickListener {
             private var lastClickTime: Long = 0
 
             override fun onClick(v: View) {
-                if (SystemClock.elapsedRealtime() - lastClickTime < debounceTime) return
-                else action()
+                if (!newImageClick && SystemClock.elapsedRealtime() - lastClickTime < debounceTime) return
+                else {
+                    newImageClick = false
+                    action()
+                }
 
                 lastClickTime = SystemClock.elapsedRealtime()
             }
@@ -1669,6 +1675,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     mFile = photoFile
                     mBitmap = bitmap
                     captureTime = nameTimeStamp
+                    newImageClick = true
                     viewModel.imageName = nameTimeStamp
 
                     viewModel.hideLoader()
