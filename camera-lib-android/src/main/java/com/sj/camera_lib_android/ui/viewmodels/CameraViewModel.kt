@@ -74,6 +74,9 @@ class CameraViewModel : ViewModel() {
 
     val imageUploadList: MutableList<ImageUploadModel> = mutableListOf()
 
+    var sampleImageWidth: Int = 0
+    var sampleImageHeight: Int = 0
+
     var imageWidth: Int = 0
     var imageHeight: Int = 0
 
@@ -316,10 +319,26 @@ class CameraViewModel : ViewModel() {
 
             imageUploadList.addAll(currentImageList.mapIndexed { index, imageDetails ->
                 var cropCoordinates = arrayOf(0, 0, 0, 0)
-                if(imageDetails.croppedCoordinates.isEmpty())
-                    imageDetails.croppedCoordinates = arrayOf(0, 0, imageWidth, imageHeight)
+                var isCropEmpty = false
+                if(imageDetails.croppedCoordinates.isEmpty()) {
+                    isCropEmpty = true
+                    imageDetails.croppedCoordinates =
+                        arrayOf(0, 0, imageWidth, imageHeight)
+                }
                 imageDetails.croppedCoordinates.let {
                     cropCoordinates = arrayOf(it[0], it[1], it[2] - it[0], it[3] - it[1])
+
+                    val heightRatio = imageHeight.toDouble()/sampleImageHeight
+                    val widthRatio = imageWidth.toDouble()/sampleImageWidth
+
+                    if(!isCropEmpty) {
+                        cropCoordinates = arrayOf(
+                            (cropCoordinates[0] * widthRatio).toInt(),
+                            (cropCoordinates[1] * heightRatio).toInt(),
+                            (cropCoordinates[2] * widthRatio).toInt(),
+                            (cropCoordinates[3] * heightRatio).toInt()
+                        )
+                    }
                 }
 
                 var position = imageDetails.position
