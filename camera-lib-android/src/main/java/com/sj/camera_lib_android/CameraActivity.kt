@@ -1109,7 +1109,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             }
         }
     }
-    private fun View.cropClickWithDebounce(debounceTime: Long = 20000L, action: () -> Unit) {
+    private fun View.cropClickWithDebounce(debounceTime: Long = 3000L, action: () -> Unit) {
 
         this.setOnClickListener(object : View.OnClickListener {
             private var lastClickTime: Long = 0
