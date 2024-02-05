@@ -25,7 +25,6 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import android.util.SizeF
 import android.view.OrientationEventListener
@@ -1111,7 +1110,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     }
     private fun View.cropClickWithDebounce(action: () -> Unit) {
         this.setOnClickListener {
-            LogUtils.logGlobally(Events.CROP_DONE, newImageClick.toString())
             if (newImageClick) action()
             newImageClick = false
         }
