@@ -6,10 +6,8 @@ package com.sj.camera_lib_android
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
@@ -1836,53 +1834,41 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     }
 
-    fun addFilesToInternal() {
-        var assetManager: AssetManager = assets
-        var inputStream = assetManager.open("good.jpg")
-        var outputStream = FileOutputStream(File(filesDir, "good.jpg"))
-        inputStream.copyTo(outputStream)
-        inputStream.close()
-        outputStream.close()
-
-        assetManager = assets
-        inputStream = assetManager.open("corrupted.jpg")
-        outputStream = FileOutputStream(File(filesDir, "corrupted.jpg"))
-        inputStream.copyTo(outputStream)
-        inputStream.close()
-        outputStream.close()
-    }
-
     fun isJpegComplete(filePath: String): Boolean {
+        try {
+            val file = File(filePath)
+            if (!file.exists()) {
+                Log.d("imageSW corrupt image check", "does not exist")
+                // File does not exist
+                return false
+            }
 
-        val file = File(filePath)
-        if (!file.exists()) {
-            Log.d("imageSW corrupt image check", "does not exist")
-            // File does not exist
-            return false
-        }
+            // Open the file in binary mode
+            val inputStream = FileInputStream(file)
 
-        // Open the file in binary mode
-        val inputStream = FileInputStream(file)
+            // Seek to the end of the file
+            val fileSize = file.length()
+            if (fileSize < 2) {
+                Log.d("imageSW corrupt image check", "less than 2")
+                // File is too small to be a valid JPEG
+                inputStream.close()
+                return false
+            }
 
-        // Seek to the end of the file
-        val fileSize = file.length()
-        if (fileSize < 2) {
-            Log.d("imageSW corrupt image check", "less than 2")
-            // File is too small to be a valid JPEG
+            // Read the last two bytes of the file
+            val buffer = ByteArray(2)
+            inputStream.skip(fileSize - 2)
+            inputStream.read(buffer)
+
+            // Close the input stream
             inputStream.close()
+
+            // Check if the last two bytes are equal to the JPEG EOI marker
+            return buffer[0] == 0xFF.toByte() && buffer[1] == 0xD9.toByte()
+        } catch (e : Exception) {
+            Log.d(Events.NATIVE_IMAGE_CORRUPTED, e.message.toString())
             return false
         }
-
-        // Read the last two bytes of the file
-        val buffer = ByteArray(2)
-        inputStream.skip(fileSize - 2)
-        inputStream.read(buffer)
-
-        // Close the input stream
-        inputStream.close()
-
-        // Check if the last two bytes are equal to the JPEG EOI marker
-        return buffer[0] == 0xFF.toByte() && buffer[1] == 0xD9.toByte()
     }
 
     private fun isWideAngleCameraSameAsDefault(): Boolean {
