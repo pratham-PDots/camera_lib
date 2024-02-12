@@ -143,6 +143,7 @@ object BlurDetection {
 
             return sharpnessScore < sharpnessThreshold
         } catch (e : Exception) {
+            Log.d("imageSW Logic 2", "exception")
             return false
         }
     }

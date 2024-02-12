@@ -1728,6 +1728,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                             targetBmp,
                             checkBoth = (getBlurContinueCount() >= 3)
                         ) // Blur check
+
+                        if(getBlurContinueCount() < 3 && !isImgBlur) changeBlurCount(reset = true)
+
                         LogUtils.logGlobally(Events.IMAGE_BLUR, "Is Image Blur: $isImgBlur")
                         if (isImgBlur) {
                             // Image is blurred
