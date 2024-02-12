@@ -30,6 +30,7 @@ object Events {
     val CROP_DONE = "native-crop-done-pressed"
     val CROP_DONE_PREVIEW = "native-preview-crop-done-pressed"
     val BLUR_RETAKE = "native-blur-retake-pressed"
+    val BLUR_CONTINUE = "native-blur-continue"
     val CROP_METHOD = "native-crop-method"
     val CROP_START = "native-crop-start"
     val BUCKET_NAME = "native-bucket-names"
