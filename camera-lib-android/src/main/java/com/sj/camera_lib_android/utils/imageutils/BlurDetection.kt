@@ -16,6 +16,8 @@ import android.util.Log
 import androidx.annotation.ColorInt
 import com.sj.camera_lib_android.CameraActivity
 import com.sj.camera_lib_android.R
+import com.sj.camera_lib_android.utils.Events
+import com.sj.camera_lib_android.utils.LogUtils
 import org.opencv.android.Utils
 import org.opencv.core.Core
 import org.opencv.core.CvType
@@ -139,7 +141,7 @@ object BlurDetection {
             Core.meanStdDev(destination, median, std)
             val sharpnessScore = Math.pow(std.get(0, 0)[0], 2.0)
 
-            Log.d("imageSW Logic 2", "$sharpnessScore $sharpnessThreshold")
+            LogUtils.logGlobally(Events.SECOND_BLUR_VALUE, "Blur value: $sharpnessScore ")
 
             return sharpnessScore < sharpnessThreshold
         } catch (e : Exception) {

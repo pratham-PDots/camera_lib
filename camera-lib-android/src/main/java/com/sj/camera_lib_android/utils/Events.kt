@@ -38,6 +38,7 @@ object Events {
     val LOGOUT = "native-logout"
     val UPLOAD_SERVICE_FAILURE = "native-upload-service-error"
     val INIT_SERVICE_BACKGROUND_FAILURE = "native-init-service-background"
+    val SECOND_BLUR_VALUE = "native-secondary-blur"
     val IMAGE_SAVED = "native-image-saved"
     val BITMAP_RECYCLED = "native-bitmap-recycled"
 }
