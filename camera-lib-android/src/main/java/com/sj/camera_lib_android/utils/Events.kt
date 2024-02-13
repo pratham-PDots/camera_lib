@@ -28,6 +28,7 @@ object Events {
     val DELETE_CLICKED = "native-delete-clicked"
     val CROP_RETAKE = "native-crop-retake-pressed"
     val CROP_DONE = "native-crop-done-pressed"
+    val CROP_DONE_PREVIEW = "native-preview-crop-done-pressed"
     val BLUR_RETAKE = "native-blur-retake-pressed"
     val CROP_METHOD = "native-crop-method"
     val CROP_START = "native-crop-start"

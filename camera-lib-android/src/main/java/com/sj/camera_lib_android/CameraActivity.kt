@@ -109,6 +109,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private var captureTime: String = ""
     private var deviceName: String = ""
 
+    private var newImageClick = true
+
     //    private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var viewFinder: PreviewView
@@ -886,7 +888,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
 
         //Done Button
-        cropDoneBtnCL.setOnClickListener {
+        cropDoneBtnCL.cropClickWithDebounce {
             LogUtils.logGlobally(Events.CROP_DONE)
             // this is for CROP DONE Button
             cropImageViewCL.croppedImageAsync()
@@ -981,6 +983,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
 
         cropDoneBtnPS.setOnClickListener {
+            LogUtils.logGlobally(Events.CROP_DONE_PREVIEW)
             cropImageViewPS.croppedImageAsync()
         }
 
@@ -1103,6 +1106,12 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     }
                 }
             }
+        }
+    }
+    private fun View.cropClickWithDebounce(action: () -> Unit) {
+        this.setOnClickListener {
+            if (newImageClick) action()
+            newImageClick = false
         }
     }
 
@@ -1655,6 +1664,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     mFile = photoFile
                     mBitmap = bitmap
                     captureTime = nameTimeStamp
+                    newImageClick = true
                     viewModel.imageName = nameTimeStamp
 
                     viewModel.hideLoader()
