@@ -30,6 +30,7 @@ object Events {
     val CROP_DONE = "native-crop-done-pressed"
     val CROP_DONE_PREVIEW = "native-preview-crop-done-pressed"
     val BLUR_RETAKE = "native-blur-retake-pressed"
+    val BLUR_CONTINUE = "native-blur-continue"
     val CROP_METHOD = "native-crop-method"
     val CROP_START = "native-crop-start"
     val BUCKET_NAME = "native-bucket-names"
@@ -37,6 +38,7 @@ object Events {
     val LOGOUT = "native-logout"
     val UPLOAD_SERVICE_FAILURE = "native-upload-service-error"
     val INIT_SERVICE_BACKGROUND_FAILURE = "native-init-service-background"
+    val SECOND_BLUR_VALUE = "native-secondary-blur"
     val IMAGE_SAVED = "native-image-saved"
     val BITMAP_RECYCLED = "native-bitmap-recycled"
 }

@@ -13,6 +13,7 @@ import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Rect
@@ -878,6 +879,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
         // Retake from Blur screen
         retakeBlurImg.setOnClickListener {
+            if(getBlurContinueCount() < 3)
+                changeBlurCount(reset = true)
             LogUtils.logGlobally(Events.BLUR_RETAKE)
             //Show Hide Layouts
             cameraLayout.visibility = View.VISIBLE
@@ -904,6 +907,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         // Continue Button
         notBlurContinueLL.setOnClickListener {
+            LogUtils.logGlobally(Events.BLUR_CONTINUE)
+            changeBlurCount(value = 1)
             // this is for continue_ with BLUR
             mBitmap?.let { it1 ->
                 mFile?.let { it2 ->
@@ -1627,6 +1632,26 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             FlashType.ON -> ImageCapture.FLASH_MODE_ON
         }
 
+    private fun getBlurContinueCount(): Int {
+        val sharedPreferences = this.getSharedPreferences("blur_pref", Context.MODE_PRIVATE)
+
+        return sharedPreferences.getInt("blur_count", 0)
+    }
+
+    private fun changeBlurCount(reset: Boolean = false, value: Int = 0) {
+        val sharedPreferences = this.getSharedPreferences("blur_pref", Context.MODE_PRIVATE)
+
+        // Get SharedPreferences Editor
+        val editor = sharedPreferences.edit()
+
+        // Save a string with a key
+        if(reset) editor.putInt("blur_count", 0)
+        else editor.putInt("blur_count", getBlurContinueCount() + value)
+
+        // Apply the changes
+        editor.apply()
+    }
+
     private fun takePhoto(isBlurFeature: String, isCropFeature: String) {
         viewModel.showLoader()
         imageCapture?.flashMode = getFlashMode()
@@ -1699,10 +1724,13 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
                         val isImgBlur = BlurDetection.runDetection(
                             this@CameraActivity,
-                            targetBmp
+                            targetBmp,
+                            checkBoth = (getBlurContinueCount() >= 3)
                         ) // Blur check
-                        LogUtils.logGlobally(Events.IMAGE_BLUR, "Is Image Blur: ${isImgBlur.first}")
-                        if (isImgBlur.first) {
+
+                        if(getBlurContinueCount() < 3 && !isImgBlur) changeBlurCount(reset = true)
+
+                        if (isImgBlur) {
                             // Image is blurred
                             imageBlur.setImageBitmap(mBitmap)
 
