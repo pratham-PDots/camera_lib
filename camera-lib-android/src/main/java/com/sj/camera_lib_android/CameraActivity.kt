@@ -10,7 +10,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.AssetManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Rect
@@ -23,7 +25,6 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import android.util.SizeF
 import android.view.OrientationEventListener
@@ -82,6 +83,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import org.opencv.android.OpenCVLoader
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -107,6 +109,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private var mBitmap: Bitmap? = null
     private var captureTime: String = ""
     private var deviceName: String = ""
+
+    private var newImageClick = true
 
     //    private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
@@ -347,6 +351,10 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             resizedHeightNew = (resolution.toInt() * 3) / 4
             viewModel.imageWidth = resolution.toInt()
             viewModel.imageHeight = (resolution.toInt() * 3) / 4
+
+            viewModel.sampleImageWidth = 2048
+            viewModel.sampleImageHeight = 1536
+
             Log.d("imageSW resizeNEW: ", "Landscape WH: $resizedWidthNew, $resizedHeightNew")
 
         } else {
@@ -354,6 +362,10 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             resizedHeightNew = resolution.toInt()
             viewModel.imageWidth = (resolution.toInt() * 3) / 4
             viewModel.imageHeight = resolution.toInt()
+
+            viewModel.sampleImageWidth = 1536
+            viewModel.sampleImageHeight = 2048
+
             Log.d("imageSW resizeNEW: ", "Portrait WH: $resizedWidthNew, $resizedHeightNew")
 
             if(!isLambda) requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -869,6 +881,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
         // Retake from Blur screen
         retakeBlurImg.setOnClickListener {
+            if(getBlurContinueCount() < 3)
+                changeBlurCount(reset = true)
             LogUtils.logGlobally(Events.BLUR_RETAKE)
             //Show Hide Layouts
             cameraLayout.visibility = View.VISIBLE
@@ -887,7 +901,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
 
         //Done Button
-        cropDoneBtnCL.clickWithDebounce {
+        cropDoneBtnCL.cropClickWithDebounce {
             LogUtils.logGlobally(Events.CROP_DONE)
             // this is for CROP DONE Button
             cropImageViewCL.croppedImageAsync()
@@ -895,6 +909,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         // Continue Button
         notBlurContinueLL.setOnClickListener {
+            LogUtils.logGlobally(Events.BLUR_CONTINUE)
+            changeBlurCount(value = 1)
             // this is for continue_ with BLUR
             mBitmap?.let { it1 ->
                 mFile?.let { it2 ->
@@ -981,7 +997,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
 
 
-        cropDoneBtnPS.clickWithDebounce {
+        cropDoneBtnPS.setOnClickListener {
+            LogUtils.logGlobally(Events.CROP_DONE_PREVIEW)
             cropImageViewPS.croppedImageAsync()
         }
 
@@ -1106,18 +1123,11 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             }
         }
     }
-
-    private fun View.clickWithDebounce(debounceTime: Long = 600L, action: () -> Unit) {
-        this.setOnClickListener(object : View.OnClickListener {
-            private var lastClickTime: Long = 0
-
-            override fun onClick(v: View) {
-                if (SystemClock.elapsedRealtime() - lastClickTime < debounceTime) return
-                else action()
-
-                lastClickTime = SystemClock.elapsedRealtime()
-            }
-        })
+    private fun View.cropClickWithDebounce(action: () -> Unit) {
+        this.setOnClickListener {
+            if (newImageClick) action()
+            newImageClick = false
+        }
     }
 
     private fun updatePreview() {
@@ -1653,6 +1663,26 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             FlashType.ON -> ImageCapture.FLASH_MODE_ON
         }
 
+    private fun getBlurContinueCount(): Int {
+        val sharedPreferences = this.getSharedPreferences("blur_pref", Context.MODE_PRIVATE)
+
+        return sharedPreferences.getInt("blur_count", 0)
+    }
+
+    private fun changeBlurCount(reset: Boolean = false, value: Int = 0) {
+        val sharedPreferences = this.getSharedPreferences("blur_pref", Context.MODE_PRIVATE)
+
+        // Get SharedPreferences Editor
+        val editor = sharedPreferences.edit()
+
+        // Save a string with a key
+        if(reset) editor.putInt("blur_count", 0)
+        else editor.putInt("blur_count", getBlurContinueCount() + value)
+
+        // Apply the changes
+        editor.apply()
+    }
+
     private fun takePhoto(isBlurFeature: String, isCropFeature: String) {
         viewModel.showLoader()
         imageCapture?.flashMode = getFlashMode()
@@ -1685,10 +1715,20 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         requiredWidth = temp
                     }
                     val originalWidthHeight = "Original Width: ${bitmap.width}, Original Height: ${bitmap.height}"
+                    val oldBitmap = bitmap
                     bitmap = resizeImgBitmap(bitmap, requiredWidth, requiredHeight)
+                    if (bitmap !== oldBitmap && !oldBitmap.isRecycled) {
+                        oldBitmap.recycle()
+                    }
                     LogUtils.logGlobally(Events.RESIZE_IMAGE, "$originalWidthHeight, resizedWidth: ${bitmap.width}, resizedHeight: ${bitmap.height}")
 
-                    if (needsRotation) bitmap = ImageProcessingUtils.rotateBitmapWithOpenCV(bitmap)
+                    if (needsRotation) {
+                        val preRotataionBitmap = bitmap
+                        bitmap = ImageProcessingUtils.rotateBitmapWithOpenCV(bitmap)
+                        if(bitmap !== preRotataionBitmap && !preRotataionBitmap.isRecycled) {
+                            preRotataionBitmap.recycle()
+                        }
+                    }
                     LogUtils.logGlobally(Events.ROTATE_IMAGE, "Rotation Needed: $needsRotation Rotation Degrees: ${imageProxy.imageInfo.rotationDegrees}")
 
                     viewModel.imageSavedCount++
@@ -1696,8 +1736,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     saveImageToFile(photoFile, bitmap, this@CameraActivity)
 
                     mFile = photoFile
-                    mBitmap = bitmap
+                    mBitmap = resizeImgBitmap(bitmap, viewModel.sampleImageWidth, viewModel.sampleImageHeight)
                     captureTime = nameTimeStamp
+                    newImageClick = true
                     viewModel.imageName = nameTimeStamp
 
                     viewModel.hideLoader()
@@ -1714,10 +1755,13 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
                         val isImgBlur = BlurDetection.runDetection(
                             this@CameraActivity,
-                            targetBmp
+                            targetBmp,
+                            checkBoth = (getBlurContinueCount() >= 3)
                         ) // Blur check
-                        LogUtils.logGlobally(Events.IMAGE_BLUR, "Is Image Blur: ${isImgBlur.first}")
-                        if (isImgBlur.first) {
+
+                        if(getBlurContinueCount() < 3 && !isImgBlur) changeBlurCount(reset = true)
+
+                        if (isImgBlur) {
                             // Image is blurred
                             imageBlur.setImageBitmap(mBitmap)
 
@@ -1770,7 +1814,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
-    fun saveImageToFile(file1: File, bitmap1: Bitmap, context: Context? = null) {
+    fun saveImageToFile(file1: File, bitmap1: Bitmap, context: Context? = null, retryCount: Int = 1) {
         Log.d("imageSW ", "saveImageToFile START")
 
         GlobalScope.launch(Dispatchers.IO) {
@@ -1784,9 +1828,13 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         outputStream.close()
                     }
 
-                    LogUtils.logGlobally(Events.IMAGE_SAVED, file1.name)
-
-                    viewModel.imageSavedCount--
+                    if(retryCount != 0 && !isJpegComplete(file1.absolutePath)) {
+                        LogUtils.logGlobally(Events.NATIVE_IMAGE_CORRUPTED, file1.name)
+                        saveImageToFile(file1, bitmap1, appContext, 0)
+                    } else {
+                        LogUtils.logGlobally(Events.IMAGE_SAVED, file1.name)
+                        viewModel.imageSavedCount--
+                    }
 
                     Log.d(
                         "imageSW",
@@ -1813,6 +1861,43 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
         Log.d("imageSW ", "saveImageToFile DONE")
 
+    }
+
+    fun isJpegComplete(filePath: String): Boolean {
+        try {
+            val file = File(filePath)
+            if (!file.exists()) {
+                Log.d("imageSW corrupt image check", "does not exist")
+                // File does not exist
+                return false
+            }
+
+            // Open the file in binary mode
+            val inputStream = FileInputStream(file)
+
+            // Seek to the end of the file
+            val fileSize = file.length()
+            if (fileSize < 2) {
+                Log.d("imageSW corrupt image check", "less than 2")
+                // File is too small to be a valid JPEG
+                inputStream.close()
+                return false
+            }
+
+            // Read the last two bytes of the file
+            val buffer = ByteArray(2)
+            inputStream.skip(fileSize - 2)
+            inputStream.read(buffer)
+
+            // Close the input stream
+            inputStream.close()
+
+            // Check if the last two bytes are equal to the JPEG EOI marker
+            return buffer[0] == 0xFF.toByte() && buffer[1] == 0xD9.toByte()
+        } catch (e : Exception) {
+            Log.d(Events.NATIVE_IMAGE_CORRUPTED, e.message.toString())
+            return false
+        }
     }
 
     private fun isWideAngleCameraSameAsDefault(): Boolean {
@@ -2181,14 +2266,14 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             sensorManager.registerListener(
                 sensorListener,
                 it,
-                SensorManager.SENSOR_DELAY_FASTEST
+                SensorManager.SENSOR_DELAY_UI
             )
         }
         gyroscopeSensor?.let {
             sensorManager.registerListener(
                 sensorListener,
                 it,
-                SensorManager.SENSOR_DELAY_FASTEST
+                SensorManager.SENSOR_DELAY_UI
             )
         }
 
