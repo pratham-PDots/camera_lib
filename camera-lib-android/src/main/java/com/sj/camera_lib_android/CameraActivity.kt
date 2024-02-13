@@ -2281,7 +2281,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             sensorManager.registerListener(
                 sensorListener,
                 it,
-                SensorManager.SENSOR_DELAY_NORMAL
+                SensorManager.SENSOR_DELAY_UI
             )
         }
     }
