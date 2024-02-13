@@ -349,6 +349,10 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             resizedHeightNew = (resolution.toInt() * 3) / 4
             viewModel.imageWidth = resolution.toInt()
             viewModel.imageHeight = (resolution.toInt() * 3) / 4
+
+            viewModel.sampleImageWidth = 2048
+            viewModel.sampleImageHeight = 1536
+
             Log.d("imageSW resizeNEW: ", "Landscape WH: $resizedWidthNew, $resizedHeightNew")
 
         } else {
@@ -356,6 +360,10 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             resizedHeightNew = resolution.toInt()
             viewModel.imageWidth = (resolution.toInt() * 3) / 4
             viewModel.imageHeight = resolution.toInt()
+
+            viewModel.sampleImageWidth = 1536
+            viewModel.sampleImageHeight = 2048
+
             Log.d("imageSW resizeNEW: ", "Portrait WH: $resizedWidthNew, $resizedHeightNew")
 
             if(!isLambda) requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -1651,10 +1659,20 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         requiredWidth = temp
                     }
                     val originalWidthHeight = "Original Width: ${bitmap.width}, Original Height: ${bitmap.height}"
+                    val oldBitmap = bitmap
                     bitmap = resizeImgBitmap(bitmap, requiredWidth, requiredHeight)
+                    if (bitmap !== oldBitmap && !oldBitmap.isRecycled) {
+                        oldBitmap.recycle()
+                    }
                     LogUtils.logGlobally(Events.RESIZE_IMAGE, "$originalWidthHeight, resizedWidth: ${bitmap.width}, resizedHeight: ${bitmap.height}")
 
-                    if (needsRotation) bitmap = ImageProcessingUtils.rotateBitmapWithOpenCV(bitmap)
+                    if (needsRotation) {
+                        val preRotataionBitmap = bitmap
+                        bitmap = ImageProcessingUtils.rotateBitmapWithOpenCV(bitmap)
+                        if(bitmap !== preRotataionBitmap && !preRotataionBitmap.isRecycled) {
+                            preRotataionBitmap.recycle()
+                        }
+                    }
                     LogUtils.logGlobally(Events.ROTATE_IMAGE, "Rotation Needed: $needsRotation Rotation Degrees: ${imageProxy.imageInfo.rotationDegrees}")
 
                     viewModel.imageSavedCount++
@@ -1662,7 +1680,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     saveImageToFile(photoFile, bitmap, this@CameraActivity)
 
                     mFile = photoFile
-                    mBitmap = bitmap
+                    mBitmap = resizeImgBitmap(bitmap, viewModel.sampleImageWidth, viewModel.sampleImageHeight)
                     captureTime = nameTimeStamp
                     newImageClick = true
                     viewModel.imageName = nameTimeStamp
@@ -2148,14 +2166,14 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             sensorManager.registerListener(
                 sensorListener,
                 it,
-                SensorManager.SENSOR_DELAY_FASTEST
+                SensorManager.SENSOR_DELAY_UI
             )
         }
         gyroscopeSensor?.let {
             sensorManager.registerListener(
                 sensorListener,
                 it,
-                SensorManager.SENSOR_DELAY_FASTEST
+                SensorManager.SENSOR_DELAY_UI
             )
         }
     }
