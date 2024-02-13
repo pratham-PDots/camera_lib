@@ -1662,7 +1662,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     val oldBitmap = bitmap
                     bitmap = resizeImgBitmap(bitmap, requiredWidth, requiredHeight)
                     if (bitmap !== oldBitmap && !oldBitmap.isRecycled) {
-                        LogUtils.logGlobally(Events.BITMAP_RECYCLED, "oldBitmap")
                         oldBitmap.recycle()
                     }
                     LogUtils.logGlobally(Events.RESIZE_IMAGE, "$originalWidthHeight, resizedWidth: ${bitmap.width}, resizedHeight: ${bitmap.height}")
@@ -1671,7 +1670,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         val preRotataionBitmap = bitmap
                         bitmap = ImageProcessingUtils.rotateBitmapWithOpenCV(bitmap)
                         if(bitmap !== preRotataionBitmap && !preRotataionBitmap.isRecycled) {
-                            LogUtils.logGlobally(Events.BITMAP_RECYCLED, "preRotataionBitmap")
                             preRotataionBitmap.recycle()
                         }
                     }
