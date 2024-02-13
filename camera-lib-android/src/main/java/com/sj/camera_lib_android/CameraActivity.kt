@@ -1257,11 +1257,14 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
             val tiltXVal = String.format(Locale.US, "%.2f", filteredTiltX).toFloat()
             val tiltYVal = String.format(Locale.US, "%.2f", filteredTiltY).toFloat()
+            val tiltZVal = String.format(Locale.US, "%.2f", mapTilt(azimuthDegrees, false)).toFloat()
+
+            val xValue = if(abs(tiltYVal) > abs(tiltZVal)) tiltYVal else tiltZVal
 
             // Update the tilt views with the filtered values
-            binding.horizontalTiltView.setValue(azimuthDegrees/8)
+            binding.horizontalTiltView.setValue(xValue)
             binding.verticalTiltView.setValue(tiltXVal)
-            binding.tiltWarningMessage.isVisible = ((abs(tiltXVal) > 6f) || (abs(tiltYVal) > 6f))
+            binding.tiltWarningMessage.isVisible = ((abs(tiltXVal) > 4f) || (abs(tiltYVal) > 4f) || abs(tiltZVal) > 4f)
         }
 
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
