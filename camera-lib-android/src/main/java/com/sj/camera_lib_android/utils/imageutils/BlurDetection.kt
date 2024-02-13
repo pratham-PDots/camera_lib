@@ -153,9 +153,11 @@ object BlurDetection {
             Core.meanStdDev(destination, median, std)
             val sharpnessScore = Math.pow(std.get(0, 0)[0], 2.0)
 
+            val isBlur = sharpnessScore < sharpnessThreshold
+
             LogUtils.logGlobally(
                 Events.IMAGE_BLUR,
-                "Is Image Blur: $primaryLogicFlag Primary Value: $primaryLogicValue Threshold: 8000000 Secondary Value: $sharpnessScore Threshold: $sharpnessThreshold"
+                "Is Image Blur: $isBlur Primary Value: $primaryLogicValue Threshold: 8000000 Secondary Value: $sharpnessScore Threshold: $sharpnessThreshold"
             )
             Log.d("imageSW Logic 2", "$sharpnessScore $sharpnessThreshold")
 
