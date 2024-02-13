@@ -41,4 +41,5 @@ object Events {
     val SECOND_BLUR_VALUE = "native-secondary-blur"
     val IMAGE_SAVED = "native-image-saved"
     val BITMAP_RECYCLED = "native-bitmap-recycled"
+    val NATIVE_IMAGE_CORRUPTED = "native-image-corrupted"
 }

@@ -6,12 +6,11 @@ package com.sj.camera_lib_android
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -84,6 +83,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import org.opencv.android.OpenCVLoader
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -1783,7 +1783,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
-    fun saveImageToFile(file1: File, bitmap1: Bitmap, context: Context? = null) {
+    fun saveImageToFile(file1: File, bitmap1: Bitmap, context: Context? = null, retryCount: Int = 1) {
         Log.d("imageSW ", "saveImageToFile START")
 
         GlobalScope.launch(Dispatchers.IO) {
@@ -1797,9 +1797,13 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         outputStream.close()
                     }
 
-                    LogUtils.logGlobally(Events.IMAGE_SAVED, file1.name)
-
-                    viewModel.imageSavedCount--
+                    if(retryCount != 0 && !isJpegComplete(file1.absolutePath)) {
+                        LogUtils.logGlobally(Events.NATIVE_IMAGE_CORRUPTED, file1.name)
+                        saveImageToFile(file1, bitmap1, appContext, 0)
+                    } else {
+                        LogUtils.logGlobally(Events.IMAGE_SAVED, file1.name)
+                        viewModel.imageSavedCount--
+                    }
 
                     Log.d(
                         "imageSW",
@@ -1826,6 +1830,43 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         }
         Log.d("imageSW ", "saveImageToFile DONE")
 
+    }
+
+    fun isJpegComplete(filePath: String): Boolean {
+        try {
+            val file = File(filePath)
+            if (!file.exists()) {
+                Log.d("imageSW corrupt image check", "does not exist")
+                // File does not exist
+                return false
+            }
+
+            // Open the file in binary mode
+            val inputStream = FileInputStream(file)
+
+            // Seek to the end of the file
+            val fileSize = file.length()
+            if (fileSize < 2) {
+                Log.d("imageSW corrupt image check", "less than 2")
+                // File is too small to be a valid JPEG
+                inputStream.close()
+                return false
+            }
+
+            // Read the last two bytes of the file
+            val buffer = ByteArray(2)
+            inputStream.skip(fileSize - 2)
+            inputStream.read(buffer)
+
+            // Close the input stream
+            inputStream.close()
+
+            // Check if the last two bytes are equal to the JPEG EOI marker
+            return buffer[0] == 0xFF.toByte() && buffer[1] == 0xD9.toByte()
+        } catch (e : Exception) {
+            Log.d(Events.NATIVE_IMAGE_CORRUPTED, e.message.toString())
+            return false
+        }
     }
 
     private fun isWideAngleCameraSameAsDefault(): Boolean {
