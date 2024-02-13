@@ -730,7 +730,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         // capture photo button click
         captureImg.setOnClickListener {
-            Log.d("imageSW rotation", "${azimuthDegrees}")
             //Gyro work
             viewModel.gyroValueX = String.format(Locale.US, "%.2f", filteredTiltY).toFloat()
             viewModel.gyroValueY = String.format(Locale.US, "%.2f", filteredTiltX).toFloat()
@@ -1274,6 +1273,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         val degreeDiff = tiltDegree - (if (xAxis) 90 else 0)
         return degreeDiff / 5f
     }
+
     @SuppressLint("ClickableViewAccessibility")
     private fun setZoomListener() {
         scaleGestureDetector = ScaleGestureDetector(this, scaleGestureListener)
