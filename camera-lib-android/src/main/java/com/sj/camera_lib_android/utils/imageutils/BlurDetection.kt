@@ -34,6 +34,9 @@ object BlurDetection {
         -1.0f, -1.0f, -1.0f
     )
 
+    var primaryLogicValue = 0
+    var primaryLogicFlag = false
+
     fun runDetection(context: Context, sourceBitmap: Bitmap, checkBoth: Boolean = false): Boolean {
         try {
             val rs = RenderScript.create(context)
@@ -116,12 +119,21 @@ object BlurDetection {
             // Note - in Android, Color.BLACK is -16777216 and Color.WHITE is -1, so range is somewhere in between. Higher is more luminous
             Log.d(
                 "imageSW Logic 1",
-                "blur value: $mostLuminousColor 8000000 ${Color.parseColor("#CECECE")}$isBlurry"
+                "blur value: $mostLuminousColor 8000000 ${Color.parseColor("#CECECE")}$isBlurry $checkBoth"
             )
 
 
-            if (!checkBoth) return isBlurry
-            else return isBlurry && isBlurry(sourceBitmap)
+            if (!checkBoth) {
+                LogUtils.logGlobally(Events.IMAGE_BLUR, "Is Image Blur: $isBlurry Primary Value: $mostLuminousColor Threshold: 8000000")
+                return isBlurry
+            }
+            else {
+                primaryLogicFlag = isBlurry
+                primaryLogicValue = mostLuminousColor
+                if(!isBlurry)
+                    LogUtils.logGlobally(Events.IMAGE_BLUR, "Is Image Blur: $isBlurry Primary Value: $mostLuminousColor Threshold: 8000000")
+                return isBlurry && isBlurry(sourceBitmap)
+            }
         } catch (e: Exception){
             return false
         }
@@ -141,8 +153,11 @@ object BlurDetection {
             Core.meanStdDev(destination, median, std)
             val sharpnessScore = Math.pow(std.get(0, 0)[0], 2.0)
 
+            LogUtils.logGlobally(
+                Events.IMAGE_BLUR,
+                "Is Image Blur: $primaryLogicFlag Primary Value: $primaryLogicValue Threshold: 8000000 Secondary Value: $sharpnessScore Threshold: $sharpnessThreshold"
+            )
             Log.d("imageSW Logic 2", "$sharpnessScore $sharpnessThreshold")
-            LogUtils.logGlobally(Events.SECOND_BLUR_VALUE, "Blur value: $sharpnessScore")
 
             return sharpnessScore < sharpnessThreshold
         } catch (e : Exception) {

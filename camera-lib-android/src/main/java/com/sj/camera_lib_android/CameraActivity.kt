@@ -13,6 +13,7 @@ import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Rect
@@ -1731,7 +1732,6 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
                         if(getBlurContinueCount() < 3 && !isImgBlur) changeBlurCount(reset = true)
 
-                        LogUtils.logGlobally(Events.IMAGE_BLUR, "Is Image Blur: $isImgBlur")
                         if (isImgBlur) {
                             // Image is blurred
                             imageBlur.setImageBitmap(mBitmap)
