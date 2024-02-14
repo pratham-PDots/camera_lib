@@ -733,6 +733,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             //Gyro work
             viewModel.gyroValueX = String.format(Locale.US, "%.2f", filteredTiltY).toFloat()
             viewModel.gyroValueY = String.format(Locale.US, "%.2f", filteredTiltX).toFloat()
+            viewModel.gyroValueZ = String.format(Locale.US, "%.2f", mapTilt(azimuthDegrees, false)).toFloat()
 
             if (viewModel.currentImageList.size == 0) {
                 isArrowSelected = true
@@ -1098,7 +1099,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private fun logCapturePressEvent() {
         try {
-            var attributes = "hasWideAngle: ${wideAngleButton.isVisible}, flash: ${currentFlashType.name}, Gyro values(Horizontal, Vertical): (${viewModel.gyroValueX}, ${viewModel.gyroValueY})"
+            var attributes = "hasWideAngle: ${wideAngleButton.isVisible}, flash: ${currentFlashType.name}, Gyro values(Horizontal, Vertical, Z): (${viewModel.gyroValueX}, ${viewModel.gyroValueY}, ${viewModel.gyroValueZ})"
             if(wideAngleButton.isVisible) attributes += ", wideAngleSelected: ${viewModel.wideAngleSet}"
             if (viewModel.backendToggle) attributes += ", overlapToggleState: ${binding.overlapToggle.isChecked}"
             LogUtils.logGlobally(Events.CAPTURE_BUTTON_PRESSED, attributes)
@@ -1706,7 +1707,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 }
 
                 override fun onCaptureSuccess(imageProxy: ImageProxy) {
-                    LogUtils.logGlobally(Events.CAPTURE_SUCCESS)
+                    LogUtils.logGlobally(Events.CAPTURE_SUCCESS, "$nameTimeStamp")
                     var bitmap = imageProxy.toBitmap()
                     LogUtils.logGlobally(Events.IMAGE_PROXY_CONVERSION)
                     var requiredHeight = resizedHeightNew!!
