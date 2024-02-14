@@ -82,6 +82,7 @@ class CameraViewModel : ViewModel() {
 
     var gyroValueX: Float = 0f
     var gyroValueY: Float = 0f
+    var gyroValueZ: Float = 0f
 
     val currentImageList = arrayListOf<ImageDetailsModel>()
     val imageCapturedListLive: MutableLiveData<ArrayList<ImageDetailsModel>> = MutableLiveData()
@@ -237,7 +238,8 @@ class CameraViewModel : ViewModel() {
                 bmp1,
                 coordinatesCropped,
                 gyroValueX,
-                gyroValueY
+                gyroValueY,
+                gyroValueZ
             )
         )
 
@@ -353,6 +355,7 @@ class CameraViewModel : ViewModel() {
                 val metadata = JSONObject(uploadParam.optString("metadata", "{}"))
                 metadata.put("gyro_horizontal", imageDetails.gyroHorizontal.toString())
                 metadata.put("gyro_vertical", imageDetails.gyroVertical.toString())
+                metadata.put("gyro_z", imageDetails.gyroZ.toString())
                 metadata.put("is_wide_angle", if (hasWideAngle && wideAngleSet) 1 else 0)
                 metadata.put("device_name", getDeviceModel())
                 metadata.put("device_id ", "")

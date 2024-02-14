@@ -192,6 +192,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
     private lateinit var sensorManager: SensorManager
     private var accelerometerSensor: Sensor? = null
     private var gyroscopeSensor: Sensor? = null
+    private var rotationVectorSensor: Sensor? = null
     private var timestamp: Long = 0
     private var pitch = 0.0f
     private var roll = 0.0f
@@ -732,6 +733,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             //Gyro work
             viewModel.gyroValueX = String.format(Locale.US, "%.2f", filteredTiltY).toFloat()
             viewModel.gyroValueY = String.format(Locale.US, "%.2f", filteredTiltX).toFloat()
+            viewModel.gyroValueZ = String.format(Locale.US, "%.2f", mapTilt(azimuthDegrees, false)).toFloat()
 
             if (viewModel.currentImageList.size == 0) {
                 isArrowSelected = true
@@ -1097,7 +1099,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private fun logCapturePressEvent() {
         try {
-            var attributes = "hasWideAngle: ${wideAngleButton.isVisible}, flash: ${currentFlashType.name}, Gyro values(Horizontal, Vertical): (${viewModel.gyroValueX}, ${viewModel.gyroValueY})"
+            var attributes = "hasWideAngle: ${wideAngleButton.isVisible}, flash: ${currentFlashType.name}, Gyro values(Horizontal, Vertical, Z): (${viewModel.gyroValueX}, ${viewModel.gyroValueY}, ${viewModel.gyroValueZ})"
             if(wideAngleButton.isVisible) attributes += ", wideAngleSelected: ${viewModel.wideAngleSet}"
             if (viewModel.backendToggle) attributes += ", overlapToggleState: ${binding.overlapToggle.isChecked}"
             LogUtils.logGlobally(Events.CAPTURE_BUTTON_PRESSED, attributes)
@@ -1170,9 +1172,14 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         // Get accelerometer and gyroscope sensors
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        rotationVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 
         binding.tiltGroup.isVisible = !(accelerometerSensor == null && gyroscopeSensor == null)
     }
+
+    var azimuthDegrees = 0f
+    var isInitialSet = false
+    var initialDegrees = 0f
 
     private val sensorListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
@@ -1212,6 +1219,31 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                         roll = alpha * (roll + gyroscopeY * dT) + (1 - alpha) * roll
                     }
                 }
+                Sensor.TYPE_ROTATION_VECTOR -> {
+                    val rotationMatrix = FloatArray(9)
+                    SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
+
+                    var outRotationMatrix = FloatArray(9)
+
+                    SensorManager.remapCoordinateSystem(rotationMatrix, SensorManager.AXIS_X,
+                        SensorManager.AXIS_Z, outRotationMatrix)
+
+
+                    // Get orientation values (azimuth, pitch, roll)
+                    val orientationValues = FloatArray(3)
+                    SensorManager.getOrientation(outRotationMatrix, orientationValues)
+
+                    // Convert azimuth from radians to degrees
+                    azimuthDegrees = Math.toDegrees(orientationValues[0].toDouble()).toFloat()
+
+                    if(!isInitialSet) {
+                        isInitialSet = true
+                        initialDegrees = azimuthDegrees
+                    }
+
+                    azimuthDegrees -= initialDegrees
+
+                }
             }
 
             timestamp = event.timestamp
@@ -1226,11 +1258,14 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
             val tiltXVal = String.format(Locale.US, "%.2f", filteredTiltX).toFloat()
             val tiltYVal = String.format(Locale.US, "%.2f", filteredTiltY).toFloat()
+            val tiltZVal = String.format(Locale.US, "%.2f", mapTilt(azimuthDegrees, false)).toFloat()
+
+            val xValue = if(abs(tiltYVal) > abs(tiltZVal)) tiltYVal else tiltZVal
 
             // Update the tilt views with the filtered values
-            binding.horizontalTiltView.setValue(tiltYVal)
+            binding.horizontalTiltView.setValue(xValue)
             binding.verticalTiltView.setValue(tiltXVal)
-            binding.tiltWarningMessage.isVisible = ((abs(tiltXVal) > 6f) || (abs(tiltYVal) > 6f))
+            binding.tiltWarningMessage.isVisible = ((abs(tiltXVal) > 4f) || (abs(tiltYVal) > 4f) || abs(tiltZVal) > 4f)
         }
 
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -1672,7 +1707,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 }
 
                 override fun onCaptureSuccess(imageProxy: ImageProxy) {
-                    LogUtils.logGlobally(Events.CAPTURE_SUCCESS)
+                    LogUtils.logGlobally(Events.CAPTURE_SUCCESS, "$nameTimeStamp")
                     var bitmap = imageProxy.toBitmap()
                     LogUtils.logGlobally(Events.IMAGE_PROXY_CONVERSION)
                     var requiredHeight = resizedHeightNew!!
@@ -2239,6 +2274,14 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             )
         }
         gyroscopeSensor?.let {
+            sensorManager.registerListener(
+                sensorListener,
+                it,
+                SensorManager.SENSOR_DELAY_UI
+            )
+        }
+
+        rotationVectorSensor?.let {
             sensorManager.registerListener(
                 sensorListener,
                 it,
