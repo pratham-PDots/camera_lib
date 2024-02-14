@@ -1246,6 +1246,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     if (!isInitialSet) {
                         isInitialSet = true
                         initialDegrees = azimuthDegrees
+                        azimuthDegrees -= initialDegrees
                     }
 
 
