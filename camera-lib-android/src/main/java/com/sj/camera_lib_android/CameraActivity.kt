@@ -1236,12 +1236,18 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     // Convert azimuth from radians to degrees
                     azimuthDegrees = Math.toDegrees(orientationValues[0].toDouble()).toFloat()
 
-                    if(!isInitialSet) {
+                    // Adjust azimuth to be in the range of -90 to 90 based on initial offset
+                    azimuthDegrees -= initialDegrees
+
+                    // Map azimuth to the range of -90 to 90
+                    if (azimuthDegrees > 90) azimuthDegrees -= 180
+                    else if (azimuthDegrees < -90) azimuthDegrees += 180
+
+                    if (!isInitialSet) {
                         isInitialSet = true
                         initialDegrees = azimuthDegrees
                     }
 
-                    azimuthDegrees -= initialDegrees
 
                 }
             }
