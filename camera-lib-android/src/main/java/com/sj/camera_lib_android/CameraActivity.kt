@@ -1099,7 +1099,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private fun logCapturePressEvent() {
         try {
-            var attributes = "hasWideAngle: ${wideAngleButton.isVisible}, flash: ${currentFlashType.name}, Gyro values(Horizontal, Vertical, Z): (${viewModel.gyroValueX}, ${viewModel.gyroValueY}, ${viewModel.gyroValueZ})"
+            var attributes = "Session ID: ${viewModel.uuid.toString() + "_" + (viewModel.currentImageList.size + 1)} hasWideAngle: ${wideAngleButton.isVisible}, flash: ${currentFlashType.name}, Gyro values(Horizontal, Vertical, Z): (${viewModel.gyroValueX}, ${viewModel.gyroValueY}, ${viewModel.gyroValueZ})"
             if(wideAngleButton.isVisible) attributes += ", wideAngleSelected: ${viewModel.wideAngleSet}"
             if (viewModel.backendToggle) attributes += ", overlapToggleState: ${binding.overlapToggle.isChecked}"
             LogUtils.logGlobally(Events.CAPTURE_BUTTON_PRESSED, attributes)
