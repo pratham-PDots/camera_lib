@@ -326,7 +326,7 @@ class MyServices : Service() {
                             // Handle failed upload
                             applicationScope?.launch {
                                 modifyImage(mediaModelClass, exception.message.toString())
-                                LogUtils.logGlobally(Events.IMAGE_UPLOAD_FAILURE, exception.message.toString())
+                                LogUtils.logGlobally(Events.IMAGE_UPLOAD_FAILURE, "Firebase error: ${exception.message.toString()} ${mediaModelClass.name}")
                                 Log.d("imageSW queue received", "failure")
                                 broadCastQueue()
 //                                broadCastImage(ReactSingleImage(

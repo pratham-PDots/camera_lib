@@ -799,7 +799,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 onClick = {
                     viewModel.submitClicked = true
                     broadcastSubmitPress(this@CameraActivity)
-                    LogUtils.logGlobally(Events.UPLOAD_BUTTON_PRESSED, "Total Images: ${viewModel.currentImageList.size}")
+                    LogUtils.logGlobally(Events.UPLOAD_BUTTON_PRESSED, "Total Images: ${viewModel.currentImageList.size} Session ID: ${viewModel.uuid.toString()}")
                     Log.d(
                         "imageSW",
                         "Saved Image Count : ${viewModel.imageSavedCount} Submit : ${viewModel.submitClicked}"
@@ -863,7 +863,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         // Retake from Crop screen
         retakeCropBtnCL.setOnClickListener {
-            LogUtils.logGlobally(Events.CROP_RETAKE)
+            LogUtils.logGlobally(Events.CROP_RETAKE, viewModel.imageName)
             //Show Hide Layouts
             cameraLayout.visibility = View.VISIBLE
             previewImgLayout.visibility = View.GONE
@@ -883,7 +883,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         retakeBlurImg.setOnClickListener {
             if(getBlurContinueCount() < 3)
                 changeBlurCount(reset = true)
-            LogUtils.logGlobally(Events.BLUR_RETAKE)
+            LogUtils.logGlobally(Events.BLUR_RETAKE, viewModel.imageName)
             //Show Hide Layouts
             cameraLayout.visibility = View.VISIBLE
             previewImgLayout.visibility = View.GONE
@@ -902,14 +902,14 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         //Done Button
         cropDoneBtnCL.cropClickWithDebounce {
-            LogUtils.logGlobally(Events.CROP_DONE)
+            LogUtils.logGlobally(Events.CROP_DONE, viewModel.imageName)
             // this is for CROP DONE Button
             cropImageViewCL.croppedImageAsync()
         }
 
         // Continue Button
         notBlurContinueLL.setOnClickListener {
-            LogUtils.logGlobally(Events.BLUR_CONTINUE)
+            LogUtils.logGlobally(Events.BLUR_CONTINUE, viewModel.imageName)
             changeBlurCount(value = 1)
             // this is for continue_ with BLUR
             mBitmap?.let { it1 ->
@@ -1716,7 +1716,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 override fun onCaptureSuccess(imageProxy: ImageProxy) {
                     LogUtils.logGlobally(Events.CAPTURE_SUCCESS, "$nameTimeStamp")
                     var bitmap = imageProxy.toBitmap()
-                    LogUtils.logGlobally(Events.IMAGE_PROXY_CONVERSION)
+                    LogUtils.logGlobally(Events.IMAGE_PROXY_CONVERSION, nameTimeStamp)
                     var requiredHeight = resizedHeightNew!!
                     var requiredWidth = resizedWidthNew!!
                     val needsRotation = imageProxy.imageInfo.rotationDegrees == 90 && viewModel.mode == "portrait"
@@ -1731,7 +1731,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     if (bitmap !== oldBitmap && !oldBitmap.isRecycled) {
                         oldBitmap.recycle()
                     }
-                    LogUtils.logGlobally(Events.RESIZE_IMAGE, "$originalWidthHeight, resizedWidth: ${bitmap.width}, resizedHeight: ${bitmap.height}")
+                    LogUtils.logGlobally(Events.RESIZE_IMAGE, "$nameTimeStamp $originalWidthHeight, resizedWidth: ${bitmap.width}, resizedHeight: ${bitmap.height}")
 
                     if (needsRotation) {
                         val preRotataionBitmap = bitmap
@@ -1740,7 +1740,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                             preRotataionBitmap.recycle()
                         }
                     }
-                    LogUtils.logGlobally(Events.ROTATE_IMAGE, "Rotation Needed: $needsRotation Rotation Degrees: ${imageProxy.imageInfo.rotationDegrees}")
+                    LogUtils.logGlobally(Events.ROTATE_IMAGE, "$nameTimeStamp Rotation Needed: $needsRotation Rotation Degrees: ${imageProxy.imageInfo.rotationDegrees}")
 
                     viewModel.imageSavedCount++
 

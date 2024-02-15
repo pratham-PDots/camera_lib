@@ -15,7 +15,7 @@ object Events {
     val UPLOAD_BUTTON_PRESSED_PREVIEW = "native-upload-button-pressed-preview"
     val IMAGE_UPLOAD_SUCESS = "native-image-upload-success"
     val UPLOADED_IMAGE_METADATA = "native-uploaded-image-metadata"
-    val IMAGE_UPLOAD_FAILURE = "native-image-failure"
+    val IMAGE_UPLOAD_FAILURE = "native-image-upload-failure"
     val DELETE_UPLOADED_FILE = "native-delete-uploaded-image"
     val CROSS_CLICK = "native-cross-clicked"
     val NATIVE_PARAMS = "native-sdk-params"
