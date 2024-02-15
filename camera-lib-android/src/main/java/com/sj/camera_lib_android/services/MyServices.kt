@@ -269,7 +269,7 @@ class MyServices : Service() {
                         .setCustomMetadata("last_image_flag", last_image_flag)
 
                     var sequenceNumber = "0"
-                    if(mediaModelClass.sequenceNumber == "0") {
+                    if(mediaModelClass.sequenceNumber.isNullOrEmpty() || mediaModelClass.sequenceNumber == "0") {
                         sequenceNumber = (index + 1).toString()
                     } else sequenceNumber = mediaModelClass.sequenceNumber.toString()
 
