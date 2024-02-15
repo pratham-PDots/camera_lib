@@ -1716,7 +1716,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 override fun onCaptureSuccess(imageProxy: ImageProxy) {
                     LogUtils.logGlobally(Events.CAPTURE_SUCCESS, "$nameTimeStamp")
                     var bitmap = imageProxy.toBitmap()
-                    LogUtils.logGlobally(Events.IMAGE_PROXY_CONVERSION, nameTimeStamp)
+                    LogUtils.logGlobally(Events.IMAGE_PROXY_CONVERSION)
                     var requiredHeight = resizedHeightNew!!
                     var requiredWidth = resizedWidthNew!!
                     val needsRotation = imageProxy.imageInfo.rotationDegrees == 90 && viewModel.mode == "portrait"
