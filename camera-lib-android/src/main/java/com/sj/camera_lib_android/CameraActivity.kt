@@ -936,7 +936,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             coordinatesCrop = arrayOf(left!!, top!!, right!!, bottom!!)
             LogUtils.logGlobally(
                 Events.IMAGE_CROPPED,
-                "coordinatesCrop: Xmin, Ymin, Xmax, Ymax: ${coordinatesCrop.contentToString()}"
+                "${viewModel.imageName} coordinatesCrop: Xmin, Ymin, Xmax, Ymax: ${coordinatesCrop.contentToString()}"
             )
 
 
