@@ -731,9 +731,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         // capture photo button click
         captureImg.setOnClickListener {
             //Gyro work
-            viewModel.gyroValueX = String.format(Locale.US, "%.2f", filteredTiltY).toFloat()
-            viewModel.gyroValueY = String.format(Locale.US, "%.2f", filteredTiltX).toFloat()
-            viewModel.gyroValueZ = String.format(Locale.US, "%.2f", mapTilt(azimuthDegrees, false)).toFloat()
+            viewModel.gyroValueX = String.format(Locale.US, "%.2f", filteredTiltY).toFloat() * 5
+            viewModel.gyroValueY = String.format(Locale.US, "%.2f", filteredTiltX).toFloat() * 5
+            viewModel.gyroValueZ = String.format(Locale.US, "%.2f", mapTilt(azimuthDegrees, false)).toFloat() * 5
 
             if (viewModel.currentImageList.size == 0) {
                 isArrowSelected = true
