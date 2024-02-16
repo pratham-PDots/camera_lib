@@ -199,7 +199,6 @@ class MyServices : Service() {
             // Return the formatted time difference string
             return String.format("%02d:%02d:%02d", hours, minutes, seconds)
         } catch (e: Exception) {
-            e.printStackTrace()
             return ""
         }
     }
@@ -217,8 +216,6 @@ class MyServices : Service() {
 
         return jsonObject.toString()
     }
-
-
 
 
 
