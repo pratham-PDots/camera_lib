@@ -1879,9 +1879,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         try {
             val file = File(filePath)
             if (!file.exists()) {
-                Log.d("imageSW corrupt image check", "does not exist")
+                Log.d(Events.NATIVE_IMAGE_CORRUPTED, "File does not exist")
                 // File does not exist
-                return false
+                return true
             }
 
             // Open the file in binary mode
@@ -1907,7 +1907,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             // Check if the last two bytes are equal to the JPEG EOI marker
             return buffer[0] == 0xFF.toByte() && buffer[1] == 0xD9.toByte()
         } catch (e : Exception) {
-            Log.d(Events.NATIVE_IMAGE_CORRUPTED, e.message.toString())
+            Log.d(Events.NATIVE_IMAGE_CORRUPTED, "Error: ${e.message.toString()}")
             return false
         }
     }
