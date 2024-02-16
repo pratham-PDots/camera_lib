@@ -323,7 +323,7 @@ class MyServices : Service() {
                                 val calculateUploadTime = calculateTimeDifference(mediaModelClass.app_timestamp, SimpleDateFormat(
                                     CameraActivity.FILENAME_FORMAT, Locale.US
                                 ).format(System.currentTimeMillis()))
-                                Bugfender.d(Events.IMAGE_UPLOAD_SUCESS, "reference: $fbRef name: $name Upload time (Time betweeen capture-upload sucess): $calculateUploadTime")
+                                Bugfender.d(Events.IMAGE_UPLOAD_SUCESS, "reference: $fbRef name: $name Upload time (Time betweeen capture & upload sucess): $calculateUploadTime")
                                 Bugfender.d(Events.UPLOADED_IMAGE_METADATA, getStringifiedMetadata(metadata.build()))
                                 removeImageFromQueue(mediaModelClass)
                                 Log.d("imageSW queue received", "success")
