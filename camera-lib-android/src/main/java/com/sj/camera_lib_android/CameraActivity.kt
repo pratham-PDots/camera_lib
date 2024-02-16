@@ -323,7 +323,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         logCameraLaunchEvent(uploadParams)
         LogUtils.logGlobally(
             Events.NATIVE_PARAMS,
-            "orientation: $modeRotation, widthPercentage: $overlayBE, resolution: $resolution, referenceUrl: $referenceUrl, allowBlurCheck: $isBlurFeature, allowCrop: $isCropFeature, isRetake: ${viewModel.isRetake}, zoomLevel: ${viewModel.currentZoomRatio}, showOverlapToggleButton: ${viewModel.backendToggle}, showGrideLines: $gridlines, langauge: $language"
+            "orientation: $modeRotation, widthPercentage: $overlayBE, resolution: $resolution, referenceUrl: $referenceUrl, allowBlurCheck: $isBlurFeature, allowCrop: $isCropFeature, isRetake: ${viewModel.isRetake}, zoomLevel: ${viewModel.currentZoomRatio}, showOverlapToggleButton: ${viewModel.backendToggle}, showGrideLines: $gridlines, langauge: $language uploadParams: $uploadParams"
         )
 
         viewModel.discardAllImages() // cameraActivity Launch
@@ -731,9 +731,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         // capture photo button click
         captureImg.setOnClickListener {
             //Gyro work
-            viewModel.gyroValueX = String.format(Locale.US, "%.2f", filteredTiltY).toFloat()
-            viewModel.gyroValueY = String.format(Locale.US, "%.2f", filteredTiltX).toFloat()
-            viewModel.gyroValueZ = String.format(Locale.US, "%.2f", mapTilt(azimuthDegrees, false)).toFloat()
+            viewModel.gyroValueX = String.format(Locale.US, "%.2f", filteredTiltY).toFloat() * 5
+            viewModel.gyroValueY = String.format(Locale.US, "%.2f", filteredTiltX).toFloat() * 5
+            viewModel.gyroValueZ = String.format(Locale.US, "%.2f", mapTilt(azimuthDegrees, false)).toFloat() * 5
 
             if (viewModel.currentImageList.size == 0) {
                 isArrowSelected = true
@@ -799,7 +799,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                 onClick = {
                     viewModel.submitClicked = true
                     broadcastSubmitPress(this@CameraActivity)
-                    LogUtils.logGlobally(Events.UPLOAD_BUTTON_PRESSED, "Total Images: ${viewModel.currentImageList.size}")
+                    LogUtils.logGlobally(Events.UPLOAD_BUTTON_PRESSED, "Total Images: ${viewModel.currentImageList.size} Session ID: ${viewModel.uuid.toString()}")
                     Log.d(
                         "imageSW",
                         "Saved Image Count : ${viewModel.imageSavedCount} Submit : ${viewModel.submitClicked}"
@@ -863,7 +863,8 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         // Retake from Crop screen
         retakeCropBtnCL.setOnClickListener {
-            LogUtils.logGlobally(Events.CROP_RETAKE)
+
+            LogUtils.logGlobally(Events.CROP_RETAKE, viewModel.imageName)
             //Show Hide Layouts
             cameraLayout.visibility = View.VISIBLE
             previewImgLayout.visibility = View.GONE
@@ -883,7 +884,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         retakeBlurImg.setOnClickListener {
             if(getBlurContinueCount() < 3)
                 changeBlurCount(reset = true)
-            LogUtils.logGlobally(Events.BLUR_RETAKE)
+            LogUtils.logGlobally(Events.BLUR_RETAKE, viewModel.imageName)
             //Show Hide Layouts
             cameraLayout.visibility = View.VISIBLE
             previewImgLayout.visibility = View.GONE
@@ -902,14 +903,14 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         //Done Button
         cropDoneBtnCL.cropClickWithDebounce {
-            LogUtils.logGlobally(Events.CROP_DONE)
+            LogUtils.logGlobally(Events.CROP_DONE, viewModel.imageName)
             // this is for CROP DONE Button
             cropImageViewCL.croppedImageAsync()
         }
 
         // Continue Button
         notBlurContinueLL.setOnClickListener {
-            LogUtils.logGlobally(Events.BLUR_CONTINUE)
+            LogUtils.logGlobally(Events.BLUR_CONTINUE, viewModel.imageName)
             changeBlurCount(value = 1)
             // this is for continue_ with BLUR
             mBitmap?.let { it1 ->
@@ -935,7 +936,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             coordinatesCrop = arrayOf(left!!, top!!, right!!, bottom!!)
             LogUtils.logGlobally(
                 Events.IMAGE_CROPPED,
-                "coordinatesCrop: Xmin, Ymin, Xmax, Ymax: ${coordinatesCrop.contentToString()}"
+                "${viewModel.imageName} coordinatesCrop: Xmin, Ymin, Xmax, Ymax: ${coordinatesCrop.contentToString()}"
             )
 
 
@@ -1099,7 +1100,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private fun logCapturePressEvent() {
         try {
-            var attributes = "hasWideAngle: ${wideAngleButton.isVisible}, flash: ${currentFlashType.name}, Gyro values(Horizontal, Vertical, Z): (${viewModel.gyroValueX}, ${viewModel.gyroValueY}, ${viewModel.gyroValueZ})"
+            var attributes = "name: ${viewModel.uuid.toString() + "_" + (viewModel.currentImageList.size + 1)} hasWideAngle: ${wideAngleButton.isVisible}, flash: ${currentFlashType.name}, Gyro values(Horizontal, Vertical, Z): (${viewModel.gyroValueX}, ${viewModel.gyroValueY}, ${viewModel.gyroValueZ})"
             if(wideAngleButton.isVisible) attributes += ", wideAngleSelected: ${viewModel.wideAngleSet}"
             if (viewModel.backendToggle) attributes += ", overlapToggleState: ${binding.overlapToggle.isChecked}"
             LogUtils.logGlobally(Events.CAPTURE_BUTTON_PRESSED, attributes)
@@ -1272,7 +1273,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             // Update the tilt views with the filtered values
             binding.horizontalTiltView.setValue(xValue)
             binding.verticalTiltView.setValue(tiltXVal)
-            binding.tiltWarningMessage.isVisible = ((abs(tiltXVal) > 4f) || (abs(tiltYVal) > 4f) || abs(tiltZVal) > 4f)
+            binding.tiltWarningMessage.isVisible = ((abs(tiltXVal) > 5f) || (abs(tiltYVal) > 5f) || abs(tiltZVal) > 5f)
         }
 
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -1731,7 +1732,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                     if (bitmap !== oldBitmap && !oldBitmap.isRecycled) {
                         oldBitmap.recycle()
                     }
-                    LogUtils.logGlobally(Events.RESIZE_IMAGE, "$originalWidthHeight, resizedWidth: ${bitmap.width}, resizedHeight: ${bitmap.height}")
+                    LogUtils.logGlobally(Events.RESIZE_IMAGE, "$nameTimeStamp $originalWidthHeight, resizedWidth: ${bitmap.width}, resizedHeight: ${bitmap.height}")
 
                     if (needsRotation) {
                         val preRotataionBitmap = bitmap
@@ -1740,7 +1741,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
                             preRotataionBitmap.recycle()
                         }
                     }
-                    LogUtils.logGlobally(Events.ROTATE_IMAGE, "Rotation Needed: $needsRotation Rotation Degrees: ${imageProxy.imageInfo.rotationDegrees}")
+                    LogUtils.logGlobally(Events.ROTATE_IMAGE, "$nameTimeStamp Rotation Needed: $needsRotation Rotation Degrees: ${imageProxy.imageInfo.rotationDegrees}")
 
                     viewModel.imageSavedCount++
 
@@ -1878,9 +1879,9 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
         try {
             val file = File(filePath)
             if (!file.exists()) {
-                Log.d("imageSW corrupt image check", "does not exist")
+                Log.d(Events.NATIVE_IMAGE_CORRUPTED, "File does not exist")
                 // File does not exist
-                return false
+                return true
             }
 
             // Open the file in binary mode
@@ -1906,7 +1907,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             // Check if the last two bytes are equal to the JPEG EOI marker
             return buffer[0] == 0xFF.toByte() && buffer[1] == 0xD9.toByte()
         } catch (e : Exception) {
-            Log.d(Events.NATIVE_IMAGE_CORRUPTED, e.message.toString())
+            Log.d(Events.NATIVE_IMAGE_CORRUPTED, "Error: ${e.message.toString()}")
             return false
         }
     }

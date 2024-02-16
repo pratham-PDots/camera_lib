@@ -124,7 +124,7 @@ class CustomBarView @JvmOverloads constructor(
     }
 
     private fun getColor() : Paint {
-        if((abs(textValue) > 4f)) {
+        if((abs(textValue) > 5f)) {
             ballPaint.apply {
                 style = Paint.Style.FILL
                 color = 0xFFFF0000.toInt()
