@@ -15,6 +15,7 @@ import com.bugfender.sdk.Bugfender
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
+import com.sj.camera_lib_android.CameraActivity
 import com.sj.camera_lib_android.Database.AppDatabase
 import com.sj.camera_lib_android.Database.ImageEntity
 import com.sj.camera_lib_android.Database.ReactPendingData
@@ -176,6 +177,33 @@ class MyServices : Service() {
         }
     }
 
+
+    fun calculateTimeDifference(timestamp1: String, timestamp2: String): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+        try {
+            // Parse the timestamps into Date objects
+            val date1 = sdf.parse(timestamp1)
+            val date2 = sdf.parse(timestamp2)
+
+            // Calculate the difference in milliseconds
+            val differenceInMillis = date2.time - date1.time
+
+            // Convert milliseconds to seconds
+            val differenceInSeconds = differenceInMillis / 1000
+
+            // Calculate hours, minutes, and seconds
+            val hours = differenceInSeconds / 3600
+            val minutes = (differenceInSeconds % 3600) / 60
+            val seconds = differenceInSeconds % 60
+
+            // Return the formatted time difference string
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return ""
+        }
+    }
+
     private fun getStringifiedMetadata(metadata: StorageMetadata): String {
         val keys = metadata.customMetadataKeys
         val jsonObject = JSONObject()
@@ -189,6 +217,8 @@ class MyServices : Service() {
 
         return jsonObject.toString()
     }
+
+
 
 
 
@@ -293,7 +323,10 @@ class MyServices : Service() {
                     uploadTask?.addOnSuccessListener { taskSnapshot ->
                             applicationScope?.launch {
                                 Log.d("imageSW", "remove queue")
-                                Bugfender.d(Events.IMAGE_UPLOAD_SUCESS, "reference: $fbRef name: $name")
+                                val calculateUploadTime = calculateTimeDifference(mediaModelClass.app_timestamp, SimpleDateFormat(
+                                    CameraActivity.FILENAME_FORMAT, Locale.US
+                                ).format(System.currentTimeMillis()))
+                                Bugfender.d(Events.IMAGE_UPLOAD_SUCESS, "reference: $fbRef name: $name Upload time: $calculateUploadTime")
                                 Bugfender.d(Events.UPLOADED_IMAGE_METADATA, getStringifiedMetadata(metadata.build()))
                                 removeImageFromQueue(mediaModelClass)
                                 Log.d("imageSW queue received", "success")

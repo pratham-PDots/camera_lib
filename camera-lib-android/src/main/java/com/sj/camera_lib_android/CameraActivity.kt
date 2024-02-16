@@ -863,6 +863,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
         // Retake from Crop screen
         retakeCropBtnCL.setOnClickListener {
+
             LogUtils.logGlobally(Events.CROP_RETAKE, viewModel.imageName)
             //Show Hide Layouts
             cameraLayout.visibility = View.VISIBLE
@@ -1099,7 +1100,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
 
     private fun logCapturePressEvent() {
         try {
-            var attributes = "Session ID: ${viewModel.uuid.toString() + "_" + (viewModel.currentImageList.size + 1)} hasWideAngle: ${wideAngleButton.isVisible}, flash: ${currentFlashType.name}, Gyro values(Horizontal, Vertical, Z): (${viewModel.gyroValueX}, ${viewModel.gyroValueY}, ${viewModel.gyroValueZ})"
+            var attributes = "name: ${viewModel.uuid.toString() + "_" + (viewModel.currentImageList.size + 1)} hasWideAngle: ${wideAngleButton.isVisible}, flash: ${currentFlashType.name}, Gyro values(Horizontal, Vertical, Z): (${viewModel.gyroValueX}, ${viewModel.gyroValueY}, ${viewModel.gyroValueZ})"
             if(wideAngleButton.isVisible) attributes += ", wideAngleSelected: ${viewModel.wideAngleSet}"
             if (viewModel.backendToggle) attributes += ", overlapToggleState: ${binding.overlapToggle.isChecked}"
             LogUtils.logGlobally(Events.CAPTURE_BUTTON_PRESSED, attributes)
@@ -1272,7 +1273,7 @@ class CameraActivity : AppCompatActivity(), Backpressedlistener {
             // Update the tilt views with the filtered values
             binding.horizontalTiltView.setValue(xValue)
             binding.verticalTiltView.setValue(tiltXVal)
-            binding.tiltWarningMessage.isVisible = ((abs(tiltXVal) > 4f) || (abs(tiltYVal) > 4f) || abs(tiltZVal) > 4f)
+            binding.tiltWarningMessage.isVisible = ((abs(tiltXVal) > 5f) || (abs(tiltYVal) > 5f) || abs(tiltZVal) > 5f)
         }
 
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
