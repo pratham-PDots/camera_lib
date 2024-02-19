@@ -25,6 +25,4 @@ data class ImageDetailsModel(
     val image: Bitmap,
     var croppedCoordinates: Array<Int>,
     var gyroHorizontal: Float = 0f,
-    var gyroVertical: Float = 0f,
-    var gyroZ: Float = 0f
-    )
+    var gyroVertical: Float = 0f)
