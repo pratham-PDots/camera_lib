@@ -217,8 +217,15 @@ class MyServices : Service() {
         return jsonObject.toString()
     }
 
-
-
+    private fun getShopCategory(uploadParams: JSONObject): String {
+        try {
+            val shopId = uploadParams.optString("shop_id", "")
+            val categoryId = uploadParams.optString("category_id", "")
+            return "Shop ID : $shopId Category ID: $categoryId"
+        } catch (e : Exception) {
+            return ""
+        }
+    }
 
     private fun uploadImage(list: MutableList<ImageUploadModel>, projectId : String = "", sessionId: String = "") {
 
@@ -323,7 +330,8 @@ class MyServices : Service() {
                                 val calculateUploadTime = calculateTimeDifference(mediaModelClass.app_timestamp, SimpleDateFormat(
                                     CameraActivity.FILENAME_FORMAT, Locale.US
                                 ).format(System.currentTimeMillis()))
-                                Bugfender.d(Events.IMAGE_UPLOAD_SUCESS, "reference: $fbRef name: $name Upload time (Time betweeen capture & upload sucess): $calculateUploadTime")
+                                val shopCategory = getShopCategory(uploadParamJson)
+                                Bugfender.d(Events.IMAGE_UPLOAD_SUCESS, "reference: $fbRef name: $name Upload time (Time betweeen capture & upload sucess): $calculateUploadTime $shopCategory")
                                 Bugfender.d(Events.UPLOADED_IMAGE_METADATA, getStringifiedMetadata(metadata.build()))
                                 removeImageFromQueue(mediaModelClass)
                                 Log.d("imageSW queue received", "success")
