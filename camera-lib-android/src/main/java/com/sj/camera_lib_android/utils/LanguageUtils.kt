@@ -14,7 +14,7 @@ object LanguageUtils {
                     desiredLanguage
                 )
             ) {
-                setSDKLanguage(LanguageType.getLanguageFromServerType(desiredLanguage).serverType, resources)
+                setSDKLanguage(LanguageType.getLanguageFromServerType(desiredLanguage).androidType, resources)
             }
 
         } catch (e: Exception) {
