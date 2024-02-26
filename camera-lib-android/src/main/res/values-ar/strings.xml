@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ShelfWatch</string>
+    <string name="dialog_submit">هل أنت متأكد أنك تريد إرسال هذه الصورة؟</string>
+    <string name="discard_submit">Aهل أنت متأكد أنك تريد تجاهل الصورة (الصور) الملتقطة؟</string>
+    <string name="dialogTitle">الرجاء تحديد الاتجاه</string>
+    <string name="yes_btn">نعم</string>
+    <string name="no_btn">لا</string>
+    <string name="done">تم</string>
+    <string name="continue_">أكمل</string>
+    <string name="reset">إعادة ضبط</string>
+    <string name="retake">إعادة الالتقاط</string>
+    <string name="crop_review"><![CDATA[التحديد والمراجعة]]></string>
+    <string name="change_orientation">تغيير الاتجاه إلى %1s</string>
+    <string name="processing_please_wait">جارى المعالجة .. انتظر من فضلك</string>
+    <string name="submit">قدم</string>
+    <string name="upload">ارفع</string>
+    <string name="camera_tilted_straighten_please">تنبيه الميل! اضبط للحصول على صور مستقيمة.</string>
+    <string name="choose_the_orientation_of_your_picture_taking">اختر اتجاه التقاط الصور الخاصة بك</string>
+    <string name="change_orientation_portrait">تغيير الاتجاه إلى عمودي</string>
+    <string name="change_orientation_landscape">تغيير الاتجاه إلى أفقى</string>
+    <string name="portrait">عمودى</string>
+    <string name="landscape">أفقى</string>
+    <string name="portrait_small">عمودى</string>
+    <string name="landscape_small">أفقى</string>
+    <string name="go_down">إنزل</string>
+    <string name="go_left">Go Left</string>
+    <string name="go_right">اذهب يمينا</string>
+    <string name="not_blurred_continue">غير واضحة؟ أكمل</string>
+    <string name="captured_photo_is_blurred">الصورة الملتقطة غير واضحة</string>
+
+</resources>

@@ -2,7 +2,9 @@ package com.sj.camera_lib_android.types
 
 enum class LanguageType(val serverType: String) {
     ENGLISH("en"),
-    POLISH("pl");
+    POLISH("pl"),
+    SLOVAKIA("sk"),
+    ARABIC("ar");
 
     companion object {
         fun getLanguageFromServerType(serverType: String): LanguageType {
